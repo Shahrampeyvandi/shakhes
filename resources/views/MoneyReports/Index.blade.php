@@ -1,48 +1,154 @@
 @extends('layout.temp')
 @section('content')
-<div class="address-page">
-    <h4>پنل کاربری</h4>
-    <p>RFP / لیست RFP</p>
-</div>
-<div class="container-fluid panel-table">
+<style>
+    td input{
+        width: 50px !important;
+    }
+</style>
+<div class="container-fluid panel-table mt-5">
     <div class="head-panel">
-        <h4> لیست RFP</h4>
+        <h4> صورت های مالی و گزارشات</h4>
     </div>
     <div class="col-md-12 ">
-        <div class="table-responsive">
-            <table class="table table-bordered table-primary ">
-                        <thead>
-                        <tr>
-                            <th scope="col">ردیف</th>
-                            <th scope="col">عنوان تقاضا </th>
-                            <th scope="col">تاریخ ثبت  </th>
-                            <th scope="col"> تاریخ اعتبار تقاضا</th>
-                            <th scope="col">وضعیت تایید</th>
-                            <th scope="col">جزئیات</th>
-                            <th scope="col">عملیات</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                      
-                        </tbody>
-                    </table>
-                </div>
+        
+        <form class="needs-validation" action="" method="post" enctype="multipart/form-data" novalidate>
+            {{csrf_field()}}
+            <div class="col-md-12 my-3">
+                <label for="title">انتخاب سهم:  </label>
+                <select class="form-control text-right selectpicker" name="RFP_applicant" required data-size="5"
+                    data-live-search="true" data-title="نام سهم" id="state_list" data-width="100%">
+                    <option value="شپنا">شپنا</option>
+                    <option value="ذوب">ذوب</option>
+                </select>
             </div>
-        </main>
+
+            <div class="container">
+
+               
+
+                <h6 class="mt-4">نوع اطلاعات</h6>
+
+
+                <div class="d-block">
+
+                    <div class="row m-4">
+
+                        <div class="col-md-4 mb-3">
+                            <div class="custom-control   custom-radio">
+                                <input id="govahi_nano_meghyas_yes" name="govahi_nano_meghyas" type="radio"
+                                    value="ماهانه" class="custom-control-input" required>
+                                <label class="custom-control-label" for="govahi_nano_meghyas_yes">ماهانه</label>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-4 mb-3">
+                            <div class="custom-control custom-radio">
+                                <input id="govahi_nano_meghyas_azmayeshgah" name="govahi_nano_meghyas" type="radio"
+                                    value="سه ماهه" class="custom-control-input" required>
+                                <label class="custom-control-label"
+                                    for="govahi_nano_meghyas_azmayeshgah">سه ماهه</label>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-4 mb-3">
+                            <div class="custom-control   custom-radio">
+                                <input id="govahi_nano_meghyas_sanat" name="govahi_nano_meghyas" type="radio"
+                                    value="سالیانه" class="custom-control-input" required>
+                                <label class="custom-control-label" for="govahi_nano_meghyas_sanat">سالیانه</label>
+                            </div>
+                        </div>
+                      
+                       
+                    </div>
+                </div>
+               
+
+               
+
+
+               
+
+
+               
+
+
+                <div class="d-block">
+
+                    <div class="row m-4">
+                        <div class="table-responsive">
+                            <table class="table table-bordered  ">
+                                <thead>
+                                    <tr>
+                                        <th>سال</th>
+                                        <th scope="col">فروردین</th>
+                                        <th scope="col">اردیبهشت</th>
+                                        <th scope="col">خرداد</th>
+                                        <th scope="col">تیر</th>
+                                        <th scope="col">مرداد</th>
+                                        <th scope="col">شهریور</th>
+                                        <th scope="col">مهر</th>
+                                        <th scope="col">آبان</th>
+                                        <th scope="col">آذر</th>
+                                        <th scope="col">دی</th>
+                                        <th scope="col">بهمن</th>
+                                        <th scope="col">اسفند</th>
+
+                       
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1399</td>
+                                        <td >
+                                            <input type="text">
+                                        </td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                       </tr>
+                                       <tr>
+                                        <td>1398</td>
+                                        <td >
+                                            <input type="text">
+                                        </td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                        <td ><input type="text"></td>
+                                       </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+                </div>
+                <hr>
+                <div class="container text-center">
+                    <button class="btn btn-primary " type="submit">ثبت اطلاعات</button>
+                </div>
+
+            </div>
+        </form>
+
     </div>
 
-<div class="modal fade bd-example-modal-lg"  tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
 
-
-
-
-
-
-        </div>
-      </div>
-    </div>
   </div>
 @endsection
 
