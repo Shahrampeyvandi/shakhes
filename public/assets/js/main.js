@@ -1,9 +1,10 @@
 $(document).ready(function () {
-
+    $('.main').css('width', '82%');
     $('.hamburger').click(function () {
         $('.sidebar').css('margin-right', '0');
 
-        $('.main').css('margin-right', '260px')
+        $('.main').css('margin-right', '274px')
+        $('.main').css('width', '100%').css('width', '-=274px');
         $(this).hide();
         $('.close-sidebar').show();
     });
@@ -11,6 +12,7 @@ $(document).ready(function () {
         $('.sidebar').css('margin-right', '-274px');
 
         $('.main').css('margin-right', '0px')
+        $('.main').css('width', '100%')
         $(this).hide();
         $('.hamburger').show();
     });
