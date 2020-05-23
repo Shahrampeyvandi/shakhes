@@ -303,6 +303,7 @@ success:function(data){
            
            switch ($(this).val()) {
                case 'ماهانه':
+               $('.season-table').hide()
                $('#monthly-table').show()
                $('.change-month').show()
                    break;
