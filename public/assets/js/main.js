@@ -3,8 +3,13 @@ $(document).ready(function () {
     $('.hamburger').click(function () {
         $('.sidebar').css('margin-right', '0');
 
-        $('.main').css('margin-right', '274px')
-        $('.main').css('width', '100%').css('width', '-=274px');
+        
+        $('.main').animate({
+            "margin-right":"274px",
+            "width":"calc(100% - 274px)"
+        },
+             50);
+       
         $(this).hide();
         $('.close-sidebar').show();
     });

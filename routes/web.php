@@ -16,6 +16,7 @@ Route::get('/', 'MainController@Index')->name('BaseUrl');
 Route::get('/moneyreports', 'MoneyReportsController@Index')->name('MoneyReports');
 Route::post('/moneyreports/monthly', 'MoneyReportsController@SubmitMonthly')->name('MonyReport.Monthly');
 Route::post('/moneyreports/seasonly', 'MoneyReportsController@SubmitSeasonly')->name('MonyReport.Seasonly');
+Route::get('/users', 'UsersController@Index')->name('Users');
 
 
 
