@@ -13,8 +13,8 @@
 
         <h6 class="mt-4">انتخاب سهم: </h6>
 
-        <select class="form-control text-right selectpicker" name="sahm" required data-size="5" data-live-search="true"
-            data-title="نام سهم" id="sahm" data-width="100%">
+        <select class="form-control text-right selectpicker" name="namad" required data-size="5" data-live-search="true"
+            data-title="نام سهم" id="namad" data-width="100%">
             <option value="شپنا">شپنا</option>
             <option value="ذوب">ذوب</option>
         </select>
@@ -100,10 +100,10 @@
             <form id="monthly-table" class="needs-validation" action="{{route('MonyReport.Monthly')}}" method="post"
                 enctype="multipart/form-data">
                 {{csrf_field()}}
-                <input type="hidden" name="type" id="type" value="'.$request->type.'">
-                <input type="hidden" name="sahm" id="sahm" value="'.$request->sahm.'">
-                <input type="hidden" name="begin_month" id="" value="'.$request->month.'">
-                <input type="hidden" name="begin_year" id="" value="'.$request->year.'">
+                <input type="hidden" name="type" id="type" value="ماهانه">
+                <input type="hidden" name="n" id="n" value="">
+                <input type="hidden" name="begin_month" id="" value="">
+                <input type="hidden" name="begin_year" id="" value="">
                 <div class="d-block">
 
                     <div class="row my-4">
@@ -131,36 +131,36 @@
                                     <tr>
                                         <td>{{$new_year}}</td>
                                         <td>
-                                            <input type="text" name="farvardin[]">
+                                            <input type="text" name="1[{{$new_year}}]">
                                         </td>
-                                        <td><input type="text" name="ordi[]"></td>
-                                        <td><input type="text" name="khordad[]"></td>
-                                        <td><input type="text" name="tir[]"></td>
-                                        <td><input type="text" name="mordad[]"></td>
-                                        <td><input type="text" name="shahrivar[]"></td>
-                                        <td><input type="text" name="mehr[]"></td>
-                                        <td><input type="text" name="aban[]"></td>
-                                        <td><input type="text" name="azar[]"></td>
-                                        <td><input type="text" name="dey[]"></td>
-                                        <td><input type="text" name="bahman[]"></td>
-                                        <td><input type="text" name="esfand[]"></td>
+                                        <td><input type="text" name="2[{{$new_year}}]"></td>
+                                        <td><input type="text" name="3[{{$new_year}}]"></td>
+                                        <td><input type="text" name="4[{{$new_year}}]"></td>
+                                        <td><input type="text" name="5[{{$new_year}}]"></td>
+                                        <td><input type="text" name="6[{{$new_year}}]"></td>
+                                        <td><input type="text" name="7[{{$new_year}}]"></td>
+                                        <td><input type="text" name="8[{{$new_year}}]"></td>
+                                        <td><input type="text" name="9[{{$new_year}}]"></td>
+                                        <td><input type="text" name="10[{{$new_year}}]"></td>
+                                        <td><input type="text" name="11[{{$new_year}}]"></td>
+                                        <td><input type="text" name="12[{{$new_year}}]"></td>
                                     </tr>
                                     <tr>
                                         <td>{{$last_year}}</td>
                                         <td>
-                                            <input type="text" name="farvardin[]">
+                                            <input type="text" name="1[{{$last_year}}]">
                                         </td>
-                                        <td><input type="text" name="ordi[]"></td>
-                                        <td><input type="text" name="khordad[]"></td>
-                                        <td><input type="text" name="tir[]"></td>
-                                        <td><input type="text" name="mordad[]"></td>
-                                        <td><input type="text" name="shahrivar[]"></td>
-                                        <td><input type="text" name="mehr[]"></td>
-                                        <td><input type="text" name="aban[]"></td>
-                                        <td><input type="text" name="azar[]"></td>
-                                        <td><input type="text" name="dey[]"></td>
-                                        <td><input type="text" name="bahman[]"></td>
-                                        <td><input type="text" name="esfand[]"></td>
+                                        <td><input type="text" name="2[{{$last_year}}]"></td>
+                                        <td><input type="text" name="3[{{$last_year}}]"></td>
+                                        <td><input type="text" name="4[{{$last_year}}]"></td>
+                                        <td><input type="text" name="5[{{$last_year}}]"></td>
+                                        <td><input type="text" name="6[{{$last_year}}]"></td>
+                                        <td><input type="text" name="7[{{$last_year}}]"></td>
+                                        <td><input type="text" name="8[{{$last_year}}]"></td>
+                                        <td><input type="text" name="9[{{$last_year}}]"></td>
+                                        <td><input type="text" name="10[{{$last_year}}]"></td>
+                                        <td><input type="text" name="11[{{$last_year}}]"></td>
+                                        <td><input type="text" name="12[{{$last_year}}]"></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -173,6 +173,7 @@
                     <button class="btn btn-primary " type="submit">ثبت اطلاعات</button>
                 </div>
         </div>
+
 
 
 
@@ -203,6 +204,11 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+
+        $('#namad').change(function(){
+            var value = $(this).val()
+            $('#n').val(value)
+        })
 
 $('#begin_month').change(function(e){
   e.preventDefault();

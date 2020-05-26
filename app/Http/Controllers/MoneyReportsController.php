@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Namad\NamadMonthlyReport;
 use Illuminate\Http\Request;
 use Morilog\Jalali\Jalalian;
 
@@ -20,7 +21,35 @@ class MoneyReportsController extends Controller
 
     public function SubmitMonthly(Request $request)
     {
-        dd($request->all());
+
+      if ($request->type == 'ماهانه') {
+        $months = $request->all(['1','2','3','4','5','6','7','8','9','10','11','12']);
+        
+       
+        foreach ($months as $key => $value) {
+        
+         foreach ($value as $key2 => $value2) {
+            if($value2 !== null){
+             $monthly_report = new NamadMonthlyReport();
+             $monthly_report->namad_id = 1;
+             $monthly_report->value = $value2;
+             $monthly_report->month = (new Jalalian($key2, $key, 28))->toString();
+             $monthly_report->save();
+            }
+         }
+        }
+        return back();
+      }
+      if ($request->type == 'سه ماهه') {
+
+      }
+      if ($request->type == 'سالیانه') {
+          
+    }
+
+
+      
+
     }
     public function SubmitSeasonly(Request $request)
     {
