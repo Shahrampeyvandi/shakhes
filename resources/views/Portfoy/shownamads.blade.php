@@ -24,8 +24,9 @@
                         <th>نام سهام</th>
                         <th>نماد سهام</th>
                         <th> بازار</th>
-                        
+                        <th> درصد پرتفوی</th>
                         <th>وضعیت</th>
+                        <th>عملیات</th>
     
                     </tr>
                 </thead>
@@ -40,7 +41,25 @@
                     <td>{{$namad->symbol}}</td>
                     <td>{{$namad->market}}</td>
                     <td>
-                        <span class="btn btn-success">0.33</span>
+                        <span class="btn btn-info">% 
+                        {{\DB::table('holdings_namads')
+                        ->whereNamad_id($namad->id)
+                        ->whereHolding_id($holding->id)
+                        ->first()->amount_percent}} 
+                        </span>
+                    </td>
+                    <td>
+                        <span class="btn btn-success">% 0.3 </span>
+                    </td>
+                    <td>
+                        <a data-id="{{$namad->id}}"
+                            class="delete text-white btn btn-rounded btn-danger btn-sm m-0"
+                            
+                            >حذف</a>
+                            <a data-id="{{$namad->id}}"
+                                class="edit text-white btn btn-rounded btn-primary btn-sm m-0"
+                                
+                                >ویرایش</a>
                     </td>
                    
                 </tr>

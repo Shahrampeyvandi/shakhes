@@ -22,7 +22,7 @@
                     </div>
                 </div>
                 <div class="row wrapper-content">
-                   <div class="form-group col-md-12">
+                   <div class="form-group col-md-8">
                     <select class="form-control text-right selectpicker" name="namads[]"  data-size="5"
                     data-live-search="true" data-title="نام سهم" id="namads[]" data-width="100%">
                     @foreach (\App\Models\Namad\Namad::OrderBy('symbol','ASC')->get() as $item)
@@ -30,6 +30,10 @@
                     @endforeach
                 </select>
                    </div>
+                   <div class="form-group col-md-4">
+                 
+                    <input type="number" class="form-control" name="persent[]" id="" placeholder="درصد پرتفوی" />
+                </div>
 
                 </div>
 
@@ -64,14 +68,22 @@
 
  $(document).on('click','.clone-bottom',function(e){
   e.preventDefault()
-  let cloned = $(this).siblings('.wrapper-content').clone()
-  cloned.find('input[type="text"]').val('')
 
+
+  var originalDiv = $('.wrapper-content').first();
+  
+  var originalSelect = originalDiv.find('.selectpicker');
+//   originalSelect.selectpicker('destroy').addClass('tmpSelect');
+
+  let cloned = originalDiv.clone()
+  cloned.find('input[type=number]').val('')
+cloned.find('.bootstrap-select').replaceWith(function() { return $('select', this); });
   cloned.prepend(`<div class="col-md-12"><a class="remove-link float-left" href="#" >
                                     <i class="fas fa-trash text-danger"></i>
                                 </a></div>`)
                                
   $(this).prev('.clone').append(cloned)
+  $('.selectpicker').selectpicker();
  })
 
 
