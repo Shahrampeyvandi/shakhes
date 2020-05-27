@@ -9,6 +9,6 @@ class Holding extends Model
 {
     public function namads()
     {
-        return $this->belongsToMany(Namad::class)->withPivot(['amount_percent','amount_value','change']);
+        return $this->belongsToMany(Namad::class,'holdings_namads')->withPivot(['amount_percent','amount_value','change']);
     }
 }

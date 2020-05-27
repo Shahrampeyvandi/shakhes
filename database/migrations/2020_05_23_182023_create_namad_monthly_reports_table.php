@@ -17,7 +17,8 @@ class CreateNamadMonthlyReportsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('namad_id');
             $table->integer('value');
-            $table->date('month');
+            $table->string('month')->nullable();
+            $table->string('year')->nullable();
             $table->timestamps();
         });
     }

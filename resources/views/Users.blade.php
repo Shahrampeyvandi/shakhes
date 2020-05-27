@@ -31,13 +31,7 @@
                   نام خانوادگی
                  
               </th>
-              <th>
-                
-                  نام کاربری
-                
-              </th>
-              <th>کد ملی</th>
-              <th>ایمیل</th>
+             
               <th>شماره موبایل</th>
               <th>پروفایل عکس</th>
 
@@ -45,31 +39,23 @@
           </thead>
           <tbody class="tbody">
 
-            {{-- @foreach ($users as $key=>$user)
+            @foreach ($users as $key=>$user)
             <tr>
-              <td>
-                <div class="custom-control custom-checkbox custom-control-inline" style="margin-left: -1rem;">
-                  <input data-id="{{$user->id}}" type="checkbox" id="user_{{ $key}}" name="customCheckboxInline1"
-                    class="custom-control-input" value="1">
-                  <label class="custom-control-label" for="user_{{$key}}"></label>
-                </div>
-              </td>
+              
               <td> {{$key+1}} </td>
-              <td>{{$user->user_firstname}}</td>
-              <td>{{$user->user_lastname}}</td>
-              <td>{{$user->user_username}}</td>
-              <td>{{$user->user_responsibility}}</td>
-              <td>{{$user->user_national_code}}</td>
-              <td>{{$user->user_mobile}}</td>
+              <td>{{$user->fname}}</td>
+              <td>{{$user->lname}}</td>
+              <td>{{$user->phone}}</td>
+            
               <td>
-                @if ($user->user_prfile_pic !== '' && $user->user_prfile_pic !== null )
-                <img width="75px" class="img-fluid " src=" {{asset("uploads/brokers/$user->user_prfile_pic")}} " />
+                @if ($user->avatar !== '' && $user->avatar !== null )
+                <img width="75px" class="img-fluid " src=" {{asset("uploads/brokers/$user->avatar")}} " />
                 @else
                 <img width="75px" class="img-fluid " src=" {{asset("Pannel/img/avatar.jpg")}} " />
                 @endif
               </td>
             </tr>
-            @endforeach --}}
+            @endforeach
 
           </tbody>
         </table>

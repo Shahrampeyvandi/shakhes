@@ -15,8 +15,9 @@
 
         <select class="form-control text-right selectpicker" name="namad" required data-size="5" data-live-search="true"
             data-title="نام سهم" id="namad" data-width="100%">
-            <option value="شپنا">شپنا</option>
-            <option value="ذوب">ذوب</option>
+            @foreach (\App\Models\Namad\Namad::OrderBy('symbol','ASC')->get() as $item)
+             <option value="{{$item->id}}">{{$item->symbol}}</option>
+            @endforeach
         </select>
 
         <h6 class="mt-4">شروع مالی سهم: </h6>
@@ -24,9 +25,9 @@
             <div class="form-group col-md-6">
 
                 <select id="begin_year" name="begin_year" class="form-control" id="recipient-name">
-                    <option value="">باز کردن فهرست انتخاب</option>
-                    <option value="{{$new_year}}">{{$new_year}}</option>
-                    <option value="{{$last_year}}">{{$last_year}}</option>
+                
+                    <option value="{{$last_year}}" selected>{{$last_year}}</option>
+                    <option value="{{$new_year}}" >{{$new_year}}</option>
 
 
 
@@ -36,8 +37,8 @@
             <div class="form-group col-md-6">
 
                 <select id="begin_month" name="begin_month" class="form-control" id="recipient-name">
-                    <option value="">باز کردن فهرست انتخاب</option>
-                    <option value="فروردین">فروردین</option>
+                   
+                    <option selected value="فروردین">فروردین</option>
                     <option value="اردیبهشت">اردیبهشت</option>
                     <option value="خرداد">خرداد</option>
                     <option value="تیر">تیر</option>
@@ -206,7 +207,30 @@
         });
 
         $('#namad').change(function(){
+            // check if namad has in database
             var value = $(this).val()
+            var data = $('#begin_month').val()
+            var type = $('input[name=type]:checked').val()
+            var year = $('#begin_year').val()
+
+          $.ajax({
+
+            type:'post',
+            url:'{{route("getmoneyreportsdata")}}',
+            data:{month:data,year:year,type:type,sahm:value},
+            success:function(data){ 
+            $('#ajax-table').html(data)
+            }
+        })
+
+
+
+
+
+
+
+
+           
             $('#n').val(value)
         })
 
@@ -230,17 +254,17 @@ success:function(data){
 
 
         $('input[name=type]').change(function(){
-            if($('#begin_month').val() == '' || $('#begin_year').val() == '')
-            {
-                alert('لطفا ماه و سال مالی را وارد کنید')
-                return false;
-            }
+            // if($('#begin_month').val() == '' || $('#begin_year').val() == '')
+            // {
+            //     alert('لطفا ماه و سال مالی را وارد کنید')
+            //     return false;
+            // }
            
            
  var type = $(this).val()
  var data = $('#begin_month').val()
  var year = $('#begin_year').val()
- var sahm = $('#sahm').val()
+ var sahm = $('#namad').val()
 
  $.ajax({
 

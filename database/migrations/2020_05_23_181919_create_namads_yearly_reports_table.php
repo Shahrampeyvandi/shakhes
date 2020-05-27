@@ -18,7 +18,7 @@ class CreateNamadsYearlyReportsTable extends Migration
             $table->unsignedBigInteger('namad_id');
             $table->integer('profit');
             $table->integer('loss');
-            $table->date('year');
+            $table->string('year');
             $table->timestamps();
         });
     }

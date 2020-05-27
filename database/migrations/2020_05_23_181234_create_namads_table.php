@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 class CreateNamadsTable extends Migration
 {
@@ -19,8 +20,22 @@ class CreateNamadsTable extends Migration
             $table->string('name');
             $table->string('market');
             $table->string('flow');
+            $table->string('salemali')->nullable();
+            $table->string('mahemali')->nullable();
             $table->timestamps();
         });
+        DB::table('members')->insert(
+            array(
+                'symbol'=>'ذوب',
+                'name'=>'ذوب',
+                'market'=>'بورس',
+                'flow'=>'1',
+                'salemali'=>'1399',
+                'mahemali'=>'1',
+               
+
+                )
+        );
     }
 
     /**

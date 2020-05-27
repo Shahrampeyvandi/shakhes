@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{route('BaseUrl')}}/vendor/FontAwesome/all.css">
     <link rel="stylesheet" href="{{route("BaseUrl")}}/datepicker/bootstrap-datepicker.min.css">
     <link rel="stylesheet" href="{{route('BaseUrl')}}/assets/css/style.css">
+     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     @yield('css')
 </head>
 
@@ -69,7 +70,7 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="#">
+                        <a class="sidebar-link pr-4" href="{{route('PortfoyList')}}">
                              <img width="20px" src="{{asset('assets/images/portfoy.png')}}" alt=""> <span
                                 class="align-middle">
                                 پرتفوی روزانه شرکت ها</span>
