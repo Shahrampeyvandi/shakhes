@@ -24,7 +24,7 @@ class CreateNamadsTable extends Migration
             $table->string('mahemali')->nullable();
             $table->timestamps();
         });
-        DB::table('members')->insert(
+        DB::table('namads')->insert(
             array(
                 'symbol'=>'ذوب',
                 'name'=>'ذوب',

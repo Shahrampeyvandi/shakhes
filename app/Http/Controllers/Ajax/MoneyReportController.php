@@ -14,15 +14,18 @@ class MoneyReportController extends Controller
      
         $namad_data = Namad::where('id',$request->sahm)->first();
         if(!is_null($namad_data)){
-
+            
             $monthly_data = $namad_data->monthlyReports;
             $seasonal_data = $namad_data->seasonalReports;
             $yearly_data = $namad_data->yearlyReports;
            
         }else{
+ 
             $monthly_data = [];
             $seasonal_data = [];
+            $yearly_data = [];
         }
+        if(count($monthly_data)){ $status = 'exist';}else{$status = 'not exist';} 
         
         
         $months_array = [
@@ -52,6 +55,33 @@ class MoneyReportController extends Controller
             'اسفند'
 
         ];
+        $num_arrays = [
+            '1',
+            '2',
+            '3',
+            '4',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+            '10',
+            '11',
+            '12',
+            '1',
+            '2',
+            '3',
+            '4',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+            '10',
+            '11',
+            '12'
+
+        ];
        
 
 
@@ -63,6 +93,7 @@ class MoneyReportController extends Controller
 
         
         $months =   array_slice($months_array, $key, 12);
+        $num_months = array_slice($num_arrays, $key, 12);
         $new_year = Jalalian::forge('now')->format('%Y');
         $fivelast_year = Jalalian::forge('now')->subYears(5)->format('%Y');
         $fourlast_year = Jalalian::forge('now')->subYears(4)->format('%Y');
@@ -109,38 +140,38 @@ if($request->type == "ماهانه"){
                             <tr>
                                 <td>'.$new_year.'</td>
                                 <td>
-                                        <input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',1)->where('year',$new_year)->first()) ? $first->value : '').'" name="1['.$new_year.']">
+                                        <input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',1)->where('year',$new_year)->first()) ? $first->value : '').'" name="'.$num_months[0].'['.$new_year.']">
                                         </td>
-                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',2)->where('year',$new_year)->first()) ? $first->value : '').'" name="2['.$new_year.']"></td>
-                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',3)->where('year',$new_year)->first()) ? $first->value : '').'" name="3['.$new_year.']"></td>
-                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',4)->where('year',$new_year)->first()) ? $first->value : '').'" name="4['.$new_year.']"></td>
-                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',5)->where('year',$new_year)->first()) ? $first->value : '').'" name="5['.$new_year.']"></td>
-                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',6)->where('year',$new_year)->first()) ? $first->value : '').'" name="6['.$new_year.']"></td>
-                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',7)->where('year',$new_year)->first()) ? $first->value : '').'" name="7['.$new_year.']"></td>
-                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',8)->where('year',$new_year)->first()) ? $first->value : '').'" name="8['.$new_year.']"></td>
-                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',9)->where('year',$new_year)->first()) ? $first->value : '').'" name="9['.$new_year.']"></td>
-                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',10)->where('year',$new_year)->first()) ? $first->value : '').'"" name="10['.$new_year.']"></td>
-                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',11)->where('year',$new_year)->first()) ? $first->value : '').'"" name="11['.$new_year.']"></td>
-                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',12)->where('year',$new_year)->first()) ? $first->value : '').'"" name="12['.$new_year.']"></td>
+                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',2)->where('year',$new_year)->first()) ? $first->value : '').'" name="'.$num_months[1].'['.$new_year.']"></td>
+                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',3)->where('year',$new_year)->first()) ? $first->value : '').'" name="'.$num_months[2].'['.$new_year.']"></td>
+                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',4)->where('year',$new_year)->first()) ? $first->value : '').'" name="'.$num_months[3].'['.$new_year.']"></td>
+                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',5)->where('year',$new_year)->first()) ? $first->value : '').'" name="'.$num_months[4].'['.$new_year.']"></td>
+                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',6)->where('year',$new_year)->first()) ? $first->value : '').'" name="'.$num_months[5].'['.$new_year.']"></td>
+                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',7)->where('year',$new_year)->first()) ? $first->value : '').'" name="'.$num_months[6].'['.$new_year.']"></td>
+                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',8)->where('year',$new_year)->first()) ? $first->value : '').'" name="'.$num_months[7].'['.$new_year.']"></td>
+                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',9)->where('year',$new_year)->first()) ? $first->value : '').'" name="'.$num_months[8].'['.$new_year.']"></td>
+                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',10)->where('year',$new_year)->first()) ? $first->value : '').'"" name="'.$num_months[9].'['.$new_year.']"></td>
+                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',11)->where('year',$new_year)->first()) ? $first->value : '').'"" name="'.$num_months[10].'['.$new_year.']"></td>
+                                        <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',12)->where('year',$new_year)->first()) ? $first->value : '').'"" name="'.$num_months[11].'['.$new_year.']"></td>
                             </tr>
                            ';
                     if($request->year !== $new_year){
                         $table .=' <tr>
                         <td>'.$last_year.'</td>
                         <td>
-                        <input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',1)->where('year',$last_year)->first()) ? $first->value : '').'" name="1['.$last_year.']">
+                        <input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',1)->where('year',$last_year)->first()) ? $first->value : '').'" name="'.$num_months[0].'['.$last_year.']">
                     </td>
-                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',2)->where('year',$last_year)->first()) ? $first->value : '').'" name="2['.$last_year.']"></td>
-                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',3)->where('year',$last_year)->first()) ? $first->value : '').'" name="3['.$last_year.']"></td>
-                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',4)->where('year',$last_year)->first()) ? $first->value : '').'" name="4['.$last_year.']"></td>
-                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',5)->where('year',$last_year)->first()) ? $first->value : '').'" name="5['.$last_year.']"></td>
-                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',6)->where('year',$last_year)->first()) ? $first->value : '').'" name="6['.$last_year.']"></td>
-                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',7)->where('year',$last_year)->first()) ? $first->value : '').'" name="7['.$last_year.']"></td>
-                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',8)->where('year',$last_year)->first()) ? $first->value : '').'" name="8['.$last_year.']"></td>
-                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',9)->where('year',$last_year)->first()) ? $first->value : '').'" name="9['.$last_year.']"></td>
-                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',10)->where('year',$last_year)->first()) ? $first->value : '').'"" name="10['.$last_year.']"></td>
-                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',11)->where('year',$last_year)->first()) ? $first->value : '').'"" name="11['.$last_year.']"></td>
-                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',12)->where('year',$last_year)->first()) ? $first->value : '').'"" name="12['.$last_year.']"></td>
+                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',2)->where('year',$last_year)->first()) ? $first->value : '').'" name="'.$num_months[1].'['.$last_year.']"></td>
+                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',3)->where('year',$last_year)->first()) ? $first->value : '').'" name="'.$num_months[2].'['.$last_year.']"></td>
+                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',4)->where('year',$last_year)->first()) ? $first->value : '').'" name="'.$num_months[3].'['.$last_year.']"></td>
+                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',5)->where('year',$last_year)->first()) ? $first->value : '').'" name="'.$num_months[4].'['.$last_year.']"></td>
+                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',6)->where('year',$last_year)->first()) ? $first->value : '').'" name="'.$num_months[5].'['.$last_year.']"></td>
+                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',7)->where('year',$last_year)->first()) ? $first->value : '').'" name="'.$num_months[6].'['.$last_year.']"></td>
+                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',8)->where('year',$last_year)->first()) ? $first->value : '').'" name="'.$num_months[7].'['.$last_year.']"></td>
+                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',9)->where('year',$last_year)->first()) ? $first->value : '').'" name="'.$num_months[8].'['.$last_year.']"></td>
+                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',10)->where('year',$last_year)->first()) ? $first->value : '').'"" name="'.$num_months[9].'['.$last_year.']"></td>
+                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',11)->where('year',$last_year)->first()) ? $first->value : '').'"" name="'.$num_months[10].'['.$last_year.']"></td>
+                    <td><input type="text" value="'.(!empty($monthly_data) && !is_null($first = $monthly_data->where('month',12)->where('year',$last_year)->first()) ? $first->value : '').'"" name="'.$num_months[11].'['.$last_year.']"></td>
                     </tr>';
                     }
                         $table .='</tbody>
@@ -367,7 +398,7 @@ if($request->type == "ماهانه"){
         </div>
     </form>';
      }
-        return response()->json($table,200);
+        return response()->json(['table'=>$table,'status'=>$status],200);
 
     }
 

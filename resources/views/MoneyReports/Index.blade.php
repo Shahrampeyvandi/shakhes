@@ -20,8 +20,9 @@
             @endforeach
         </select>
 
-        <h6 class="mt-4">شروع مالی سهم: </h6>
-        <div class="row mt-3 change-month">
+        <div class="change-month">
+            <h6 class="mt-4">شروع مالی سهم: </h6>
+        <div class="row mt-3 ">
             <div class="form-group col-md-6">
 
                 <select id="begin_year" name="begin_year" class="form-control" id="recipient-name">
@@ -55,6 +56,7 @@
 
                 </select>
             </div>
+        </div>
         </div>
 
         <h6 class="mt-4">نوع اطلاعات</h6>
@@ -219,7 +221,14 @@
             url:'{{route("getmoneyreportsdata")}}',
             data:{month:data,year:year,type:type,sahm:value},
             success:function(data){ 
-            $('#ajax-table').html(data)
+                if(data['status'] == 'exist'){
+                    $('.change-month').hide()
+                }
+                if(data['status'] == 'not exist'){
+                    $('.change-month').show()
+                }
+
+            $('#ajax-table').html(data['table'])
             }
         })
 
@@ -247,7 +256,7 @@ type:'post',
 url:'{{route("getmoneyreportsdata")}}',
 data:{month:data,year:year,type:type,sahm:sahm},
 success:function(data){ 
-   $('#ajax-table').html(data)
+   $('#ajax-table').html(data['table'])
    }
  })
 })
@@ -272,7 +281,7 @@ type:'post',
 url:'{{route("getmoneyreportsdata")}}',
 data:{month:data,year:year,type:type,sahm:sahm},
 success:function(data){ 
-   $('#ajax-table').html(data)
+   $('#ajax-table').html(data['table'])
    }
  })
            
