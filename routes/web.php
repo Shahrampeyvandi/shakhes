@@ -22,6 +22,8 @@ Route::get('/holding/create', 'PortfoyController@CreateHolding')->name('Holding.
 Route::post('/holding/create', 'PortfoyController@InsertHolding')->name('Holding.Create');
 
 Route::post('/holding/delete', 'PortfoyController@DeleteHolding')->name('Holding.Delete');
+Route::post('/holding/namad/delete', 'PortfoyController@DeleteHoldingNamad')->name('Holding.Namad.Delete');
+
 Route::get('/holding/{id}/namads', 'PortfoyController@ShowNamads')->name('Holding.Namads');
 
 

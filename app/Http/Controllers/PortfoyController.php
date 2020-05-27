@@ -27,6 +27,14 @@ class PortfoyController extends Controller
             $request->session()->flash('Error', 'نام شرکت را وارد نمایید');
             return back();
         }
+        $sum = 0;
+        foreach ($request->persent as $key => $percent) {
+            $sum = $sum + $percent;
+        }
+        if($percent > 100) {
+            $request->session()->flash('Error', 'درصد پرتفوی بیش از 100 % میباشد');
+            return back();
+        }
         $holding = new Holding();
         $holding->name = $request->name;
         if ($holding->save()) {
@@ -57,5 +65,14 @@ class PortfoyController extends Controller
         $holding =  Holding::where('id', $id)->first();
 
         return view('Portfoy.shownamads', compact('holding'));
+    }
+    
+    public function DeleteHoldingNamad(Request $request)
+    {
+
+        Holding::where('id', $request->holding)->first()->namads()->detach($request->id);
+        
+
+        return back();
     }
 }

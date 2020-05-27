@@ -52,11 +52,11 @@
                         <span class="btn btn-success">% 0.3 </span>
                     </td>
                     <td>
-                        <a data-id="{{$namad->id}}"
+                    <a data-id="{{$namad->id}}" data-holding="{{$holding->id}}"
                             class="delete text-white btn btn-rounded btn-danger btn-sm m-0"
                             
                             >حذف</a>
-                            <a data-id="{{$namad->id}}"
+                            <a data-id="{{$namad->id}}" 
                                 class="edit text-white btn btn-rounded btn-primary btn-sm m-0"
                                 
                                 >ویرایش</a>
@@ -92,6 +92,7 @@
         $('.delete').click(function(e){
                 e.preventDefault()
                 var value = $(this).data('id');
+                var holding = $(this).data('holding');
            swal({
             title: "آیا اطمینان دارید؟",
             text: "",
@@ -107,8 +108,8 @@
                 // ajax request
               $.ajax({
                 type:'POST',
-                url:'{{url('/holding/delete')}}',
-                 data:{_token:'{{csrf_token()}}',id:value},
+                url:'{{url('/holding/namad/delete')}}',
+                 data:{_token:'{{csrf_token()}}',id:value,holding:holding},
         
                       
                  

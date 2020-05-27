@@ -76,7 +76,12 @@
 //   originalSelect.selectpicker('destroy').addClass('tmpSelect');
 
   let cloned = originalDiv.clone()
-  cloned.find('input[type=number]').val('')
+  let setval =100 - cloned.find('input[type=number]').val()
+  let sum = 100
+  $('input[type=number]').each(function(){
+      sum -= $(this).val()
+  })
+  cloned.find('input[type=number]').val(sum)
 cloned.find('.bootstrap-select').replaceWith(function() { return $('select', this); });
   cloned.prepend(`<div class="col-md-12"><a class="remove-link float-left" href="#" >
                                     <i class="fas fa-trash text-danger"></i>
