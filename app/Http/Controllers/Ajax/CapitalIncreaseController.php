@@ -74,7 +74,7 @@ class CapitalIncreaseController extends Controller
            <td >' . $amounts . '</td>
            <td >' . $item->publish_date . '</td>
            <td ><a href="' . $item->link_to_codal . '" class="text-primary">لینک به کدال</a></td>
-           <td ><a href="#" class="text-danger">حذف</a></td>';
+           <td ><a href="#"  data-id="'.$item->id.'" class="delete text-danger">حذف</a></td>';
         }
         $list .= '</tr>
                             

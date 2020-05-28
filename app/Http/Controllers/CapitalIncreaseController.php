@@ -14,12 +14,12 @@ class CapitalIncreaseController extends Controller
     }
     public function Insert(Request $request)
     {
-    
+        
         $capitalincrease = new CapitalIncrease();
         $capitalincrease->namad_id = $request->namad;
         $capitalincrease->from = $request->type;
         $capitalincrease->step = $request->step;
-        $capitalincrease->publish_date = $request->date;
+        $capitalincrease->publish_date = $this->convertDate($request->date);
         $capitalincrease->link_to_codal = $request->linkcodal;
         if ($capitalincrease->save()) {
            if ($capitalincrease->from == "compound") {
@@ -39,6 +39,17 @@ class CapitalIncreaseController extends Controller
             $percents->save();
            }
         }
+        return back();
+    }
+
+    public function Delete(Request $request)
+    {
+
+       $model = CapitalIncrease::find($request->id);
+        if($model->delete()){
+            CapitalIncreasePercents::where('capital_increase_id',$request->id)->delete();
+        }
+
         return back();
     }
 }

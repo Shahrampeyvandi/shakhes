@@ -175,7 +175,46 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+        $(document).on('click','.delete',function(e){
+       
+                e.preventDefault()
+                var value = $(this).data('id');
+                
+           swal({
+            title: "آیا اطمینان دارید؟",
+            text: "",
+            icon: "warning",
+			buttons: {
+				confirm : 'بله',
+				cancel : 'خیر'
+			},
+            dangerMode: true
+        })
+        .then(function(willDelete) {
+            if (willDelete) {
+                // ajax request
+              $.ajax({
+                type:'POST',
+                url:'{{route("CapitalIncrease.Delete")}}',
+                 data:{_token:'{{csrf_token()}}',id:value,},      
+                 success:function(data){
+                       setTimeout(()=>{
+                        location.reload()
+                       },1000)
+                }
+        })
+            }
+			else {
+                swal("عملیات لغو شد", {
+					icon: "error",
+					button: "تایید"
+				});
+    		}
+    	});
+    
 
+    
+    })
 $('#namad').change(function(){
 // check if namad has in database
 var value = $(this).val()

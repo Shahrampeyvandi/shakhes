@@ -28,6 +28,7 @@ Route::get('/holding/{id}/namads', 'PortfoyController@ShowNamads')->name('Holdin
 
 Route::get('/capitalincrease', 'CapitalIncreaseController@Index')->name('CapitalIncrease');
 Route::post('/capitalincrease', 'CapitalIncreaseController@Insert')->name('CapitalIncrease');
+Route::post('/capitalincrease/delete', 'CapitalIncreaseController@Delete')->name('CapitalIncrease.Delete');
 
 
 
