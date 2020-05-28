@@ -15,6 +15,9 @@ class CreateActivationCodesTable extends Migration
     {
         Schema::create('activation_codes', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('mobile')->unique();
+            $table->string('v_code')->unique();
+            $table->string('expire');
             $table->timestamps();
         });
     }
