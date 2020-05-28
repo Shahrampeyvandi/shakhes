@@ -26,6 +26,8 @@ Route::post('/holding/namad/delete', 'PortfoyController@DeleteHoldingNamad')->na
 
 Route::get('/holding/{id}/namads', 'PortfoyController@ShowNamads')->name('Holding.Namads');
 
+Route::get('/capitalincrease', 'CapitalIncreaseController@Index')->name('CapitalIncrease');
+Route::post('/capitalincrease', 'CapitalIncreaseController@Insert')->name('CapitalIncrease');
 
 
 
@@ -39,6 +41,7 @@ Route::post('/moneyreports/getdata', 'Ajax\MoneyReportController@getmoneyreports
 Route::post('/getNamadData', 'Ajax\MoneyReportController@getNamadData')->name('getNamadData');
 
 
+Route::post('/getcapitalincreases', 'Ajax\CapitalIncreaseController@getCapitalIncreases')->name('getCapitalIncreases');
 
 
 

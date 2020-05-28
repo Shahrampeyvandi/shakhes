@@ -77,7 +77,7 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="#">
+                        <a class="sidebar-link pr-4" href="{{route('CapitalIncrease')}}">
                              <img width="20px" src="{{asset('assets/images/sarmaye.png')}}" alt=""> <span
                                 class="align-middle">
                                 افزایش سرمایه</span>

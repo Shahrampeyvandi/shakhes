@@ -85,7 +85,7 @@ class MoneyReportController extends Controller
        
 
 
-        $key = array_search($request->month, $months_array); 
+        $key = array_search('فروردین', $months_array); 
      
 
 
