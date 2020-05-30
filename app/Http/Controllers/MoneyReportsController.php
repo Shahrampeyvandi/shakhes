@@ -24,7 +24,7 @@ class MoneyReportsController extends Controller
 
     public function SubmitMonthly(Request $request)
     {
-    
+        if (is_null($request->sahm)) {return back();}
 
         $namad_data = Namad::where('id', $request->sahm)->first();
         if (!is_null($namad_data)) {
