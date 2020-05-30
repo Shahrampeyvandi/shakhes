@@ -84,7 +84,7 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="#">
+                        <a class="sidebar-link pr-4" href="{{route('Clarifications')}}">
                              <img width="20px" src="{{asset('assets/images/shafafsazi.png')}}" alt=""> <span
                                 class="align-middle">
                                 شفاف سازی</span>

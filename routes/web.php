@@ -29,7 +29,10 @@ Route::get('/holding/{id}/namads', 'PortfoyController@ShowNamads')->name('Holdin
 Route::get('/capitalincrease', 'CapitalIncreaseController@Index')->name('CapitalIncrease');
 Route::post('/capitalincrease', 'CapitalIncreaseController@Insert')->name('CapitalIncrease');
 Route::post('/capitalincrease/delete', 'CapitalIncreaseController@Delete')->name('CapitalIncrease.Delete');
+Route::get('/clarifications', 'ClarificationController@Index')->name('Clarifications');
 
+Route::get('/clarifications/create', 'ClarificationController@Create')->name('Clarification.Create');
+Route::post('/clarifications/create', 'ClarificationController@Insert')->name('Clarification.Create');
 
 
 

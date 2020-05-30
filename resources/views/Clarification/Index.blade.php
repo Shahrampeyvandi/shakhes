@@ -11,7 +11,7 @@
     <div class="col-sm-12 col-sm-offset-3 col-md-12  ">
         <div class="wpb_wrapper py-3">
             <h6 class="  mt-15 mb-15 title__divider title__divider--line" style="margin-right: 0px;"><span
-                    class="title__divider__wrapper">پرتفوی روزانه شرکت ها<span class="line brk-base-bg-gradient-right"></span>
+                    class="title__divider__wrapper">شفاف سازی<span class="line brk-base-bg-gradient-right"></span>
             </span> <a href="{{route('Clarification.Create')}}" style="left:0;"
                     class=" btn btn-success btn-sm m-0 position-absolute">افزودن</a>
             </h6>
@@ -22,29 +22,31 @@
                 <thead>
                     <tr>
                         <th>ردیف</th>
-                        <th>نام شرکت</th>
-                        <th>تعداد سهام</th>
-                        <th> درصد تغییر پرتفوی </th>
-                        <th> ارزش ریالی پرتفوی </th>
+                        <th> موضوع</th>
+                        <th> نماد</th>
+                        <th> تاریخ گزارش</th>
+                        <th> لینک کدال</th>
                         <th>عملیات</th>
     
                     </tr>
                 </thead>
               <tbody>
-                @foreach ($holdings as $key=>$holding)
+                @foreach ($clarifications as $key=>$clarification)
                 <tr>
                     <td>{{$key+1}}</td>
                     <td>
-                       {{$holding->name}}
+                       {{$clarification->subject}}
                     </td>
-                    <td>{{count($holding->namads)}}</td>
-                    <td>0</td>
-                    <td>0</td>
+                    <td>{{$clarification->namad->name}}</td>
+                     <td>{{\Morilog\Jalali\Jalalian::forge($clarification->publish_date)->format('%B %d، %Y')}}</td>
+                <td>
+                    <a href="{{$clarification->link_to_codal}}" class="text-primary">لینک </a>
+                </td>
                     <td>
                         <div class="btn-group" role="group" aria-label="">
-                        <a href="{{route('Holding.Namads',$holding->id)}}"
+                        <a href="#"
                                     class=" btn btn-rounded btn-info btn-sm m-0">مشاهده</a>
-                        <a data-id="{{$holding->id}}"
+                        <a data-id="{{$clarification->id}}"
                                     class="delete text-white btn btn-rounded btn-danger btn-sm m-0"
                                     
                                     >حذف</a>

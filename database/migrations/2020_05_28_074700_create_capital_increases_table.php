@@ -29,6 +29,7 @@ class CreateCapitalIncreasesTable extends Migration
             $table->string('publish_date')->nullable();
             $table->string('link_to_codal')->nullable();
             $table->text('description')->nullable();
+            $table->boolean('new')->default(1);
             $table->timestamps();
         });
         
