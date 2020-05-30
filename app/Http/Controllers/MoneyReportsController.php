@@ -24,13 +24,14 @@ class MoneyReportsController extends Controller
 
     public function SubmitMonthly(Request $request)
     {
-
+    
 
         $namad_data = Namad::where('id', $request->sahm)->first();
         if (!is_null($namad_data)) {
 
             $monthly_data = $namad_data->monthlyReports;
             $seasonal_data = $namad_data->seasonalReports;
+           
             $yearly_data = $namad_data->yearlyReports;
         }
 
@@ -64,15 +65,17 @@ class MoneyReportsController extends Controller
             return back();
         }
         if ($request->type == 'سه ماهه') {
-            if ($seasonal_data) $seasonal_data->delete();
+            if (count($seasonal_data)) $seasonal_data->each->delete();
+            $count=1;
             foreach ($request->season as $key => $season) {
 
                 $seasonal_report = new NamadSeasonalReport();
                 $seasonal_report->namad_id = $request->sahm;
                 $seasonal_report->profit = !is_null($season['income']) ? $season['income'] : 0;
                 $seasonal_report->loss = !is_null($season['gain']) ? $season['gain'] : 0;
-                $seasonal_report->season = $key;
+                $seasonal_report->season = 'فصل '.$request->num[$count].' سال '.$request->year[$count].'';
                 $seasonal_report->save();
+                $count++;
             }
             return back();
         }

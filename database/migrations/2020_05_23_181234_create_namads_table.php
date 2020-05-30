@@ -20,7 +20,6 @@ class CreateNamadsTable extends Migration
             $table->string('name');
             $table->string('market');
             $table->string('flow');
-            $table->string('salemali')->nullable();
             $table->string('mahemali')->nullable();
             $table->timestamps();
         });
@@ -30,10 +29,7 @@ class CreateNamadsTable extends Migration
                 'name'=>'ذوب',
                 'market'=>'بورس',
                 'flow'=>'1',
-                'salemali'=>'1399',
                 'mahemali'=>'1',
-               
-
                 )
         );
     }
