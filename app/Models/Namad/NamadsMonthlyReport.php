@@ -4,10 +4,8 @@ namespace App\Models\Namad;
 
 use Illuminate\Database\Eloquent\Model;
 
-class NamadYearlyReport extends Model
+class NamadsMonthlyReport extends Model
 {
-    protected $table = 'namads_yearly_reports';
-    
     public function namad()
     {
         return $this->belongTo(Namad::class);

@@ -3,8 +3,9 @@
 namespace App\Models\Namad;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Namad\Namad;
 
-class NamadSeasonalReport extends Model
+class NamadsDailyReport extends Model
 {
     public function namad()
     {

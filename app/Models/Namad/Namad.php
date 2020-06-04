@@ -3,10 +3,10 @@
 namespace App\Models\Namad;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Namad\NamadDailyReport;
-use App\Models\Namad\NamadMonthlyReport;
-use App\Models\Namad\NamadYearlyReport;
-use App\Models\Namad\NamadSeasonalReport;
+use App\Models\Namad\NamadsDailyReport;
+use App\Models\Namad\NamadsMonthlyReport;
+use App\Models\Namad\NamadsYearlyReport;
+use App\Models\Namad\NamadsSeasonalReport;
 use App\Models\Holding\Holding;
 use App\Models\Accounting\Subscribe;
 use App\Models\Accounting\Transaction;
@@ -15,22 +15,22 @@ class Namad extends Model
 {
     public function dailyReports()
     {
-        return $this->hasMany(NamadDailyReport::class);
+        return $this->hasMany(NamadsDailyReport::class);
     }
 
     public function monthlyReports()
     {
-        return $this->hasMany(NamadMonthlyReport::class);
+        return $this->hasMany(NamadsMonthlyReport::class);
     }
     
     public function yearlyReports()
     {
-        return $this->hasMany(NamadYearlyReport::class)->orderBy('year','ASC');
+        return $this->hasMany(NamadsYearlyReport::class)->orderBy('year','ASC');
     }
 
     public function seasonalReports()
     {
-        return $this->hasMany(NamadSeasonalReport::class)->orderBy('id','ASC');
+        return $this->hasMany(NamadsSeasonalReport::class)->orderBy('id','ASC');
     }
 
     public function holdings()

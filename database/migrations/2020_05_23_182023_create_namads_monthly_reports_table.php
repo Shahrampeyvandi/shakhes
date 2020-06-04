@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateNamadMonthlyReportsTable extends Migration
+class CreateNamadsMonthlyReportsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateNamadMonthlyReportsTable extends Migration
      */
     public function up()
     {
-        Schema::create('namad_monthly_reports', function (Blueprint $table) {
+        Schema::create('namads_monthly_reports', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('namad_id');
-            $table->integer('value');
+            $table->float('value');
             $table->string('month')->nullable();
             $table->string('year')->nullable();
             $table->timestamps();
@@ -30,6 +30,6 @@ class CreateNamadMonthlyReportsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('namad_monthly_reports');
+        Schema::dropIfExists('namads_monthly_reports');
     }
 }

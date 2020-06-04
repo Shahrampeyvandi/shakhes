@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateNamadSeasonalReportsTable extends Migration
+class CreateNamadsSeasonalReportsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateNamadSeasonalReportsTable extends Migration
      */
     public function up()
     {
-        Schema::create('namad_seasonal_reports', function (Blueprint $table) {
+        Schema::create('namads_seasonal_reports', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('namad_id');
-            $table->integer('profit');
-            $table->integer('loss');
+            $table->float('profit');
+            $table->float('loss');
             $table->string('season');
             $table->timestamps();
         });
@@ -30,6 +30,6 @@ class CreateNamadSeasonalReportsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('namad_seasonal_reports');
+        Schema::dropIfExists('namads_seasonal_reports');
     }
 }
