@@ -53,12 +53,6 @@ class LoginSignUpController extends Controller
                 'error' => 'کد وارد شده اشتباه است',
             ], 401);
         }
-
-
-        return response()->json([
-
-            'error' => true,
-        ], 400);
     }
 
     public function register(Request $request)
