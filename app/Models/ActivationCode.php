@@ -15,6 +15,7 @@ class ActivationCode extends Model
     public static function createCode($mobile)
     {
      
+       
         $code = static::code();
         if (static::where('mobile',$mobile)->count()) {
             $beforecode=static::where('mobile',$mobile)->first();
