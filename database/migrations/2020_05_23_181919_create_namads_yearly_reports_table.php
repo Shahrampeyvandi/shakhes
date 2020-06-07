@@ -16,8 +16,8 @@ class CreateNamadsYearlyReportsTable extends Migration
         Schema::create('namads_yearly_reports', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('namad_id');
-            $table->integer('profit');
-            $table->integer('loss');
+            $table->float('profit');
+            $table->float('loss');
             $table->string('year');
             $table->timestamps();
         });
