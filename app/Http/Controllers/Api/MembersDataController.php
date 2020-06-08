@@ -11,7 +11,8 @@ class MembersDataController extends Controller
 {
      public function namads(Request $request)
      {
-        $payload = JWTAuth::parseToken($request->header('Authorization'))->getPayload();
+        
+       return $payload = JWTAuth::parseToken($request->header('Authorization'))->getPayload();
         $mobile = $payload->get('mobile');
         return $mobile;
         $member = Member::where('mobile', $mobile)->first();
