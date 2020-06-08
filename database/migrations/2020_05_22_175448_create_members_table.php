@@ -18,7 +18,7 @@ class CreateMembersTable extends Migration
             $table->string('fname');
             $table->string('lname');
             $table->string('password')->nullable();
-            $table->string('mobile')->unique();
+            $table->string('phone')->unique();
             $table->string('avatar')->nullable();
             $table->dateTime('subscribe')->nullable();
             $table->timestamps();
