@@ -17,7 +17,7 @@ class CreateMembersTable extends Migration
             $table->bigIncrements('id');
             $table->string('fname');
             $table->string('lname');
-            $table->string('password');
+            $table->string('password')->nullable();
             $table->string('phone')->unique();
             $table->string('avatar')->nullable();
             $table->dateTime('subscribe')->nullable();

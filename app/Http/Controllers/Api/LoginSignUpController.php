@@ -14,14 +14,18 @@ class LoginSignUpController extends Controller
     public function getcode(Request $request)
     {
 
-        $code = ActivationCode::createCode($request->mobile);
+        $code = ActivationCode::createCode($request->phone);
         if ($code == false) {
-            return 'کد فعال سازی قبلا برای شما ارسال شده است. لطفا بعدا مجددا امتحان فرمایید';
+            return response()->json([
+                'code'=>400,
+                'message' => 'کد فعال سازی قبلا برای شما ارسال شده است. لطفا بعدا مجددا امتحان فرمایید',
+            ], 200);
         }
 
 
         return response()->json([
-            'code' => $code,
+            'code'=>200,
+            'data' => $code->v_code,
             'error' => '',
         ], 200);
     }
@@ -30,19 +34,21 @@ class LoginSignUpController extends Controller
     public function verify(Request $request)
     {
         $code = $request->code;
-        $mobile = $request->mobile;
+        $mobile = $request->phone;
         $activationCode_OBJ = ActivationCode::where('v_code', $code)->where('mobile', $mobile)->first();
         if ($activationCode_OBJ) {
 
             // check member 
-            if($member = Member::where('mobile',$mobile)->first()){
+            if($member = Member::where('phone',$mobile)->first()){
                 $token = JWTAuth::fromUser($member);
                 return response()->json([
-                    'token'=>$token,
+                    'code'=>201,
+                    'data'=>$token,
                     'error' => '',
                 ], 200);
             }else{
                 return response()->json([
+                    'code'=>200,
                     'token'=>'',
                     'error' => '',
                 ], 200);
@@ -50,8 +56,9 @@ class LoginSignUpController extends Controller
 
         } else {
             return response()->json([
-                'error' => 'کد وارد شده اشتباه است',
-            ], 401);
+                'code'=>400,
+                'message' => 'کد وارد شده اشتباه است',
+            ], 200);
         }
     }
 
@@ -65,13 +72,14 @@ class LoginSignUpController extends Controller
         if($member->save()){
             $token = JWTAuth::fromUser($member);
             return response()->json([
-                'code' => $token,
+                'code'=>200,
+                'data' => $token,
                 'error' => '',
             ], 200);
         }else{
             return response()->json([
-                'code' => '',
-                'error' => 'خطا در ثبت نام',
+                'code'=>400,
+                'message' => 'خطا در ثبت نام',
             ], 401);
         }
 
