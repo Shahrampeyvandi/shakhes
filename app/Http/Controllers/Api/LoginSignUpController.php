@@ -61,7 +61,7 @@ class LoginSignUpController extends Controller
         $member = new Member;
         $member->fname = $request->fname;
         $member->lname = $request->lname;
-        $member->phone = $request->phone;
+        $member->mobile = $request->mobile;
         if($member->save()){
             $token = JWTAuth::fromUser($member);
             return response()->json([
