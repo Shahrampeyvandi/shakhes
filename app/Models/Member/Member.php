@@ -11,6 +11,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Member extends  Authenticatable  implements JWTSubject
 {
+    protected $guarded = [];
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -20,7 +22,7 @@ class Member extends  Authenticatable  implements JWTSubject
         return [
             'fname'      => $this->fname,
             'lname'       => $this->lname,
-            'mobile'           => $this->mobile,
+            'mobile'           => $this->phone,
         ];
     }
 
@@ -37,6 +39,6 @@ class Member extends  Authenticatable  implements JWTSubject
 
     public function namads()
     {
-        return $this->blongsToMany(Namad::class)->withPivot(['amount', 'profit_loss_percent', 'price']);
+        return $this->belongsToMany(Namad::class,'members_namads')->withPivot(['amount', 'profit_loss_percent', 'price']);
     }
 }

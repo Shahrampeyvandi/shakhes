@@ -14,8 +14,8 @@ class MembersDataController extends Controller
         
        return $payload = JWTAuth::parseToken($request->header('Authorization'))->getPayload();
         $mobile = $payload->get('mobile');
-        return $mobile;
-        $member = Member::where('mobile', $mobile)->first();
+        $member = Member::where('phone', $mobile)->first();
+    
         $namads_array = $member->namads;
 
         
