@@ -21,6 +21,7 @@ class CreateNamadsTable extends Migration
             $table->string('market');
             $table->string('flow');
             $table->string('mahemali')->nullable();
+            $table->boolean('is_holding')->default(0);
             $table->timestamps();
         });
         DB::table('namads')->insert(
