@@ -26,6 +26,4 @@ class ClarificationController extends Controller
             200
         );
     }
-
- 
 }

@@ -513,3 +513,11 @@ a.sidebar-link {
     border-radius: .25rem;
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
+
+
+#example1_filter{
+    text-align: left;
+}
+#example1_filter label{
+    text-align: right;
+}
