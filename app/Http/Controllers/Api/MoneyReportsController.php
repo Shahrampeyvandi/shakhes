@@ -101,6 +101,7 @@ class MoneyReportsController extends Controller
         $namad = Namad::find($request->id);
         $monthly_reports_years = $namad->monthlyReports->pluck('year');
         $array = [];
+        $count = 1;
         foreach ($monthly_reports_years as $keys => $year) {
             $monthly_reports = $namad->monthlyReports->where('year', $year);
             foreach ($monthly_reports as $key => $item) {
@@ -143,11 +144,12 @@ class MoneyReportsController extends Controller
                         $fa = 'اسفند';
                         break;
                 }
-                $array[$keys]['value'] = number_format($item->value,0,'.','');
-                $array[$keys]['year'] = $year;
-                $array[$keys]['month'] = $fa;
+                $array[$count]['value'] = number_format($item->value,0,'.','');
+                $array[$count]['year'] = $year;
+                $array[$count]['month'] = $fa;
 
             }
+            $count++;
         }
 
         return response()->json(
