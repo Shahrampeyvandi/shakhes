@@ -88,7 +88,7 @@ class MoneyReportsController extends Controller
     public function getnamadmonthlyreports(Request $request)
     {
 
-        $check_holding = $this->check_if_holding($request->namad_id);
+        $check_holding = $this->check_if_holding($request->id);
         if ($check_holding) {
             return response()->json(
                 $check_holding,
@@ -98,10 +98,10 @@ class MoneyReportsController extends Controller
 
         // else
 
-        $namad = Namad::find($request->namad_id);
+        $namad = Namad::find($request->id);
         $monthly_reports_years = $namad->monthlyReports->pluck('year');
         $array = [];
-        foreach ($monthly_reports_years as $key => $year) {
+        foreach ($monthly_reports_years as $keys => $year) {
             $monthly_reports = $namad->monthlyReports->where('year', $year);
             foreach ($monthly_reports as $key => $item) {
                 switch ($item->month) {
@@ -143,12 +143,15 @@ class MoneyReportsController extends Controller
                         $fa = 'اسفند';
                         break;
                 }
-                $array[$year][$fa] = $item->value;
+                $array[$keys]['value'] = number_format($item->value,0,'.','');
+                $array[$keys]['year'] = $year;
+                $array[$keys]['month'] = $fa;
+
             }
         }
 
         return response()->json(
-            $array,
+           ['data'=>$array],
             200
         );
     }

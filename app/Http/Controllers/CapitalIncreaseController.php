@@ -10,7 +10,7 @@ class CapitalIncreaseController extends Controller
 {
     public function Index()
     {
-        return view('CapitalIncrease.index');
+        return view('CapitalIncrease.Index');
     }
     public function Insert(Request $request)
     {

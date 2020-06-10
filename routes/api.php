@@ -17,12 +17,12 @@ Route::get('/member/capitalincreases', 'Api\MembersDataController@getcapitalincr
 
 
 
-
+Route::get('/namad', 'Api\NamadsController@getnamad');
 Route::get('/namads/search', 'Api\NamadsController@search');
 
 
 
-Route::post('/getnamadmonthlyreports', 'Api\MoneyReportsController@getnamadmonthlyreports'); // اگر نماد , شرکت سرمایه گزاری باشد ...
+Route::get('/getnamadmonthlyreports', 'Api\MoneyReportsController@getnamadmonthlyreports'); // اگر نماد , شرکت سرمایه گزاری باشد ...
 Route::post('/getnamadseasonalreports', 'Api\MoneyReportsController@getnamadseasonalreports');
 Route::post('/getnamadyearlyreports', 'Api\MoneyReportsController@getnamadyearlyreports');
 

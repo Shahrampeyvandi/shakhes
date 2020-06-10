@@ -14,9 +14,25 @@ class NamadsController extends Controller
         $key = $request->search;
 
         $namads =Namad::where('symbol','like', '%' . $key . '%')
-        ->get();
+        ->take(5)->get();
 
-        return response()->json($namads,200);
+        return response()->json([
+            'data'=>$namads],200);
+      
+    }
+
+    public function getnamad(Request $request)
+    {
+
+        $namad =Namad::find($request->id);
+
+        $namad['final_price_value'] = $namad->dailyReports()->latest()->first()->last_price_value;
+        $namad['final_price_percent'] = $namad->dailyReports()->latest()->first()->final_price_percent;
+        $namad['last_price_status'] = $namad->dailyReports()->latest()->first()->last_price_status;
+
+
+
+        return response()->json($namad,200);
       
     }
 }
