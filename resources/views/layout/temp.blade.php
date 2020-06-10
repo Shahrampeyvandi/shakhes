@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{{route('BaseUrl')}}/vendor/bootstrap/bootstrap-select.css">
     <link rel="stylesheet" href="{{route('BaseUrl')}}/vendor/FontAwesome/all.css">
     <link rel="stylesheet" href="{{route("BaseUrl")}}/datepicker/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="{{route('BaseUrl')}}/vendor/dataTable/responsive.bootstrap.min.css">
     <link rel="stylesheet" href="{{route('BaseUrl')}}/assets/css/style.css">
      <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     @yield('css')
@@ -206,6 +207,10 @@
     <script src="{{route('BaseUrl')}}/datepicker/bootstrap-datepicker.min.js"></script>
     <script src="{{route('BaseUrl')}}/datepicker/bootstrap-datepicker.fa.min.js"></script>
     <script src="{{route('BaseUrl')}}/vendor/bootstrap/bootstrap-select.js"></script>
+    <script src="{{route('BaseUrl')}}/vendor/dataTable/jquery.dataTables.min.js"></script>
+    <script src="{{route('BaseUrl')}}/vendor/dataTable/dataTables.bootstrap4.min.js"></script>
+    <script src="{{route('BaseUrl')}}/vendor/dataTable/dataTables.responsive.min.js"></script>
+    <script src="{{route('BaseUrl')}}/vendor/dataTable/datatable.js"></script>
     <script src="{{route('BaseUrl')}}/assets/js/main.js"></script>
     <script>
         $(document).ready(function() {

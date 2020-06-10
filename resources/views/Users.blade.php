@@ -33,6 +33,7 @@
               </th>
              
               <th>شماره موبایل</th>
+              <th>تعداد سهام</th>
               <th>پروفایل عکس</th>
 
             </tr>
@@ -46,12 +47,12 @@
               <td>{{$user->fname}}</td>
               <td>{{$user->lname}}</td>
               <td>{{$user->phone}}</td>
-            
+            <td>{{$user->namads->count()}}</td>
               <td>
-                @if ($user->avatar !== '' && $user->avatar !== null )
+                @if ($user->avatar !== null )
                 <img width="75px" class="img-fluid " src=" {{asset("uploads/brokers/$user->avatar")}} " />
                 @else
-                <img width="75px" class="img-fluid " src=" {{asset("Pannel/img/avatar.jpg")}} " />
+                <img width="75px" class="img-fluid " src=" {{asset("assets/images/avatar.png")}} " />
                 @endif
               </td>
             </tr>
