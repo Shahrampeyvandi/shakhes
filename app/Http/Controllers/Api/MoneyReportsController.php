@@ -158,6 +158,7 @@ class MoneyReportsController extends Controller
             }
             $count++;
         }
+        $array['mahemali'] = $namad['mahemali'];
 
         return response()->json(
            ['data'=>$array],

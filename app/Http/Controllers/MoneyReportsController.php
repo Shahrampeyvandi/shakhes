@@ -27,6 +27,9 @@ class MoneyReportsController extends Controller
         if (is_null($request->sahm)) {return back();}
 
         $namad_data = Namad::where('id', $request->sahm)->first();
+        $namad_data->mahemali = $request->begin_month;
+        $namad_data->update();
+        
         if (!is_null($namad_data)) {
 
             $monthly_data = $namad_data->monthlyReports;
@@ -34,7 +37,7 @@ class MoneyReportsController extends Controller
            
             $yearly_data = $namad_data->yearlyReports;
         }
-
+        
 
         if ($request->type == 'ماهانه') {
             $months = $request->all(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']);
