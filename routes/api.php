@@ -11,7 +11,7 @@ Route::get('/member/namads', 'Api\MembersDataController@namads');
 Route::post('/member/namads/add', 'Api\MembersDataController@add');
 
 
-Route::post('/namads/search', 'Api\NamadsController@search');
+Route::get('/namads/search', 'Api\NamadsController@search');
 
 
 

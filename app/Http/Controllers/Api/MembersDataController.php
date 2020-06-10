@@ -32,11 +32,10 @@ class MembersDataController extends Controller
     $member = $this->token($request->header('Authorization'));
     $namads_array = $member->namads;
 
+
     foreach ($namads_array as $key => $namad_data) {
-      $array[$namad_data->symbol]['market'] = $namad_data->market;
-      $array[$namad_data->symbol]['amount'] = $namad_data->pivot->amount;
-      $array[$namad_data->symbol]['profit_loss_percent'] = $namad_data->pivot->profit_loss_percent;
-      $array[$namad_data->symbol]['price'] = $namad_data->pivot->price;
+      $array[$namad_data->symbol]['final_price_value'] = $namad_data->dailyReports()->latest()->first()->last_price_value;
+      $array[$namad_data->symbol]['final_price_percent'] = $namad_data->dailyReports()->latest()->first()->final_price_percent;
     }
 
     return response()->json(
@@ -49,7 +48,7 @@ class MembersDataController extends Controller
   public function add(Request $request)
   {
     $member = $this->token($request->header('Authorization'));
-    $namad_id = $request->namad_id;
+    $namad_id = $request->id;
     $namad_obj = Namad::whereId($namad_id)->first();
     $namad_daily_report = $namad_obj->dailyReports->first();
     $price = !is_null($namad_daily_report) ? $namad_daily_report->last_price_value : 0;

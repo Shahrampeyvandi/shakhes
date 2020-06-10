@@ -11,15 +11,12 @@ class NamadsController extends Controller
     public function search(Request $request)
     {
 
-        $key = $request->key;
+        $key = $request->search;
 
         $namads =Namad::where('symbol','like', '%' . $key . '%')
-        ->pluck('symbol');
+        ->get();
 
-        return response()->json(
-            $namads,
-            200
-          );
+        return response()->json($namads,200);
       
     }
 }
