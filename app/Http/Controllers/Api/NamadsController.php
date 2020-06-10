@@ -14,7 +14,7 @@ class NamadsController extends Controller
         $key = $request->key;
 
         $namads =Namad::where('symbol','like', '%' . $key . '%')
-        ->pluck('symbol');
+        ->pluck('symbol','id');
 
         return response()->json(
             $namads,

@@ -91,15 +91,15 @@
                                 شفاف سازی</span>
                         </a>
                     </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="#">
+                    {{-- <li class="sidebar-item">
+                        <a class="sidebar-link pr-4" href="{{route('ContinuingPaterns')}}">
                              <img width="20px" src="{{asset('assets/images/shami.png')}}" alt=""> <span
                                 class="align-middle">
                                 الگوهای شمعی ژاپنی</span>
                         </a>
-                    </li>
+                    </li> --}}
                     <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="#">
+                        <a class="sidebar-link pr-4" href="{{route('ContinuingPaterns')}}">
                              <img width="20px" src="{{asset('assets/images/mali.png')}}" alt=""> <span
                                 class="align-middle">
                                 الگوهای ادامه دهنده و بازگشتی</span>
@@ -192,7 +192,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="content-main">
+            <div class="content-main mt-5">
                 @yield('content')
             </div>
 

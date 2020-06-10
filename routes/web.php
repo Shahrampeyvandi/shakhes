@@ -34,6 +34,11 @@ Route::get('/clarifications', 'ClarificationController@Index')->name('Clarificat
 Route::get('/clarifications/create', 'ClarificationController@Create')->name('Clarification.Create');
 Route::post('/clarifications/create', 'ClarificationController@Insert')->name('Clarification.Create');
 
+Route::get('/continuingpaterns', 'ContinuingPaternsController@Index')->name('ContinuingPaterns');
+Route::get('/continuingpaterns/create', 'ContinuingPaternsController@Create')->name('ContinuingPaterns.Create');
+Route::post('/continuingpaterns/create', 'ContinuingPaternsController@Insert')->name('ContinuingPaterns.Create');
+Route::post('/continuingpatern/delete', 'ContinuingPaternsController@Delete')->name('ContinuingPaterns.Delete');
+
 
 
 
