@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Namad\Namad;
-use App\Models\Namad\NamadMonthlyReport;
-use App\Models\Namad\NamadSeasonalReport;
-use App\Models\Namad\NamadYearlyReport;
+use App\Models\Namad\NamadsMonthlyReport;
+use App\Models\Namad\NamadsSeasonalReport;
+use App\Models\Namad\NamadsYearlyReport;
 use Illuminate\Http\Request;
 use Morilog\Jalali\Jalalian;
 
@@ -44,15 +44,15 @@ class MoneyReportsController extends Controller
 
                 foreach ($value as $key2 => $value2) {
                     if ($value2 !== null) {
-                        if (NamadMonthlyReport::where('namad_id', $request->sahm)->where('year', $key2)->where('month', $key)->count()) {
+                        if (NamadsMonthlyReport::where('namad_id', $request->sahm)->where('year', $key2)->where('month', $key)->count()) {
 
-                            NamadMonthlyReport::where('namad_id', $request->sahm)->where('year', $key2)->where('month', $key)
+                            NamadsMonthlyReport::where('namad_id', $request->sahm)->where('year', $key2)->where('month', $key)
                                 ->update([
                                     'value' => $value2
                                 ]);
                         } else {
 
-                            $monthly_report = new NamadMonthlyReport();
+                            $monthly_report = new NamadsMonthlyReport();
                             $monthly_report->namad_id = $request->sahm;
                             $monthly_report->value = $value2;
                             $monthly_report->month = $key;
@@ -69,7 +69,7 @@ class MoneyReportsController extends Controller
             $count=1;
             foreach ($request->season as $key => $season) {
 
-                $seasonal_report = new NamadSeasonalReport();
+                $seasonal_report = new NamadsSeasonalReport();
                 $seasonal_report->namad_id = $request->sahm;
                 $seasonal_report->profit = !is_null($season['income']) ? $season['income'] : 0;
                 $seasonal_report->loss = !is_null($season['gain']) ? $season['gain'] : 0;
@@ -81,15 +81,15 @@ class MoneyReportsController extends Controller
         }
         if ($request->type == 'سالیانه') {
             foreach ($request->year as $key => $year) {
-                if (NamadYearlyReport::where('namad_id', $request->sahm)->where('year', $key)->count()) {
+                if (NamadsYearlyReport::where('namad_id', $request->sahm)->where('year', $key)->count()) {
 
-                    NamadYearlyReport::where('namad_id', $request->sahm)->where('year', $key)
+                    NamadsYearlyReport::where('namad_id', $request->sahm)->where('year', $key)
                         ->update([
                             'profit' => !is_null($year['income']) ? $year['income'] : 0,
                             'loss' =>!is_null($year['gain']) ? $year['gain'] : 0
                         ]);
                 } else {
-                    $seasonal_report = new NamadYearlyReport();
+                    $seasonal_report = new NamadsYearlyReport();
                     $seasonal_report->namad_id = $request->sahm;
                     $seasonal_report->profit = !is_null($year['income']) ? $year['income'] : 0;
                     $seasonal_report->loss = !is_null($year['gain']) ? $year['gain'] : 0;

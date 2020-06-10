@@ -17,9 +17,12 @@ class MembersDataController extends Controller
   public function personaldata(Request $request)
   {
     $member = $this->token($request->header('Authorization'));
+    $member=Member::find(2);
+    
     $array['fname'] = $member->fname;
     $array['lname'] = $member->lname;
     $array['mobile'] = $member->phone;
+    $array['namads'] = count($member->namads);
 
 
     return response()->json(
@@ -32,17 +35,22 @@ class MembersDataController extends Controller
   public function namads(Request $request)
   {
     $member = $this->token($request->header('Authorization'));
+    $member=Member::find(2);
+
     $namads_array = $member->namads;
 
+
     foreach ($namads_array as $key => $namad_data) {
-      $array[$namad_data->symbol]['market'] = $namad_data->market;
-      $array[$namad_data->symbol]['amount'] = $namad_data->pivot->amount;
-      $array[$namad_data->symbol]['profit_loss_percent'] = $namad_data->pivot->profit_loss_percent;
-      $array[$namad_data->symbol]['price'] = $namad_data->pivot->price;
+      $array[$key]['id'] = $namad_data->id;
+      $array[$key]['symbol'] = $namad_data->symbol;
+      $array[$key]['final_price_value'] = $namad_data->dailyReports()->latest()->first()->last_price_value;
+      $array[$key]['final_price_percent'] = $namad_data->dailyReports()->latest()->first()->final_price_percent;
+      $array[$key]['last_price_status'] = $namad_data->dailyReports()->latest()->first()->last_price_status;
+
     }
 
     return response()->json(
-      $array,
+      ['data'=>$array],
       200
     );
   }
@@ -51,10 +59,10 @@ class MembersDataController extends Controller
   public function add(Request $request)
   {
     $member = $this->token($request->header('Authorization'));
-    $namad_id = $request->namad_id;
+    $namad_id = $request->id;
     $namad_obj = Namad::whereId($namad_id)->first();
-    $namad_daily_report = $namad_obj->dailyReports->first();
-    $price = !is_null($namad_daily_report) ? $namad_daily_report->last_price_value : 0;
+    //$namad_daily_report = $namad_obj->dailyReports->first();
+    $price = 0;
 
     $member->namads()->attach($namad_id, ['amount' => 0, 'profit_loss_percent' => 0, 'price' => $price]);
     return response()->json(

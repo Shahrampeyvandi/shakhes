@@ -10,7 +10,7 @@ class ClarificationController extends Controller
     public function Index()
     {
         $clarifications = clarification::latest()->get();
-        return view('Clarification.index',compact('clarifications'));
+        return view('Clarification.Index',compact('clarifications'));
     }
 
 
