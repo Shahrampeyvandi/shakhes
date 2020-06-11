@@ -23,8 +23,8 @@ Route::get('/namads/search', 'Api\NamadsController@search');
 
 
 Route::get('/getnamadmonthlyreports', 'Api\MoneyReportsController@getnamadmonthlyreports'); // اگر نماد , شرکت سرمایه گزاری باشد ...
-Route::post('/getnamadseasonalreports', 'Api\MoneyReportsController@getnamadseasonalreports');
-Route::post('/getnamadyearlyreports', 'Api\MoneyReportsController@getnamadyearlyreports');
+Route::get('/getnamadseasonalreports', 'Api\MoneyReportsController@getnamadseasonalreports');
+Route::get('/getnamadyearlyreports', 'Api\MoneyReportsController@getnamadyearlyreports');
 
 
 Route::get('/clarifications', 'Api\ClarificationController@getall'); // get all clarifications

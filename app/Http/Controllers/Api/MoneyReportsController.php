@@ -136,30 +136,40 @@ class MoneyReportsController extends Controller
     {
 
 
-        $namad = Namad::find($request->namad_id);
+        $namad = Namad::find($request->id);
         $seasonal_reports = $namad->seasonalReports;
         $array = [];
+        $count=0;
         foreach ($seasonal_reports as $key => $season_data) {
-            $array[$season_data->season]['profit'] = $season_data->profit;
-            $array[$season_data->season]['loss'] = $season_data->loss;
+           // $array[$season_data->season]['profit'] = $season_data->profit;
+           // $array[$season_data->season]['loss'] = $season_data->loss;
+
+            $array[$count]['profit'] = $season_data->profit;
+            $array[$count]['loss'] = $season_data->loss;
+            $array[$count]['season'] = $season_data->season;
+            $count++;
         }
         return response()->json(
-            $array,
+            ['data' => $array],
             200
         );
     }
     public function getnamadyearlyreports(Request $request)
     {
 
-        $namad = Namad::find($request->namad_id);
+        $namad = Namad::find($request->id);
         $yearlyreports = $namad->yearlyReports;
         $array = [];
+        $count=0;
         foreach ($yearlyreports as $key => $yearlyreport_data) {
-            $array[$yearlyreport_data->year]['profit'] = $yearlyreport_data->profit;
-            $array[$yearlyreport_data->year]['loss'] = $yearlyreport_data->loss;
+        
+            $array[$count]['profit'] = $yearlyreport_data->profit;
+            $array[$count]['loss'] = $yearlyreport_data->loss;
+            $array[$count]['year'] = $yearlyreport_data->year;
+            $count++;
         }
         return response()->json(
-            $array,
+            ['data' => $array],
             200
         );
     }
