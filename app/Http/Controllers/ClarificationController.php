@@ -31,4 +31,10 @@ class ClarificationController extends Controller
         }
 
     }
+
+    public function Delete(Request $request)
+    {
+        clarification::where('id',$request->id)->delete();
+        return back();
+    }
 }
