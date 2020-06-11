@@ -12,7 +12,7 @@
         <div class="wpb_wrapper py-3">
             <h6 class="  mt-15 mb-15 title__divider title__divider--line" style="margin-right: 0px;"><span
                     class="title__divider__wrapper">پرتفوی روزانه شرکت ها<span class="line brk-base-bg-gradient-right"></span>
-            </span> <a href="{{route('Clarification.Create')}}" style="left:0;"
+            </span> <a href="{{route('Holding.Create')}}" style="left:0;"
                     class=" btn btn-success btn-sm m-0 position-absolute">افزودن</a>
             </h6>
         </div>
@@ -31,26 +31,32 @@
                     </tr>
                 </thead>
               <tbody>
-                @foreach ($holdings as $key=>$holding)
+                @foreach ($array as $key=>$holding)
+                @php
+                    $count = 1;
+                @endphp
                 <tr>
-                    <td>{{$key+1}}</td>
+                    <td>{{$count}}</td>
                     <td>
-                       {{$holding->name}}
+                       {{$key}}
                     </td>
-                    <td>{{count($holding->namads)}}</td>
-                    <td>0</td>
-                    <td>0</td>
+                    <td>{{$holding['namad_counts']}}</td>
+                    <td>{{$holding['percent_change_porftoy']}}</td>
+                    <td>{{$holding['portfoy']}}</td>
                     <td>
                         <div class="btn-group" role="group" aria-label="">
-                        <a href="{{route('Holding.Namads',$holding->id)}}"
+                        <a href="{{route('Holding.Namads',$holding['id'])}}"
                                     class=" btn btn-rounded btn-info btn-sm m-0">مشاهده</a>
-                        <a data-id="{{$holding->id}}"
+                        <a data-id="{{$holding['id']}}"
                                     class="delete text-white btn btn-rounded btn-danger btn-sm m-0"
                                     
                                     >حذف</a>
                             </div>
                     </td>
                 </tr>
+                @php
+                $count++;
+            @endphp
                 @endforeach
               </tbody>
             </table>

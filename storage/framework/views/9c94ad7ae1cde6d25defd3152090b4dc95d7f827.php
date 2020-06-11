@@ -11,7 +11,7 @@
         <div class="wpb_wrapper py-3">
             <h6 class="  mt-15 mb-15 title__divider title__divider--line" style="margin-right: 0px;"><span
                     class="title__divider__wrapper">پرتفوی روزانه شرکت ها<span class="line brk-base-bg-gradient-right"></span>
-            </span> <a href="<?php echo e(route('Clarification.Create')); ?>" style="left:0;"
+            </span> <a href="<?php echo e(route('Holding.Create')); ?>" style="left:0;"
                     class=" btn btn-success btn-sm m-0 position-absolute">افزودن</a>
             </h6>
         </div>
@@ -30,27 +30,33 @@
                     </tr>
                 </thead>
               <tbody>
-                <?php $__currentLoopData = $holdings; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key=>$holding): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php $__currentLoopData = $array; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key=>$holding): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php
+                    $count = 1;
+                ?>
                 <tr>
-                    <td><?php echo e($key+1); ?></td>
+                    <td><?php echo e($count); ?></td>
                     <td>
-                       <?php echo e($holding->name); ?>
+                       <?php echo e($key); ?>
 
                     </td>
-                    <td><?php echo e(count($holding->namads)); ?></td>
-                    <td>0</td>
-                    <td>0</td>
+                    <td><?php echo e($holding['namad_counts']); ?></td>
+                    <td><?php echo e($holding['percent_change_porftoy']); ?></td>
+                    <td><?php echo e($holding['portfoy']); ?></td>
                     <td>
                         <div class="btn-group" role="group" aria-label="">
-                        <a href="<?php echo e(route('Holding.Namads',$holding->id)); ?>"
+                        <a href="<?php echo e(route('Holding.Namads',$holding['id'])); ?>"
                                     class=" btn btn-rounded btn-info btn-sm m-0">مشاهده</a>
-                        <a data-id="<?php echo e($holding->id); ?>"
+                        <a data-id="<?php echo e($holding['id']); ?>"
                                     class="delete text-white btn btn-rounded btn-danger btn-sm m-0"
                                     
                                     >حذف</a>
                             </div>
                     </td>
                 </tr>
+                <?php
+                $count++;
+            ?>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
               </tbody>
             </table>

@@ -1,5 +1,4 @@
-@extends('layout.temp')
-@section('content')
+<?php $__env->startSection('content'); ?>
 <style>
     td input {
         width: 50px !important;
@@ -12,7 +11,7 @@
         <div class="wpb_wrapper py-3">
             <h6 class="  mt-15 mb-15 title__divider title__divider--line" style="margin-right: 0px;"><span
                     class="title__divider__wrapper">شفاف سازی<span class="line brk-base-bg-gradient-right"></span>
-            </span> <a href="{{route('Clarification.Create')}}" style="left:0;"
+            </span> <a href="<?php echo e(route('Clarification.Create')); ?>" style="left:0;"
                     class=" btn btn-success btn-sm m-0 position-absolute">افزودن</a>
             </h6>
         </div>
@@ -31,29 +30,29 @@
                     </tr>
                 </thead>
               <tbody>
-                @foreach ($clarifications as $key=>$clarification)
+                <?php $__currentLoopData = $clarifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key=>$clarification): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <tr>
-                    <td>{{$key+1}}</td>
+                    <td><?php echo e($key+1); ?></td>
                     <td>
-                       {{$clarification->subject}}
+                       <?php echo e($clarification->subject); ?>
+
                     </td>
-                    <td>{{$clarification->namad->name}}</td>
-                     <td>{{\Morilog\Jalali\Jalalian::forge($clarification->publish_date)->format('%B %d، %Y')}}</td>
+                    <td><?php echo e($clarification->namad->name); ?></td>
+                     <td><?php echo e(\Morilog\Jalali\Jalalian::forge($clarification->publish_date)->format('%B %d، %Y')); ?></td>
                 <td>
-                    <a href="{{$clarification->link_to_codal}}" class="text-primary">لینک </a>
+                    <a href="<?php echo e($clarification->link_to_codal); ?>" class="text-primary">لینک </a>
                 </td>
                     <td>
                         <div class="btn-group" role="group" aria-label="">
-                        {{-- <a href="#"
-                                    class=" btn btn-rounded btn-info btn-sm m-0">مشاهده</a> --}}
-                        <a data-id="{{$clarification->id}}"
+                        
+                        <a data-id="<?php echo e($clarification->id); ?>"
                                     class="delete text-white btn btn-rounded btn-danger btn-sm m-0"
                                     
                                     >حذف</a>
                             </div>
                     </td>
                 </tr>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
               </tbody>
             </table>
         </div>
@@ -65,12 +64,12 @@
 
 
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
 
 
 
-@section('js')
+<?php $__env->startSection('js'); ?>
 <script>
     $(document).ready(function(){
         $.ajaxSetup({
@@ -97,8 +96,8 @@
                 // ajax request
               $.ajax({
                 type:'POST',
-                url:'{{url('/clarification/delete')}}',
-                 data:{_token:'{{csrf_token()}}',id:value},
+                url:'<?php echo e(url('/clarification/delete')); ?>',
+                 data:{_token:'<?php echo e(csrf_token()); ?>',id:value},
                  success:function(data){
                        setTimeout(()=>{
                         location.reload()
@@ -119,5 +118,7 @@
 
 })
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
 
+
+<?php echo $__env->make('layout.temp', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\panel\resources\views/Clarification/Index.blade.php ENDPATH**/ ?>

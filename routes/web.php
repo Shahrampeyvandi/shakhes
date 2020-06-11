@@ -16,8 +16,16 @@ Route::get('/', 'MainController@Index')->name('BaseUrl');
 Route::get('/moneyreports', 'MoneyReportsController@Index')->name('MoneyReports');
 Route::post('/moneyreports/monthly', 'MoneyReportsController@SubmitMonthly')->name('MonyReport.Monthly');
 Route::post('/moneyreports/seasonly', 'MoneyReportsController@SubmitSeasonly')->name('MonyReport.Seasonly');
+Route::get('/moneyreports/showchart/{id}', 'MoneyReportsController@ShowMonthlyChart')->name('ShowMonthlyChart');
+Route::get('/yearlyreports/showchart/{id}', 'MoneyReportsController@ShowYearlyChart')->name('ShowYearlyChart');
+Route::get('/seasonalreports/showchart/{id}', 'MoneyReportsController@ShowSeasonalChart')->name('ShowSeasonalChart');
+
+Route::get('/namadreports/delete/{id}', 'MoneyReportsController@Delete')->name('Reports.Delete');
+
+
 Route::get('/users', 'UsersController@Index')->name('Users');
 Route::get('/portfoy', 'PortfoyController@Index')->name('PortfoyList');
+
 Route::get('/holding/create', 'PortfoyController@CreateHolding')->name('Holding.Create');
 Route::post('/holding/create', 'PortfoyController@InsertHolding')->name('Holding.Create');
 
@@ -33,6 +41,8 @@ Route::get('/clarifications', 'ClarificationController@Index')->name('Clarificat
 
 Route::get('/clarifications/create', 'ClarificationController@Create')->name('Clarification.Create');
 Route::post('/clarifications/create', 'ClarificationController@Insert')->name('Clarification.Create');
+
+Route::post('/clarification/delete', 'ClarificationController@Delete')->name('Clarification.Delete');
 
 Route::get('/continuingpaterns', 'ContinuingPaternsController@Index')->name('ContinuingPaterns');
 Route::get('/continuingpaterns/create', 'ContinuingPaternsController@Create')->name('ContinuingPaterns.Create');
