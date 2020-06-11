@@ -21,57 +21,25 @@ class MoneyReportsController extends Controller
          * اوکیه همینجوری؟؟
          * 
          */
-        // Change the line below to your timezone!
-        date_default_timezone_set('Asia/Tehran');
-      
+
+
         $namad_obj =  Namad::whereId($id)->first();
         if (!is_null($namad_obj)) {
             $name = $namad_obj->name;
             // check if namad is holding
-            $holding_obj = Holding::where('name', $name)->first();
-
+            $holding_obj = Holding::where('name', $namad_obj->id)->first();
             if (is_null($holding_obj)) return null;
-
-
-
             $count = 1;
             $portfoy = 0;
             $yesterday_portfoy = 0;
-           
-            foreach ($holding_obj->namads as $key => $namad) {
-                
-                $array[$count]['symbol'] = $namad->symbol;
-                $array[$count]['name'] = $namad->name;
-                $array[$count]['amount_percent'] = $namad->pivot->amount_percent;
-                $array[$count]['amount_value'] = $namad->pivot->amount_value;
-                $array[$count]['change'] = $namad->pivot->change;
+            $getnamadsdata = $holding_obj->showPercentNamads($holding_obj->id);
 
-                // حساب کردن ارزش پرتفوی شرکت
-                
-                // today
-                $last_price_value = count($namad->dailyReports) ? $namad->dailyReports()->latest()->first()->last_price_value : 0;
-                $portfoy +=  $array[$count]['amount_value'] * $last_price_value ;
-              
-                // yesterday
-                $yesterday = $namad->dailyReports()->whereDate('created_at', date('Y-m-d',strtotime("-1 days")))->latest()->first();
-               if(!is_null($yesterday)) {
-                   $last_price_value_yesterday =  $yesterday->last_price_value;
-               }else{
-                $last_price_value_yesterday = 0;
-               }
-               $yesterday_portfoy += $array[$count]['amount_value'] * $last_price_value_yesterday ;
-
-
-                $count++;
-            }
             // پرتفوی لحظه ای شرکت
-            $array['portfoy'] = $portfoy;
+            $portfoy_array = Holding::GetPortfoyAndYesterdayPortfoy($holding_obj);
+            $array['portfoy'] = $portfoy_array[0];
             // درصد تغییر پرتفوی
-            $array['percent_change_porftoy'] = $yesterday_portfoy == 0 ? 0 : ($portfoy - $yesterday_portfoy) / $yesterday_portfoy;
-
-            
-
-
+            $array['percent_change_porftoy'] = $portfoy_array[1] == 0 ? 0 : ($portfoy_array[0] - $portfoy_array[1]) / $portfoy_array[1];
+            $array['saham'][] = $getnamadsdata;
             return $array;
         } else {
             return response()->json(
@@ -82,10 +50,9 @@ class MoneyReportsController extends Controller
             );
         }
     }
-
     public function getnamadmonthlyreports(Request $request)
     {
-       
+
         $check_holding = $this->check_if_holding($request->id);
         if ($check_holding) {
             return response()->json(
@@ -144,7 +111,7 @@ class MoneyReportsController extends Controller
                         break;
                 }
 
-                $array[$year][$fa] =  number_format($item->value,0,'.','');
+                $array[$year][$fa] =  number_format($item->value, 0, '.', '');
 
 
 
@@ -161,7 +128,7 @@ class MoneyReportsController extends Controller
         $array['mahemali'] = $namad['mahemali'];
 
         return response()->json(
-           ['data'=>$array],
+            ['data' => $array],
             200
         );
     }
@@ -183,7 +150,6 @@ class MoneyReportsController extends Controller
     }
     public function getnamadyearlyreports(Request $request)
     {
-
 
         $namad = Namad::find($request->namad_id);
         $yearlyreports = $namad->yearlyReports;

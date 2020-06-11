@@ -16,47 +16,55 @@
         <select class="form-control text-right selectpicker" name="namad" required data-size="5" data-live-search="true"
             data-title="نام سهم" id="namad" data-width="100%">
             @foreach (\App\Models\Namad\Namad::OrderBy('symbol','ASC')->get() as $item)
-             <option value="{{$item->id}}">{{$item->symbol}}</option>
+            <option value="{{$item->id}}">{{$item->symbol}}</option>
             @endforeach
         </select>
 
         <div class="change-month">
             <h6 class="mt-4">شروع مالی سهم: </h6>
-        <div class="row mt-3 ">
-            <div class="form-group col-md-6">
+            <div class="row mt-3 ">
+                <div class="form-group col-md-6">
 
-                <select id="begin_year" name="begin_year" class="form-control" id="recipient-name">
-                
-                    <option value="{{$last_year}}" selected>{{$last_year}}</option>
-                    <option value="{{$new_year}}" >{{$new_year}}</option>
+                    <select id="begin_year" name="begin_year" class="form-control" id="recipient-name">
 
-
-
-
-                </select>
-            </div>
-            <div class="form-group col-md-6">
-
-                <select id="begin_month" name="begin_month" class="form-control" id="recipient-name">
-                   
-                    <option selected value="فروردین">فروردین</option>
-                    <option value="اردیبهشت">اردیبهشت</option>
-                    <option value="خرداد">خرداد</option>
-                    <option value="تیر">تیر</option>
-                    <option value="مرداد">مرداد</option>
-                    <option value="شهریور">شهریور</option>
-                    <option value="مهر">مهر</option>
-                    <option value="آبان">آبان</option>
-                    <option value="آذر">آذر</option>
-                    <option value="دی">دی</option>
-                    <option value="بهمن">بهمن</option>
-                    <option value="اسفند">اسفند</option>
+                        <option value="{{$last_year}}" selected>{{$last_year}}</option>
+                        <option value="{{$new_year}}">{{$new_year}}</option>
 
 
 
-                </select>
+
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+
+                    <select id="begin_month" name="begin_month" class="form-control" id="recipient-name">
+
+                        <option selected value="1">فروردین</option>
+                        <option value="2">اردیبهشت</option>
+                        <option value="3">خرداد</option>
+                        <option value="4">تیر</option>
+                        <option value="5">مرداد</option>
+                        <option value="6">شهریور</option>
+                        <option value="7">مهر</option>
+                        <option value="8">آبان</option>
+                        <option value="9">آذر</option>
+                        <option value="10">دی</option>
+                        <option value="11">بهمن</option>
+                        <option value="12">اسفند</option>
+
+
+
+                    </select>
+                </div>
             </div>
         </div>
+        <div class="row mt-3 show-details" style="display: none">
+            <a href="" class="ml-3 monthly">مشاهده نمودار ماهانه</a>
+            <a href="" class="ml-3 seasonal">مشاهده نمودار سه ماهه</a>
+
+            <a href="" class="ml-3 yearly">مشاهده نمودار سالیانه</a>
+
+            <a href="" class="ml-3 delete_reports">حذف کل اطلاعات</a>
         </div>
 
         <h6 class="mt-4">نوع اطلاعات</h6>
@@ -214,18 +222,29 @@
             var data = $('#begin_month').val()
             var type = $('input[name=type]:checked').val()
             var year = $('#begin_year').val()
-
+            var monthly_url = "{{route("BaseUrl")}}/moneyreports/showchart/"+value
+            var yearly_url = "{{route("BaseUrl")}}/yearlyreports/showchart/"+value
+            var seasonal_url = "{{route("BaseUrl")}}/seasonalreports/showchart/"+value
+            var delete_url = "{{route("BaseUrl")}}/namadreports/delete/"+value
           $.ajax({
-
             type:'post',
             url:'{{route("getmoneyreportsdata")}}',
             data:{month:data,year:year,type:type,sahm:value},
             success:function(data){ 
+
                 if(data['status'] == 'exist'){
                     $('.change-month').hide()
+                    $('.show-details').show()
+                    $('.show-details').children('.monthly').attr('href',monthly_url)
+                    $('.show-details').children('.seasonal').attr('href',seasonal_url)
+                    $('.show-details').children('.yearly').attr('href',yearly_url)
+                    $('.show-details').children('.delete_reports').attr('href',delete_url)
+                    
                 }
+
                 if(data['status'] == 'not exist'){
                     $('.change-month').show()
+                    $('.show-details').hide()
                 }
 
             $('#ajax-table').html(data['table'])

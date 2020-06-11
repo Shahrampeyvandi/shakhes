@@ -1,28 +1,21 @@
-@extends('layout.temp')
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 
 <div class="row">
     <div class="col-md-12">
         <div class="card p-3">
-            @include('layout.errors')
-        <form id="upload-file" method="post" action="{{route('Holding.Create')}}" >
-                @csrf
-                {{-- <div class="form-group ">
-                    <label for=""><span class="text-danger">*</span> نوع : </label>
-                    <select name="slider_type" id="slider-type" class="form-control  custom-select">
-                        <option value="header_slideshow" >header slider</option>
-                        <option value="footer_slideshow" >client slider</option>
-                    </select>
-                </div> --}}
+            <?php echo $__env->make('layout.errors', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+        <form id="upload-file" method="post" action="<?php echo e(route('Holding.Create')); ?>" >
+                <?php echo csrf_field(); ?>
+                
                 <div class="row">
                     <div class="form-group col-md-12">
                         <label for="name" class="col-form-label"><span class="text-danger">*</span> نام شرکت: </label>
                         <select class="form-control text-right selectpicker" name="name"  data-size="5"
                         data-live-search="true" data-title="نام شرکت سرمایه گذاری" id="name" data-width="100%">
-                        @foreach (\App\Models\Namad\Namad::OrderBy('symbol','ASC')->get() as $item)
-                        <option value="{{$item->id}}">{{$item->symbol}}</option>
-                        @endforeach
+                        <?php $__currentLoopData = \App\Models\Namad\Namad::OrderBy('symbol','ASC')->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($item->id); ?>"><?php echo e($item->symbol); ?></option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                     </div>
                 </div>
@@ -30,9 +23,9 @@
                    <div class="form-group col-md-8">
                     <select class="form-control text-right selectpicker" name="namads[]"  data-size="5"
                     data-live-search="true" data-title="نام سهم" id="namads[]" data-width="100%">
-                    @foreach (\App\Models\Namad\Namad::OrderBy('symbol','ASC')->get() as $item)
-                    <option value="{{$item->id}}">{{$item->symbol}}</option>
-                    @endforeach
+                    <?php $__currentLoopData = \App\Models\Namad\Namad::OrderBy('symbol','ASC')->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($item->id); ?>"><?php echo e($item->symbol); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
                    </div>
                    <div class="form-group col-md-4">
@@ -62,10 +55,10 @@
         <br />
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
 
-@section('js')
+<?php $__env->startSection('js'); ?>
 <script>
     $(document).ready(function(){
        
@@ -102,4 +95,5 @@ cloned.find('.bootstrap-select').replaceWith(function() { return $('select', thi
 
  });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layout.temp', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\panel\resources\views/Portfoy/createholding.blade.php ENDPATH**/ ?>
