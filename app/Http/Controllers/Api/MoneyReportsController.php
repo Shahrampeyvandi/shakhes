@@ -100,7 +100,7 @@ class MoneyReportsController extends Controller
         $monthly_reports_years = $namad->monthlyReports->pluck('year')->toArray();
 
         $array = [];
-        $count = 1;
+        $count = 0;
         foreach (array_unique($monthly_reports_years) as $keys => $year) {
             $monthly_reports = $namad->monthlyReports->where('year', $year);
             foreach ($monthly_reports as $key => $item) {
@@ -144,21 +144,21 @@ class MoneyReportsController extends Controller
                         break;
                 }
 
-                $array[$year][$fa] =  number_format($item->value,0,'.','');
+                //$array[$year][$fa] =  number_format($item->value,0,'.','');
+
+              
 
 
 
 
-
-
-                // $array[$keys]['value'] = number_format($item->value,0,'.','');
-                // $array[$keys]['year'] = $year;
-                // $array[$keys]['month'] = $fa;
+                $array[$count]['value'] = number_format($item->value,0,'.','');
+                $array[$count]['year'] = $year;
+                $array[$count]['month'] = $fa;
+                $count++;
 
             }
-            $count++;
         }
-        $array['mahemali'] = $namad['mahemali'];
+        //$array['mahemali'] = $namad['mahemali'];
 
         return response()->json(
            ['data'=>$array],
