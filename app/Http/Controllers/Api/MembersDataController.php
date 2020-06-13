@@ -8,6 +8,7 @@ use App\Models\CapitalIncrease\CapitalIncrease;
 use App\Models\clarification;
 use App\Models\Member\Member;
 use App\Models\Namad\Namad;
+use Carbon\Carbon;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class MembersDataController extends Controller
@@ -17,13 +18,20 @@ class MembersDataController extends Controller
   public function personaldata(Request $request)
   {
     $member = $this->token($request->header('Authorization'));
+    
     $member=Member::find(2);
     
     $array['fname'] = $member->fname;
     $array['lname'] = $member->lname;
     $array['mobile'] = $member->phone;
     $array['namads'] = count($member->namads);
-
+    $namads_array = $member->namads;
+    foreach ($namads_array as $key => $namad) {
+      
+      $array['count_capital_inc'] =  $namad->capital_increases()->where('new',1)->OrWhere('created_at', '>', Carbon::now()->subDay(3))->count();
+      $array['count_clarification'] =  $namad->clarifications()->where('new',1)->OrWhere('created_at', '>', Carbon::now()->subDay(3))->count();
+      // فعلا همین دو مورد هست صورت های مالی و پرتفوی روزانه شرکت ها نیاز به نوتیفیکیشن ندارد
+    }
 
     return response()->json(
       $array,
@@ -104,6 +112,43 @@ class MembersDataController extends Controller
     );
     return response()->json(
       ['error' => ''],
+      200
+    );
+  }
+  public function namadcapitalincreases(Request $request)
+  {
+    $member = $this->token(request()->header('Authorization'));
+    $namad_id = $request->id;
+
+
+    $namad = $member->namads()->where('id',$namad_id)->first();
+    if($namad){
+
+    }
+    $capitalincreases_array = CapitalIncrease::whereIn('namad_id', $namad->id)->latest()->get();
+    $count = 1;
+    foreach ($capitalincreases_array as $key => $capitalincrease_obj) {
+      $array[$count]['namad'] = $capitalincrease_obj->namad->name;
+      $array[$count]['step'] = $capitalincrease_obj->step;
+      // چک میشود اگر افزایش سرمایه ترکیبی باشد
+      if ($capitalincrease_obj->from == 'compound') {
+        foreach ($capitalincrease_obj->amounts as $key => $item) {
+          $array[$count]['from'][$item->type] = $item->percent;
+        }
+      } else {
+
+        $array[$count]['from'][$capitalincrease_obj->from] = '100';
+      }
+
+      $array[$count]['publish_date'] = $capitalincrease_obj->publish_date;
+      $array[$count]['link_to_codal'] = $capitalincrease_obj->link_to_codal;
+      $array[$count]['description'] = $capitalincrease_obj->description;
+      $array[$count]['new'] = $capitalincrease_obj->new;
+
+      $count++;
+    }
+    return response()->json(
+      $array,
       200
     );
   }

@@ -10,6 +10,8 @@ use App\Models\Namad\NamadsSeasonalReport;
 use App\Models\Holding\Holding;
 use App\Models\Accounting\Subscribe;
 use App\Models\Accounting\Transaction;
+use App\Models\CapitalIncrease\CapitalIncrease;
+use App\Models\clarification;
 
 class Namad extends Model
 {
@@ -36,6 +38,15 @@ class Namad extends Model
     public function holdings()
     {
         return $this->belongsToMany(Holding::class)->withPivot(['amount_percent','amount_value','change']);
+    }
+
+    public function capital_increases()
+    {
+        return $this->hasMany(CapitalIncrease::class);
+    }
+    public function clarifications()
+    {
+        return $this->hasMany(clarification::class);
     }
 
 }
