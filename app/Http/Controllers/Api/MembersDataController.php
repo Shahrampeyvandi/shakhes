@@ -28,8 +28,10 @@ class MembersDataController extends Controller
     $namads_array = $member->namads;
     foreach ($namads_array as $key => $namad) {
 
-      $array['count_capital_inc'] =  $namad->capital_increases()->where('created_at', '>', Carbon::now()->subDay(3))->count();
-      $array['count_clarification'] =  $namad->clarifications()->where('created_at', '>', Carbon::now()->subDay(3))->count();
+      $array['count_capital_inc'] =  $namad->capital_increases()->where('created_at', '>', Carbon::now()->subDay(3))
+      ->where('new',1)->count();
+      $array['count_clarification'] =  $namad->clarifications()->where('created_at', '>', Carbon::now()->subDay(3))
+      ->where('new',1)->count();
       // فعلا همین دو مورد هست صورت های مالی و پرتفوی روزانه شرکت ها نیاز به نوتیفیکیشن ندارد
     }
 
