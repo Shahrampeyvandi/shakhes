@@ -10,6 +10,38 @@ use App\Models\Namad\Namad;
 class MoneyReportsController extends Controller
 {
 
+
+    public function get_holding_data()
+    {
+        $holding_obj = Holding::where('name', request()->id)->first();
+        if (is_null($holding_obj)){
+            return response()->json(
+                [
+                    'data' => [],
+                    'error'=>true
+                ],
+                401
+            );
+        }
+           
+ 
+        $getnamadsdata = $holding_obj->showPercentNamads($holding_obj->id);
+
+        // پرتفوی لحظه ای شرکت
+        $portfoy_array = Holding::GetPortfoyAndYesterdayPortfoy($holding_obj);
+        $array['portfoy'] = $portfoy_array[0];
+        // درصد تغییر پرتفوی
+        $array['percent_change_porftoy'] = $portfoy_array[1] == 0 ? 0 : ($portfoy_array[0] - $portfoy_array[1]) / $portfoy_array[1];
+        $array['saham'] = $getnamadsdata;
+        return response()->json(
+            [
+                'data' => $array,
+                
+            ],
+            200
+        );
+    }
+
     public function check_if_holding($id)
     {
         /**
@@ -28,10 +60,16 @@ class MoneyReportsController extends Controller
             $name = $namad_obj->name;
             // check if namad is holding
             $holding_obj = Holding::where('name', $namad_obj->id)->first();
-            if (is_null($holding_obj)) return null;
-            $count = 1;
-            $portfoy = 0;
-            $yesterday_portfoy = 0;
+            if (is_null($holding_obj)) {
+                return response()->json(
+                    [
+                        'data' => [],
+                        'error'=>true
+                    ],
+                    401
+                );
+            }
+
             $getnamadsdata = $holding_obj->showPercentNamads($holding_obj->id);
 
             // پرتفوی لحظه ای شرکت
@@ -39,7 +77,7 @@ class MoneyReportsController extends Controller
             $array['portfoy'] = $portfoy_array[0];
             // درصد تغییر پرتفوی
             $array['percent_change_porftoy'] = $portfoy_array[1] == 0 ? 0 : ($portfoy_array[0] - $portfoy_array[1]) / $portfoy_array[1];
-            $array['saham'][] = $getnamadsdata;
+            $array['saham'] = $getnamadsdata;
             return $array;
         } else {
             return response()->json(
@@ -113,16 +151,15 @@ class MoneyReportsController extends Controller
 
                 //$array[$year][$fa] =  number_format($item->value,0,'.','');
 
-              
 
 
 
 
-                $array[$count]['value'] = number_format($item->value,0,'.','');
+
+                $array[$count]['value'] = number_format($item->value, 0, '.', '');
                 $array[$count]['year'] = $year;
                 $array[$count]['month'] = $fa;
                 $count++;
-
             }
         }
         //$array['mahemali'] = $namad['mahemali'];
@@ -139,10 +176,10 @@ class MoneyReportsController extends Controller
         $namad = Namad::find($request->id);
         $seasonal_reports = $namad->seasonalReports;
         $array = [];
-        $count=0;
+        $count = 0;
         foreach ($seasonal_reports as $key => $season_data) {
-           // $array[$season_data->season]['profit'] = $season_data->profit;
-           // $array[$season_data->season]['loss'] = $season_data->loss;
+            // $array[$season_data->season]['profit'] = $season_data->profit;
+            // $array[$season_data->season]['loss'] = $season_data->loss;
 
             $array[$count]['profit'] = $season_data->profit;
             $array[$count]['loss'] = $season_data->loss;
@@ -160,9 +197,9 @@ class MoneyReportsController extends Controller
         $namad = Namad::find($request->id);
         $yearlyreports = $namad->yearlyReports;
         $array = [];
-        $count=0;
+        $count = 0;
         foreach ($yearlyreports as $key => $yearlyreport_data) {
-        
+
             $array[$count]['profit'] = $yearlyreport_data->profit;
             $array[$count]['loss'] = $yearlyreport_data->loss;
             $array[$count]['year'] = $yearlyreport_data->year;
