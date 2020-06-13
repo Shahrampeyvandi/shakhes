@@ -50,7 +50,8 @@ class MoneyReportsController extends Controller
             foreach ($months as $key => $value) {
 
                 foreach ($value as $key2 => $value2) {
-                    if ($value2 !== null) {
+
+                        $value2 == null ? $value2=0 : $value2=$value2;
                         if (NamadsMonthlyReport::where('namad_id', $request->sahm)->where('year', $key2)->where('month', $key)->count()) {
 
                             NamadsMonthlyReport::where('namad_id', $request->sahm)->where('year', $key2)->where('month', $key)
@@ -66,7 +67,7 @@ class MoneyReportsController extends Controller
                             $monthly_report->year = $key2;
                             $monthly_report->save();
                         }
-                    }
+                    
                 }
             }
             return back();

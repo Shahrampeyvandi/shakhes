@@ -53,15 +53,17 @@ class Holding extends Model
     {
         
         $holding_namads =  DB::table('holdings_namads')->whereHolding_id($id)->get();
+        $all=[];
         foreach ($holding_namads as $key => $namad) {
             $id = $this->name;
             $name = Namad::where('id',$id)->first()->name;
-            $array[$name]['amount_percent'] = $namad->amount_percent;
-            $array[$name]['amount_value'] = $namad->amount_value;
-            $array[$name]['change'] = $namad->change;
-     
+            $array['name'] = $name;
+            $array['amount_percent'] = $namad->amount_percent;
+            $array['amount_value'] = $namad->amount_value;
+            $array['change'] = $namad->change;
+            $all[]=$array;
         }
 
-        return $array;
+        return $all;
     }
 }

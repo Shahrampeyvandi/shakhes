@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Holding\Holding;
 use App\Models\Namad\Namad;
 
 class NamadsController extends Controller
@@ -29,7 +30,13 @@ class NamadsController extends Controller
         $namad['final_price_value'] = $namad->dailyReports()->latest()->first()->last_price_value;
         $namad['final_price_percent'] = $namad->dailyReports()->latest()->first()->final_price_percent;
         $namad['last_price_status'] = $namad->dailyReports()->latest()->first()->last_price_status;
+        // check if holding
+        if(Holding::where('namad_id',$request->id)->first()){
+            $namad['holding'] = true;
+        }else{
+            $namad['holding'] = false;
 
+        }
 
 
         return response()->json($namad,200);
