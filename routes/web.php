@@ -24,6 +24,8 @@ Route::get('/namadreports/delete/{id}', 'MoneyReportsController@Delete')->name('
 
 
 Route::get('/users', 'UsersController@Index')->name('Users');
+Route::post('/user/delete', 'UsersController@Delete')->name('Users.Delete');
+
 Route::get('/portfoy', 'PortfoyController@Index')->name('PortfoyList');
 
 Route::get('/holding/create', 'PortfoyController@CreateHolding')->name('Holding.Create');
@@ -49,6 +51,10 @@ Route::get('/continuingpaterns/create', 'ContinuingPaternsController@Create')->n
 Route::post('/continuingpaterns/create', 'ContinuingPaternsController@Insert')->name('ContinuingPaterns.Create');
 Route::post('/continuingpatern/delete', 'ContinuingPaternsController@Delete')->name('ContinuingPaterns.Delete');
 
+Route::get('/disclosures', 'DisclosuresController@Index')->name('Disclosures');
+Route::get('/disclosures/create', 'DisclosuresController@Create')->name('Disclosures.Create');
+Route::post('/disclosures/create', 'DisclosuresController@Insert')->name('Disclosures.Create');
+Route::post('/disclosures/delete', 'DisclosuresController@Delete')->name('Disclosures.Delete');
 
 
 

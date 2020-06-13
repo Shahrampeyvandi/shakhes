@@ -6,7 +6,7 @@
     <div class="col-md-12">
         <div class="card p-3">
             @include('layout.errors')
-        <form id="upload-file" method="post" action="{{route('Clarification.Create')}}" >
+        <form id="upload-file" method="post" action="{{route('Disclosures.Create')}}" >
                 @csrf
                 <h5 class="mb-3">افزودن مورد جدید</h5>
                 <div class="row ">
@@ -40,7 +40,7 @@
 
                             </div>
                             <input type="text" class="form-control datepicker-fa" placeholder="" id="date_mind_1"
-                                aria-label="Small" name="date" aria-describedby="inputGroup-sizing-sm" required>
+                             required   aria-label="Small" name="date" aria-describedby="inputGroup-sizing-sm">
 
                         </div>
                     </div>

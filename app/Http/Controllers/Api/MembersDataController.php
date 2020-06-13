@@ -162,14 +162,14 @@ class MembersDataController extends Controller
           $array["from_stored_gain"]=0;
           $array["from_assets"]=0;
       
-          if ($capitalincrease_obj->from == 'compound') {
+         
             foreach ($capitalincrease_obj->amounts as $key => $item) {
 
               $array["from_$item->type"] = $item->percent;
             }
-          } else {
-            $array['from'][$capitalincrease_obj->from] = '100';
-          }
+          
+           
+          
           $array['publish_date'] = $capitalincrease_obj->publish_date;
           $array['link_to_codal'] = $capitalincrease_obj->link_to_codal;
           $array['description'] = $capitalincrease_obj->description;

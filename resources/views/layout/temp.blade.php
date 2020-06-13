@@ -35,11 +35,9 @@
                 </div>
 
                 <ul class="sidebar-nav">
-                    <li class="sidebar-header">
-                        منو
-                    </li>
+                   
                     <li class="sidebar-item active">
-                        <a class="sidebar-link pr-4" href="#">
+                    <a class="sidebar-link pr-4" href="{{route('BaseUrl')}}">
                             <i class="align-middle mr-2 fas fa-fw fa-home ml-1"></i> <span
                                 class="align-middle">داشبورد</span>
                         </a>
@@ -82,6 +80,13 @@
                              <img width="20px" src="{{asset('assets/images/sarmaye.png')}}" alt=""> <span
                                 class="align-middle">
                                 افزایش سرمایه</span>
+                        </a>
+                    </li>
+                     <li class="sidebar-item">
+                        <a class="sidebar-link pr-4" href="{{route('Disclosures')}}">
+                             <img width="20px" src="{{asset('assets/images/sarmaye.png')}}" alt=""> <span
+                                class="align-middle">
+                                افشای اطلاعات با اهمیت</span>
                         </a>
                     </li>
                     <li class="sidebar-item">

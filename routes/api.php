@@ -40,6 +40,4 @@ Route::get('/getholdingdata', 'Api\MoneyReportsController@get_holding_data');
 
 Route::get('/clarifications', 'Api\ClarificationController@getall'); // get all clarifications
 Route::get('/capitalincreases', 'Api\CapitalIncreasesController@getall'); // get all capitalincreases
-
-
-
+Route::get('/continuingpaterns', 'Api\PaternsController@getContinuingPaterns'); // get all capitalincreases

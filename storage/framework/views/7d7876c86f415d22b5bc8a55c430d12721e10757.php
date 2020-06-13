@@ -15,7 +15,7 @@
     <div class="card-body">
      
       <div style="overflow-x: auto;">
-        <table id="example1" class="table table-striped  table-bordered">
+        <table id="example1" class="table table-striped  table-bordered w-100">
           <thead>
             <tr>
              
@@ -34,7 +34,7 @@
               <th>شماره موبایل</th>
               <th>تعداد سهام</th>
               <th>پروفایل عکس</th>
-
+              <th>عملیات</th>
             </tr>
           </thead>
           <tbody class="tbody">
@@ -54,6 +54,15 @@
                 <img width="75px" class="img-fluid " src=" <?php echo e(asset("assets/images/avatar.png")); ?> " />
                 <?php endif; ?>
               </td>
+              <td>
+                <div class="btn-group" role="group" aria-label="">
+                
+                <a data-id="<?php echo e($user->id); ?>"
+                            class="delete text-white btn btn-rounded btn-danger btn-sm m-0"
+                            
+                            >حذف</a>
+                    </div>
+            </td>
             </tr>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
@@ -67,6 +76,55 @@
 </div>
 <?php $__env->stopSection(); ?>
 
+<?php $__env->startSection('js'); ?>
+<script>
+  $(document).ready(function(){
+      $.ajaxSetup({
 
+          headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          }
+      });
+      $('.delete').click(function(e){
+              e.preventDefault()
+              var value = $(this).data('id');
+         swal({
+          title: "آیا اطمینان دارید؟",
+          text: "",
+          icon: "warning",
+    buttons: {
+      confirm : 'بله',
+      cancel : 'خیر'
+    },
+          dangerMode: true
+      })
+      .then(function(willDelete) {
+          if (willDelete) {
+              // ajax request
+            $.ajax({
+              type:'POST',
+              url:'<?php echo e(url('/user/delete')); ?>',
+               data:{_token:'<?php echo e(csrf_token()); ?>',id:value},
+               success:function(data){
+                     setTimeout(()=>{
+                      location.reload()
+                     },1000)
+             
+              }
+      })
+          }
+    else {
+              swal("عملیات لغو شد", {
+        icon: "error",
+        button: "تایید"
+      });
+      }
+    });
+
+  })
+
+})
+</script>
+<?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layout.temp', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\panel\resources\views/Users.blade.php ENDPATH**/ ?>

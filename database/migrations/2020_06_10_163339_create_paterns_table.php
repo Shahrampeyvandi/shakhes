@@ -20,6 +20,7 @@ class CreatePaternsTable extends Migration
             $table->foreign('namad_id')->references('id')->on('namads')->onDelete('cascade');
             $table->string('picture');
             $table->enum('type',['asc','desc']);
+            $table->boolean('new')->default(1);
             $table->timestamps();
         });
     }
