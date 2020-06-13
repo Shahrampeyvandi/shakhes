@@ -18,9 +18,8 @@ class MembersDataController extends Controller
   public function personaldata(Request $request)
   {
     $member = $this->token($request->header('Authorization'));
-
-    $member = Member::find(2);
-
+   // $member=Member::find(2);
+    
     $array['fname'] = $member->fname;
     $array['lname'] = $member->lname;
     $array['mobile'] = $member->phone;
@@ -45,11 +44,12 @@ class MembersDataController extends Controller
   public function namads(Request $request)
   {
     $member = $this->token($request->header('Authorization'));
-    $member = Member::find(2);
+   // $member=Member::find(2);
 
     $namads_array = $member->namads;
 
 
+    $array=[];
     foreach ($namads_array as $key => $namad_data) {
       $array[$key]['id'] = $namad_data->id;
       $array[$key]['symbol'] = $namad_data->symbol;
