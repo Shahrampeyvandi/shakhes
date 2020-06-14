@@ -100,7 +100,7 @@ class MembersDataController extends Controller
    
     }
     return response()->json(
-      $all,
+      ['data'=>$all],
       200
     );
    }else{
@@ -167,7 +167,7 @@ class MembersDataController extends Controller
 
               $array["from_$item->type"] = $item->percent;
             }
-          } else {
+          }else {
             $array['from'][$capitalincrease_obj->from] = '100';
           }
           $array['publish_date'] = $capitalincrease_obj->publish_date;
@@ -192,7 +192,7 @@ class MembersDataController extends Controller
 
 
     return response()->json(
-      $all,
+    ['data'=>$all] ,
       200
     );
   }
