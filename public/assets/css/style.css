@@ -216,8 +216,8 @@ body {
 
 .sidebar-item.active .sidebar-link:hover,
 .sidebar-item.active>.sidebar-link {
-    color: #212529;
-    background: #e9ecef;
+    color: #ffffff;
+    background: #0188d9;
 }
 
 .sidebar-link,

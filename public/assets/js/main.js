@@ -6,7 +6,7 @@ $(document).ready(function () {
         
         $('.main').animate({
             "margin-right":"274px",
-            "width":"calc(100% - 274px)"
+            "width":"82%"
         },
              50);
        

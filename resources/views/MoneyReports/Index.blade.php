@@ -2,7 +2,7 @@
 @section('content')
 <style>
     td input {
-        width: 50px !important;
+        width: 100px !important;
     }
 </style>
 <div class="container-fluid panel-table mt-5">

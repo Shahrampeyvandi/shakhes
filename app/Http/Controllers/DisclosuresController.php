@@ -2,33 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\clarification;
+use App\Models\Namad\Disclosures;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
-class ClarificationController extends Controller
+class DisclosuresController extends Controller
 {
     public function Index()
     {
-        $clarifications = clarification::latest()->get();
-        return view('Clarification.Index',compact('clarifications'));
+        $disclosures = Disclosures::latest()->get();
+        return view('Disclosures.Index',compact('disclosures'));
     }
 
 
     public function Create()
     {
-        return view('Clarification.create');
+        return view('Disclosures.create');
 
     }
     public function Insert(Request $request)
     {
-        $capitalincrease = new clarification();
+        
+        $capitalincrease = new Disclosures();
         $capitalincrease->namad_id = $request->namad;
         $capitalincrease->subject = $request->subject;
         $capitalincrease->publish_date = $this->convertDate($request->date);
         $capitalincrease->link_to_codal = $request->linkcodal;
         if ($capitalincrease->save()) {
-            return redirect()->route('Clarifications');
+            return redirect()->route('Disclosures');
         }else{
             return back()->withInput(Input::all());
         }
@@ -37,7 +38,7 @@ class ClarificationController extends Controller
 
     public function Delete(Request $request)
     {
-        clarification::where('id',$request->id)->delete();
+        Disclosures::where('id',$request->id)->delete();
         return back();
     }
 }
