@@ -22,24 +22,31 @@ class NamadsController extends Controller
       
     }
 
+    public function getNotifications(Request $request)
+    {
+        
+    }
+
     public function getnamad(Request $request)
     {
 
         $namad =Namad::find($request->id);
-
-        $namad['final_price_value'] = $namad->dailyReports()->latest()->first()->last_price_value;
-        $namad['final_price_percent'] = $namad->dailyReports()->latest()->first()->final_price_percent;
-        $namad['last_price_status'] = $namad->dailyReports()->latest()->first()->last_price_status;
+        if(is_null(($namad))){
+            return response()->json(['error'=>'نماد مورد نظر پیدا نشد','data'=>[]],401);
+        }
+        $array['final_price_value'] = $report=$namad->dailyReports()->latest()->first()  ? $namad->dailyReports()->latest()->first()->last_price_value : null;
+        $array['final_price_percent'] = $report=$namad->dailyReports()->latest()->first() ? $namad->dailyReports()->latest()->first()->final_price_percent : null;
+        $array['last_price_status'] = $report=$namad->dailyReports()->latest()->first() ? $namad->dailyReports()->latest()->first()->last_price_status : null;
         // check if holding
-        if(Holding::where('namad_id',$request->id)->first()){
-            $namad['holding'] = true;
+        if(Holding::where('name',$request->id)->first()){
+            $array['holding'] = true;
         }else{
-            $namad['holding'] = false;
+            $array['holding'] = false;
 
         }
 
 
-        return response()->json($namad,200);
+        return response()->json(['data'=>$array,'error'=>false],200);
       
     }
 }

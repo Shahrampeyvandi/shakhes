@@ -132,18 +132,7 @@ class MembersDataController extends Controller
     );
   }
 
-  public function read_clarification(Request $request)
-  {
-    clarification::whereId($request->id)->update(
-      [
-        'new' => 0
-      ]
-    );
-    return response()->json(
-      ['error' => ''],
-      200
-    );
-  }
+  
   public function namadcapitalincreases($namad_id)
   {
 
@@ -155,6 +144,7 @@ class MembersDataController extends Controller
         $count = 1;
         $all = [];
         foreach ($capitalincreases_array as $key => $capitalincrease_obj) {
+          
           $array['namad'] = $capitalincrease_obj->namad->name;
           $array['step'] = $capitalincrease_obj->step;
           // چک میشود اگر افزایش سرمایه ترکیبی باشد
@@ -167,7 +157,11 @@ class MembersDataController extends Controller
 
               $array["from_$item->type"] = $item->percent;
             }
-          
+
+            $percents =  $capitalincrease_obj->showPercents();
+            $array["percent_from_cash"]=$percents['percent_from_cash'];
+            $array["percent_from_stored_gain"]=$percents['percent_from_stored_gain'];
+            $array["percent_from_assets"]=$percents['percent_from_assets'];
            
           
           $array['publish_date'] = $capitalincrease_obj->publish_date;
@@ -233,16 +227,5 @@ class MembersDataController extends Controller
       200
     );
   }
-  public function read_capitalincreases(Request $request)
-  {
-    CapitalIncrease::whereId($request->id)->update(
-      [
-        'new' => 0
-      ]
-    );
-    return response()->json(
-      ['error' => ''],
-      200
-    );
-  }
+  
 }

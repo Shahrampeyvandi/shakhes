@@ -49,5 +49,7 @@ class Namad extends Model
         return $this->hasMany(clarification::class);
     }
 
+  
+
 }
 

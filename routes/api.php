@@ -12,9 +12,6 @@ Route::post('/member/namads/add', 'Api\MembersDataController@add');
 Route::get('/member/clarifications', 'Api\MembersDataController@getclarifications'); // دریافت شفاف سازی سهام من
 Route::get('/member/clarifications/{id}', 'Api\MembersDataController@namadclarifications'); // دریافت شفاف سازی های یک نماد از سهام من
 
-Route::post('/member/capitalincreases/marktoread', 'Api\MembersDataController@read_capitalincreases'); // با کلیک روی لینک به حالت خوانده شده تغییر میکند
-Route::post('/member/clarification/marktoread', 'Api\MembersDataController@read_clarification'); // با کلیک روی لینک به حالت خوانده شده تغییر میکند
-
 Route::get('/member/capitalincreases', 'Api\MembersDataController@getcapitalincreases'); // دریافت افزایش سرمایه سهام من
 Route::get('/member/capitalincreases/{id}', 'Api\MembersDataController@namadcapitalincreases'); // دریافت افزایش سرمایه های یک نماد از سهام من
 
