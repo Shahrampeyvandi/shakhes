@@ -100,7 +100,7 @@ class MembersDataController extends Controller
    
     }
     return response()->json(
-      $all,
+      ['data'=>$all],
       200
     );
    }else{
@@ -186,7 +186,7 @@ class MembersDataController extends Controller
 
 
     return response()->json(
-      $all,
+    ['data'=>$all] ,
       200
     );
   }
