@@ -26,6 +26,7 @@ class DisclosuresController extends Controller
         $capitalincrease = new Disclosures();
         $capitalincrease->namad_id = $request->namad;
         $capitalincrease->subject = $request->subject;
+        $capitalincrease->group = $request->group;
         $capitalincrease->publish_date = $this->convertDate($request->date);
         $capitalincrease->link_to_codal = $request->linkcodal;
         if ($capitalincrease->save()) {

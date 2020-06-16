@@ -10,7 +10,7 @@
                 @csrf
                 <h5 class="mb-3">افزودن مورد جدید</h5>
                 <div class="row ">
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-6">
                         <label for="subject" class="col-form-label">نام سهم: </label>
                      <select class="form-control text-right selectpicker" name="namad"  data-size="5"
                      data-live-search="true" data-title="" id="namad" data-width="100%">
@@ -19,7 +19,17 @@
                      @endforeach
                  </select>
                     </div>
-                   
+                    <div class="form-group col-md-6">
+
+                        <label for="subject" class="col-form-label">گروه: </label>
+                        <select required name="group" class="form-control" id="exampleFormControlSelect2">
+                            <option value="a" selected>الف</option>
+                            <option value="b">ب</option>
+                          
+
+
+                        </select>
+                    </div>
  
                  </div>
                 <div class="row mb-1">

@@ -15,8 +15,10 @@ Route::get('/member/clarifications/{id}', 'Api\MembersDataController@namadclarif
 Route::get('/member/capitalincreases', 'Api\MembersDataController@getcapitalincreases'); // دریافت افزایش سرمایه سهام من
 Route::get('/member/capitalincreases/{id}', 'Api\MembersDataController@namadcapitalincreases'); // دریافت افزایش سرمایه های یک نماد از سهام من
 
+Route::get('/member/notifications', 'Api\MembersDataController@notifications'); 
 
 
+Route::get('/member/disclosures/{id}', 'Api\MembersDataController@namadDisclosures'); // افشای اطلاعات با اهمیت سهم
 
 
 // پایان سهام من
@@ -26,6 +28,12 @@ Route::get('/member/capitalincreases/{id}', 'Api\MembersDataController@namadcapi
 
 Route::get('/namad', 'Api\NamadsController@getnamad');
 Route::get('/namads/search', 'Api\NamadsController@search');
+
+
+// notification routes
+Route::get('/getnotifications', 'Api\NamadsController@GetAllNotifications');
+// Route::get('/getnotifications/{id}', 'Api\NamadsController@getNamadNotifications');
+
 
 
 

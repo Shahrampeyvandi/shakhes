@@ -22,10 +22,7 @@ class NamadsController extends Controller
       
     }
 
-    public function getNotifications(Request $request)
-    {
-        
-    }
+
 
     public function getnamad(Request $request)
     {
@@ -38,6 +35,7 @@ class NamadsController extends Controller
         $array['final_price_percent'] = $report=$namad->dailyReports()->latest()->first() ? $namad->dailyReports()->latest()->first()->final_price_percent : null;
         $array['last_price_status'] = $report=$namad->dailyReports()->latest()->first() ? $namad->dailyReports()->latest()->first()->last_price_status : null;
         // check if holding
+
         if(Holding::where('name',$request->id)->first()){
             $array['holding'] = true;
         }else{
@@ -45,8 +43,17 @@ class NamadsController extends Controller
 
         }
 
+      $all =  array_merge($array,$namad->getNamadNotifications());
 
-        return response()->json(['data'=>$array,'error'=>false],200);
+        return response()->json(['data'=>$all,'error'=>false],200);
       
     }
+
+    public function getAllNotifications()
+    {
+        $data =  Namad::GetAllNotifications();
+        return response()->json(['data'=>$data,'error'=>false],200);
+    }
+  
+
 }
