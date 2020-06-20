@@ -55,6 +55,7 @@ Route::get('/disclosures', 'DisclosuresController@Index')->name('Disclosures');
 Route::get('/disclosures/create', 'DisclosuresController@Create')->name('Disclosures.Create');
 Route::post('/disclosures/create', 'DisclosuresController@Insert')->name('Disclosures.Create');
 Route::post('/disclosures/delete', 'DisclosuresController@Delete')->name('Disclosures.Delete');
+Route::get('/volumetrades', 'VolumeTradesController@Index')->name('VolumeTrades');
 
 
 

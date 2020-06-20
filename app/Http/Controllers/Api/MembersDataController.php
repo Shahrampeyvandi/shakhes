@@ -9,6 +9,8 @@ use App\Models\clarification;
 use App\Models\Member\Member;
 use App\Models\Namad\Disclosures;
 use App\Models\Namad\Namad;
+use App\Models\VolumeTrade;
+use App\Setting;
 use Carbon\Carbon;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -278,6 +280,25 @@ class MembersDataController extends Controller
 
     return response()->json(
        $all,
+      200
+    );
+  }
+  public function namadVolumeTrades($namad_id)
+  {
+       $volume_trade = VolumeTrade::find($namad_id);
+       
+    
+           $array['symbol'] = $volume_trade->namad->symbol;
+           $array['name'] = $volume_trade->namad->name;
+           $array['price'] = $volume_trade->namad->dailyReports()->latest()->first()->last_price_value;
+           $array['trades_volume'] =  $volume_trade->namad->dailyReports()->latest()->first()->trades_volume;
+           $array['base_zarib'] = Setting::first()->trading_volume_ratio;
+           $array['current_zarib'] = $volume_trade->volume_ratio;
+          
+       
+
+     return response()->json(
+      $array,
       200
     );
   }

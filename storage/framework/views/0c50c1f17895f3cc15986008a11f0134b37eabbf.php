@@ -112,10 +112,10 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="#">
-                             <img width="20px" src="<?php echo e(asset('assets/images/mali.png')); ?>" alt=""> <span
+                    <a class="sidebar-link pr-4" href="<?php echo e(route('VolumeTrades')); ?>">
+                             <img width="20px" src="<?php echo e(asset('assets/images/mali.png')); ?>" alt="افزایش حجم معاملات"> <span
                                 class="align-middle">
-                                واگرایی مثبت</span>
+                                افزایش حجم معاملات</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
