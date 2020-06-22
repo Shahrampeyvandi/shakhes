@@ -27,32 +27,35 @@ class NamadsController extends Controller
     public function getnamad(Request $request)
     {
 
-        $namad =Namad::find($request->id);
+        $id=$request->id;
+        $namad =Namad::find($id);
         if(is_null(($namad))){
             return response()->json(['error'=>'نماد مورد نظر پیدا نشد','data'=>[]],401);
         }
-        $array['final_price_value'] = $report=$namad->dailyReports()->latest()->first()  ? $namad->dailyReports()->latest()->first()->last_price_value : null;
-        $array['final_price_percent'] = $report=$namad->dailyReports()->latest()->first() ? $namad->dailyReports()->latest()->first()->final_price_percent : null;
-        $array['last_price_status'] = $report=$namad->dailyReports()->latest()->first() ? $namad->dailyReports()->latest()->first()->last_price_status : null;
+        $namad['final_price_value'] = $report=$namad->dailyReports()->latest()->first()  ? $namad->dailyReports()->latest()->first()->last_price_value : null;
+        $namad['final_price_percent'] = $report=$namad->dailyReports()->latest()->first() ? $namad->dailyReports()->latest()->first()->final_price_percent : null;
+        $namad['last_price_status'] = $report=$namad->dailyReports()->latest()->first() ? $namad->dailyReports()->latest()->first()->last_price_status : null;
         // check if holding
 
-        if(Holding::where('name',$request->id)->first()){
-            $array['holding'] = true;
+        if(Holding::where('name',$id)->first()){
+            $namad['holding'] = 1;
         }else{
-            $array['holding'] = false;
+            $namad['holding'] = 0;
 
         }
+        $namad['holding'] = 0;
 
-      $all =  array_merge($array,$namad->getNamadNotifications());
 
-        return response()->json(['data'=>$all,'error'=>false],200);
+      $all =  array_merge($namad->toArray(),$namad->getNamadNotifications());
+
+        return response()->json($all,200);
       
     }
 
     public function getAllNotifications()
     {
         $data =  Namad::GetAllNotifications();
-        return response()->json(['data'=>$data,'error'=>false],200);
+        return response()->json($data,200);
     }
   
 

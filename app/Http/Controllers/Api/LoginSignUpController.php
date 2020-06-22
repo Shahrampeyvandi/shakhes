@@ -17,14 +17,14 @@ class LoginSignUpController extends Controller
         $code = ActivationCode::createCode($request->phone);
         if ($code == false) {
             return response()->json([
-                'code'=>400,
+                'code' => 400,
                 'message' => 'کد فعال سازی قبلا برای شما ارسال شده است. لطفا بعدا مجددا امتحان فرمایید',
             ], 200);
         }
 
 
         return response()->json([
-            'code'=>200,
+            'code' => 200,
             'data' => $code->v_code,
             'error' => '',
         ], 200);
@@ -39,24 +39,28 @@ class LoginSignUpController extends Controller
         if ($activationCode_OBJ) {
 
             // check member 
-            if($member = Member::where('phone',$mobile)->first()){
+            if ($member = Member::where('phone', $mobile)->first()) {
                 $token = JWTAuth::fromUser($member);
                 return response()->json([
-                    'code'=>201,
-                    'data'=>$token,
+                    'code' => 201,
+                    'data' => $token,
                     'error' => '',
                 ], 200);
-            }else{
-                return response()->json([
-                    'code'=>200,
-                    'token'=>'',
-                    'error' => '',
-                ], 200);
+            } else {
+                $member = new Member;
+                $member->phone = $request->phone;
+                if ($member->save()) {
+                    $token = JWTAuth::fromUser($member);
+                    return response()->json([
+                        'code' => 201,
+                        'data' => $token,
+                        'error' => '',
+                    ], 200);
+                }
             }
-
         } else {
             return response()->json([
-                'code'=>400,
+                'code' => 400,
                 'message' => 'کد وارد شده اشتباه است',
             ], 200);
         }
@@ -69,21 +73,19 @@ class LoginSignUpController extends Controller
         $member->fname = $request->fname;
         $member->lname = $request->lname;
         $member->phone = $request->phone;
-        if($member->save()){
+        if ($member->save()) {
             $token = JWTAuth::fromUser($member);
             return response()->json([
-                'code'=>200,
+                'code' => 200,
                 'data' => $token,
                 'error' => '',
             ], 200);
-        }else{
+        } else {
             return response()->json([
-                'code'=>400,
+                'code' => 400,
                 'message' => 'خطا در ثبت نام',
             ], 401);
         }
-
-       
     }
 
 

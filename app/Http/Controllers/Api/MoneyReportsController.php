@@ -34,10 +34,9 @@ class MoneyReportsController extends Controller
         $array['percent_change_porftoy'] = $portfoy_array[1] == 0 ? 0 : ($portfoy_array[0] - $portfoy_array[1]) / $portfoy_array[1];
         $array['saham'] = $getnamadsdata;
         return response()->json(
-            [
-                'data' => $array,
+           $array,
                 
-            ],
+            
             200
         );
     }
@@ -90,16 +89,6 @@ class MoneyReportsController extends Controller
     }
     public function getnamadmonthlyreports(Request $request)
     {
-
-        $check_holding = $this->check_if_holding($request->id);
-        if ($check_holding) {
-            return response()->json(
-                $check_holding,
-                200
-            );
-        }
-
-        // else
 
         $namad = Namad::find($request->id);
         $monthly_reports_years = $namad->monthlyReports->pluck('year')->toArray();

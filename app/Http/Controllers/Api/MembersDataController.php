@@ -259,9 +259,9 @@ class MembersDataController extends Controller
         foreach ($disclosures as $key => $disclosure) {
           $array['namad'] = $namad->symbol;
           $array['group'] = $disclosure->group;
-          $array['subject'] = $disclosure->publish_date;
+          $array['subject'] = $disclosure->subject;
           $array['link_to_codal'] = $disclosure->link_to_codal;
-          $array['publish_date'] = $disclosure->description;
+          $array['publish_date'] = $disclosure->publish_date;
           $all[] = $array;
         }
       } else {
@@ -279,7 +279,7 @@ class MembersDataController extends Controller
 
 
     return response()->json(
-       $all,
+       ['data'=>$all],
       200
     );
   }
