@@ -9,6 +9,13 @@ use App\Models\Namad\Namad;
 
 class NamadsController extends Controller
 {
+
+
+
+    public function getalldata($id)
+    {
+       return Namad::whereId($id)->first()->dailyReports;
+    }
     public function search(Request $request)
     {
 

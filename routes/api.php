@@ -23,6 +23,7 @@ Route::get('/member/disclosures/{id}', 'Api\MembersDataController@namadDisclosur
 
 // پایان سهام من
 
+Route::get('/getalldata/{id}', 'Api\NamadsController@getalldata'); // افشای اطلاعات با اهمیت سهم
 
 
 
@@ -49,6 +50,8 @@ Route::get('/continuingpaterns', 'Api\PaternsController@getContinuingPaterns'); 
 
 
 Route::get('/getvolumetrades/{id?}', 'Api\VolumeTradesController@get'); // افشای اطلاعات با اهمیت سهم
+Route::get('/education/list', 'Api\EducationController@list'); 
 
+Route::get('/education/addview/{id}', 'Api\EducationController@addViewCount'); 
 
 

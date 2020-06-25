@@ -57,6 +57,8 @@ Route::post('/disclosures/create', 'DisclosuresController@Insert')->name('Disclo
 Route::post('/disclosures/delete', 'DisclosuresController@Delete')->name('Disclosures.Delete');
 Route::get('/volumetrades', 'VolumeTradesController@Index')->name('VolumeTrades');
 
+Route::get('/education/add', 'EducationController@Add')->name('Education.Add');
+Route::post('/education/save', 'EducationController@Save')->name('Education.Add');
 
 
 

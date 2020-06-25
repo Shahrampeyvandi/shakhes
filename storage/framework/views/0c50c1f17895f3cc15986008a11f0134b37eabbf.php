@@ -51,6 +51,22 @@
                         </a>
                     </li>
 
+                     <li class="sidebar-item">
+                        <a href="#proposal" data-toggle="collapse" class="sidebar-link collapsed" style="padding-right: 18px;">
+                            <i class="align-middle mr-2 fas fa-list-alt ml-2"></i> <span
+                                class="align-middle">آموزش</span>
+                        </a>
+                        <ul id="proposal" class="sidebar-dropdown list-unstyled collapse" data-parent="#sidebarCo">
+                            <li class="sidebar-item"><a class="sidebar-link"
+                                    href="#">لیست </a>
+                            </li>
+                            <li class="sidebar-item"><a class="sidebar-link" href="<?php echo e(route('Education.Add')); ?>">
+                                    افزودن</a>
+                            </li>
+
+                        </ul>
+                    </li>
+
 
                    
 
