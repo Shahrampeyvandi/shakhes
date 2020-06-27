@@ -32,15 +32,15 @@
 
                             </div>
 
-                          
+
                             <div class="row">
                                 <div class="form-group col-md-6">
                                     <div class="form-row">
                                         <div class="col-md-3">
-                                            <label for=""> تصویر : </label>
+                                            <label for=""> پوستر : </label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="file" name="image" class=""  />
+                                            <input type="file" name="image" class="" />
                                         </div>
                                     </div>
                                 </div>
@@ -55,14 +55,13 @@
                                     onclick="addCategory(event)">افزودن</button>
                                 <div class="cat-wrapper">
                                     <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key=>$category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                         <div class="custom-control custom-radio custom-control-inline">
-                                        <input type="radio" id="<?php echo e($key+1); ?>" name="category"
-                                        value="<?php echo e($category->name); ?>"
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="<?php echo e($key+1); ?>" name="category" value="<?php echo e($category->name); ?>"
                                             class="custom-control-input">
-                                         <label class="custom-control-label" for="<?php echo e($key+1); ?>"><?php echo e($category->name); ?></label>
+                                        <label class="custom-control-label" for="<?php echo e($key+1); ?>"><?php echo e($category->name); ?></label>
                                     </div>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                   
+
                                 </div>
                             </div>
                             <div class="row">
@@ -92,7 +91,15 @@
 
 
 <?php $__env->startSection('js'); ?>
+<script src="<?php echo e(asset('vendor/ckeditor/ckeditor.js')); ?>"></script>
 <script>
+    CKEDITOR.replace('desc',{
+            contentsLangDirection: 'rtl',
+            extraPlugins: 'uploadimage',
+            filebrowserUploadUrl: '<?php echo e(route('UploadImage')); ?>?type=file',
+            imageUploadUrl: '<?php echo e(route('UploadImage')); ?>?type=image',
+        });
+
     function addCategory(event) {
        event.preventDefault()
         let val = $(event.target).prev().val();
