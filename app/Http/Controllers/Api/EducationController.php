@@ -26,6 +26,7 @@ class EducationController extends Controller
                 $item['section'] = $education->section;
                 $item['image'] = $education->image;
                 $item['views'] = $education->views;
+                $item['id'] = $education->id;
                 $items['items'][] = $item;
             }
             $all[] = array_merge($array,$items);
@@ -33,7 +34,7 @@ class EducationController extends Controller
           
         }
 
-        return \response()->json($all,200);
+        return \response()->json(['data'=>$all],200);
        
     }
 
