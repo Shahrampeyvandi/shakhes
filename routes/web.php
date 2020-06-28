@@ -58,7 +58,9 @@ Route::post('/disclosures/delete', 'DisclosuresController@Delete')->name('Disclo
 Route::get('/volumetrades', 'VolumeTradesController@Index')->name('VolumeTrades');
 
 Route::get('/education/add', 'EducationController@Add')->name('Education.Add');
-Route::post('/education/save', 'EducationController@Save')->name('Education.Add');
+Route::post('/education/add', 'EducationController@Save')->name('Education.Add');
+Route::post('/education/delete', 'EducationController@Delete');
+Route::get('/education/list', 'EducationController@List')->name('Education.List');
 
 
 
@@ -68,7 +70,7 @@ Route::post('/moneyreports/getdata', 'Ajax\MoneyReportController@getmoneyreports
 
 Route::post('/getNamadData', 'Ajax\MoneyReportController@getNamadData')->name('getNamadData');
 
-
+Route::post('panel/upload-image', 'EducationController@UploadImage')->name('UploadImage');
 Route::post('/getcapitalincreases', 'Ajax\CapitalIncreaseController@getCapitalIncreases')->name('getCapitalIncreases');
 
 

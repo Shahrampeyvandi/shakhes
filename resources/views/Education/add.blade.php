@@ -33,15 +33,15 @@
 
                             </div>
 
-                          
+
                             <div class="row">
                                 <div class="form-group col-md-6">
                                     <div class="form-row">
                                         <div class="col-md-3">
-                                            <label for=""> تصویر : </label>
+                                            <label for=""> پوستر : </label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="file" name="image" class=""  />
+                                            <input type="file" name="image" class="" />
                                         </div>
                                     </div>
                                 </div>
@@ -56,14 +56,13 @@
                                     onclick="addCategory(event)">افزودن</button>
                                 <div class="cat-wrapper">
                                     @foreach ($categories as $key=>$category)
-                                         <div class="custom-control custom-radio custom-control-inline">
-                                        <input type="radio" id="{{$key+1}}" name="category"
-                                        value="{{$category->name}}"
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="{{$key+1}}" name="category" value="{{$category->name}}"
                                             class="custom-control-input">
-                                         <label class="custom-control-label" for="{{$key+1}}">{{$category->name}}</label>
+                                        <label class="custom-control-label" for="{{$key+1}}">{{$category->name}}</label>
                                     </div>
                                     @endforeach
-                                   
+
                                 </div>
                             </div>
                             <div class="row">
@@ -93,7 +92,15 @@
 
 
 @section('js')
+<script src="{{asset('vendor/ckeditor/ckeditor.js')}}"></script>
 <script>
+    CKEDITOR.replace('desc',{
+            contentsLangDirection: 'rtl',
+            extraPlugins: 'uploadimage',
+            filebrowserUploadUrl: '{{route('UploadImage')}}?type=file',
+            imageUploadUrl: '{{route('UploadImage')}}?type=image',
+        });
+
     function addCategory(event) {
        event.preventDefault()
         let val = $(event.target).prev().val();

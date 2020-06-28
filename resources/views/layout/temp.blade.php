@@ -58,7 +58,7 @@
                         </a>
                         <ul id="proposal" class="sidebar-dropdown list-unstyled collapse" data-parent="#sidebarCo">
                             <li class="sidebar-item"><a class="sidebar-link"
-                                    href="#">لیست </a>
+                                    href="{{route('Education.List')}}">لیست </a>
                             </li>
                             <li class="sidebar-item"><a class="sidebar-link" href="{{route('Education.Add')}}">
                                     افزودن</a>
