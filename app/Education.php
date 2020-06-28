@@ -10,6 +10,6 @@ class Education extends Model
 
     public function category()
     {
-        return $this->hasOne(EducationCat::class,'category_id');
+        return $this->belongsTo('App\EducationCat');
     }
 }

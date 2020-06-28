@@ -53,5 +53,6 @@ Route::get('/getvolumetrades/{id?}', 'Api\VolumeTradesController@get'); // اف�
 Route::get('/education/list', 'Api\EducationController@list'); 
 
 Route::get('/education/addview/{id}', 'Api\EducationController@addViewCount'); 
+Route::get('/education/{id}', 'Api\EducationController@view'); 
 
 

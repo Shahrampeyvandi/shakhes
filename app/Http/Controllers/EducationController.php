@@ -8,6 +8,12 @@ use Illuminate\Http\Request;
 
 class EducationController extends Controller
 {
+
+    function list() {
+
+        $educations = Education::latest()->get();
+        return view('Education.List', compact('educations'));
+    }
     public function Add()
     {
 
@@ -18,7 +24,7 @@ class EducationController extends Controller
     {
 
         if ($request->hasFile('image')) {
-            $destinationPath = "pictures/educations/";
+            $destinationPath = "pictures/educations";
             $picextension = $request->file('image')->getClientOriginalExtension();
             $fileName = date("Y-m-d") . '_' . time() . '.' . $picextension;
             $request->file('image')->move($destinationPath, $fileName);
@@ -114,5 +120,13 @@ class EducationController extends Controller
             //return response
             return json_encode($data);
         }
+    }
+
+    public function Delete(Request $request)
+    {
+        $education = Education::find($request->id);
+
+        $education->delete();
+        return back();
     }
 }
