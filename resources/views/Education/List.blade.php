@@ -41,8 +41,8 @@
                                 <td>{{$education->views}}</td>
                                 <td>
                                     <div class="btn-group" role="group" aria-label="">
-                                        {{-- <a href="#"
-                            class=" btn btn-rounded btn-info btn-sm m-0">مشاهده</a> --}}
+                                    <a href="{{route('Education.Show',$education->id)}}"
+                            class=" btn btn-rounded btn-info btn-sm m-0">مشاهده</a>
                                         <a data-id="{{$education->id}}"
                                             class="delete text-white btn btn-rounded btn-danger btn-sm m-0">حذف</a>
                                     </div>

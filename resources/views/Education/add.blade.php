@@ -1,12 +1,8 @@
 @extends('layout.temp')
 @section('content')
 
-
-
 <main class="main-content">
     <div class="container-fluid">
-
-
         <div class="card">
             <div class="card-body">
                 <div class="card-title">
@@ -21,7 +17,7 @@
                             <h6 class="card-title">عنوان </h6>
                             <div class="row">
                                 <div class="form-group col-md-12">
-                                    <input type="text" class="form-control" name="title" id="title" placeholder="">
+                                    <input required type="text" class="form-control" name="title" id="title" placeholder="">
                                 </div>
 
                             </div>
@@ -50,7 +46,7 @@
                         <div class="col-md-4 right-side">
                             <div class="cat">
                                 <h6 class="card-title">دسته بندی ها: </h6>
-                                <input type="text" class="form-control mb-2" name="category" id="category"
+                                <input type="text" required class="form-control mb-2" name="category" id="category"
                                     placeholder="جدید">
                                 <button class="btn btn-outline-primary btn-sm mb-2"
                                     onclick="addCategory(event)">افزودن</button>

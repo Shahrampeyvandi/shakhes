@@ -129,4 +129,10 @@ class EducationController extends Controller
         $education->delete();
         return back();
     }
+
+    public function Show($id)
+    {
+        $education = Education::find($id);
+        return view('Education.show',compact('education'));
+    }
 }

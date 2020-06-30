@@ -9,32 +9,22 @@
         <h5>آموزش ها</h5>
     </div>
     <div class="col-md-12 ">
-
         <div class="card">
             <div class="card-body">
-
                 <div style="overflow-x: auto;">
                     <table id="example1" class="table table-striped  table-bordered w-100">
                         <thead>
                             <tr>
-
                                 <th>ردیف</th>
                                 <th>
-
                                     نام
-
                                 </th>
                                 <th>
-
                                     دسته بندی
-
                                 </th>
                                 <th>
-
                                     تعداد بازدید
-
                                 </th>
-
                                 <th>عملیات</th>
                             </tr>
                         </thead>
@@ -50,7 +40,8 @@
                                 <td><?php echo e($education->views); ?></td>
                                 <td>
                                     <div class="btn-group" role="group" aria-label="">
-                                        
+                                    <a href="<?php echo e(route('Education.Show',$education->id)); ?>"
+                            class=" btn btn-rounded btn-info btn-sm m-0">مشاهده</a>
                                         <a data-id="<?php echo e($education->id); ?>"
                                             class="delete text-white btn btn-rounded btn-danger btn-sm m-0">حذف</a>
                                     </div>
