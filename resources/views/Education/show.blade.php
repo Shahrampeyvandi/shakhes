@@ -16,7 +16,7 @@
         <div class="card-body">
            @if($education->image)
             <div>
-                <img width="100%" src="{{$education->image}}" alt="">
+                <img width="100%" src="{{route('BaseUrl')}}/pictures/{{$education->image}}" alt="">
             </div>
            @endif
             <div class="desciption">
