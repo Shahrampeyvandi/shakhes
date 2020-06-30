@@ -25,12 +25,12 @@ class EducationController extends Controller
             }
 
             foreach ($educations as $key => $education) {
+                $item['id'] = $education->id;
                 $item['title'] = $education->title;
                 $item['description'] = $education->description;
                 $item['section'] = $education->section;
                 $item['image'] = $education->image;
                 $item['views'] = $education->views;
-                $item['id'] = $education->id;
                 $items['items'][] = $item;
             }
             $all[] = array_merge($array, $items);
@@ -57,7 +57,7 @@ class EducationController extends Controller
         $array['image'] = $education->image;
         $array['views'] = $education->views;
 
-        return \response()->json(['data' => $array], 200);
+        return \response()->json( $array, 200);
     }
 
 }
