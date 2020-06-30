@@ -61,6 +61,7 @@ Route::get('/education/add', 'EducationController@Add')->name('Education.Add');
 Route::post('/education/add', 'EducationController@Save')->name('Education.Add');
 Route::post('/education/delete', 'EducationController@Delete');
 Route::get('/education/list', 'EducationController@List')->name('Education.List');
+Route::get('/education/{id}', 'EducationController@Show')->name('Education.Show');
 
 
 
