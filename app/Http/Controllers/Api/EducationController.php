@@ -21,7 +21,7 @@ class EducationController extends Controller
             $items = [];
             $educations = Education::where('category_id', $cat->id)->get();
             if (count($educations) == 0) {
-                return \response()->json(['data' => 'هیچ آموزشی پیدا نشد'], 401);
+                continue;
             }
 
             foreach ($educations as $key => $education) {
