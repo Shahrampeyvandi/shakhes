@@ -28,7 +28,7 @@ class EducationController extends Controller
             $picextension = $request->file('image')->getClientOriginalExtension();
             $fileName = date("Y-m-d") . '_' . time() . '.' . $picextension;
             $request->file('image')->move($destinationPath, $fileName);
-            $picPath = "$destinationPath/$fileName";
+            $picPath = "educations/$fileName";
         } else {
             $picPath = '';
         }
@@ -51,7 +51,7 @@ class EducationController extends Controller
             ]);
         }
 
-        return back();
+        return redirect()->route('Education.List');
     }
 
     public function UploadImage()

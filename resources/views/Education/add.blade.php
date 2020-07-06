@@ -46,7 +46,7 @@
                         <div class="col-md-4 right-side">
                             <div class="cat">
                                 <h6 class="card-title">دسته بندی ها: </h6>
-                                <input type="text" required class="form-control mb-2" name="category" id="category"
+                                <input type="text"  class="form-control mb-2" name="category" id="category"
                                     placeholder="جدید">
                                 <button class="btn btn-outline-primary btn-sm mb-2"
                                     onclick="addCategory(event)">افزودن</button>
@@ -54,7 +54,9 @@
                                     @foreach ($categories as $key=>$category)
                                     <div class="custom-control custom-radio custom-control-inline">
                                         <input type="radio" id="{{$key+1}}" name="category" value="{{$category->name}}"
-                                            class="custom-control-input">
+                                            class="custom-control-input" @if (($key+1) == 1)
+                                                checked
+                                            @endif>
                                         <label class="custom-control-label" for="{{$key+1}}">{{$category->name}}</label>
                                     </div>
                                     @endforeach

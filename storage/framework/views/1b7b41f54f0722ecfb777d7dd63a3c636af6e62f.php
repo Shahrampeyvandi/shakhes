@@ -1,11 +1,7 @@
 <?php $__env->startSection('content'); ?>
 
-
-
 <main class="main-content">
     <div class="container-fluid">
-
-
         <div class="card">
             <div class="card-body">
                 <div class="card-title">
@@ -20,7 +16,7 @@
                             <h6 class="card-title">عنوان </h6>
                             <div class="row">
                                 <div class="form-group col-md-12">
-                                    <input type="text" class="form-control" name="title" id="title" placeholder="">
+                                    <input required type="text" class="form-control" name="title" id="title" placeholder="">
                                 </div>
 
                             </div>
