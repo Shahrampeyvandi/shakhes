@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use Carbon\Carbon;
-use App\Models\Namad\Namad;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Namad\Namad;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 
 class NamadsController extends Controller
@@ -31,21 +31,24 @@ class NamadsController extends Controller
     public function getnamad(Request $request)
     {
 
-        // $id = $request->id;
-        // $namad = Namad::find($id);
-        // $code = $namad->code;
-        
-        
-        $last_minutes =  Carbon::now()->subMinutes(1)->format('H:i');
-        if(substr($last_minutes,-2,1) == 0){
-           return str_replace(substr($last_minutes,-2,1),'',$last_minutes);
-        }
-        $allmarket = Redis::hgetall('IRB3TB630091')[$last_minutes];
-        return json_decode($allmarket, true);
+        $id = $request->id;
+        $namad = Namad::find($id);
+        $code = $namad->ir_code;
 
-        //     if(is_null(($namad))){
-        //         return response()->json(['error'=>'نماد مورد نظر پیدا نشد','data'=>[]],401);
-        //     }
+        $last_minutes = Carbon::now()->subMinutes(1)->format('H:i');
+        if (substr($last_minutes, -2, 1) == 0) {
+            $last_minutes = str_replace(substr($last_minutes, -2, 1), '', $last_minutes);
+        }
+        $redis_data = Redis::hgetall($code)['20:53'];
+        $data_obj = json_decode($redis_data, true);
+
+        if (is_null(($data_obj))) {
+            return response()->json(['error' => 'نماد مورد نظر پیدا نشد', 'data' => []], 401);
+        }
+        $data['final_price_value'] = $data_obj["pl"];
+        $data['final_price_percent'] = $data_obj["plp"];
+        $data['last_price_status'] = $data_obj["plp"] > 0 ? '1' : '0';
+        $data['holding'] = 0;
         //     $namad['final_price_value'] = $report=$namad->dailyReports()->latest()->first()  ? $namad->dailyReports()->latest()->first()->last_price_value : null;
         //     $namad['final_price_percent'] = $report=$namad->dailyReports()->latest()->first() ? $namad->dailyReports()->latest()->first()->final_price_percent : null;
         //     $namad['last_price_status'] = $report=$namad->dailyReports()->latest()->first() ? $namad->dailyReports()->latest()->first()->last_price_status : null;
@@ -60,8 +63,10 @@ class NamadsController extends Controller
         //     $namad['holding'] = 0;
 
         //   $all =  array_merge($namad->toArray(),$namad->getNamadNotifications());
+        
+        $namadnotifications = $namad->getNamadNotifications();
 
-        //     return response()->json($all,200);
+        return response()->json(array_merge($data, $namadnotifications), 200);
 
     }
 
