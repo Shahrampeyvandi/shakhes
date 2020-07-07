@@ -39,7 +39,7 @@ class NamadsController extends Controller
         if (substr($last_minutes, -2, 1) == 0) {
             $last_minutes = str_replace(substr($last_minutes, -2, 1), '', $last_minutes);
         }
-        $redis_data = Redis::hgetall($code)['20:53'];
+        $redis_data = Redis::hgetall($code)[$last_minutes];
         $data_obj = json_decode($redis_data, true);
 
         if (is_null(($data_obj))) {
@@ -63,7 +63,7 @@ class NamadsController extends Controller
         //     $namad['holding'] = 0;
 
         //   $all =  array_merge($namad->toArray(),$namad->getNamadNotifications());
-        
+
         $namadnotifications = $namad->getNamadNotifications();
 
         return response()->json(array_merge($data, $namadnotifications), 200);
