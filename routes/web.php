@@ -75,7 +75,7 @@ Route::post('panel/upload-image', 'EducationController@UploadImage')->name('Uplo
 Route::post('/getcapitalincreases', 'Ajax\CapitalIncreaseController@getCapitalIncreases')->name('getCapitalIncreases');
 
 
-
+Route::get('/getdata','RedisController@getmain');
 
 
 

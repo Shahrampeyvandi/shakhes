@@ -21,9 +21,14 @@ class RedisController extends Controller
         //     echo '</br>';
 
         // }
-        $user = Redis::hgetall('ID');
+        $allmarket = Redis::hgetall('IRB3TB630091')['13:42'];
         //$user = json_decode(end($user), true);
-        dd($user);
+        return $allmarket;
+        $all = [];
+        foreach ($allmarket as $key => $item) {
+            $item = [];
+
+        }
        // echo $user;
 
        
