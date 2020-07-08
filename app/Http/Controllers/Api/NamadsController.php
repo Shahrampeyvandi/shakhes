@@ -30,17 +30,71 @@ class NamadsController extends Controller
 
     public function getnamad(Request $request)
     {
+        
+   
+
+   $last_minutes = Carbon::now()->subMinutes(3)->format('H:i');
+        if (substr($last_minutes, -2, 1) == 0) {
+            $last_minutes = str_replace(substr($last_minutes, -2, 1), '', $last_minutes);
+        }
+        
+        /**
+         * get all namad data in last minutes
+         *  
+         $all = [];
+          $redis_data = Redis::hkeys("ID");
+          
+          foreach ($redis_data as $key => $item) {
+            $all[] = json_decode(Redis::hget($item,$last_minutes),true);
+        }
+        return response()->json($all);
+
+         */
+        
+         
+        /**
+         * 
+         * get ir_code all namads
+         *    
+          $all = [];
+          $redis_data = Redis::hkeys("ID");
+          
+          foreach ($redis_data as $key => $item) {
+             
+            $single = json_decode(Redis::hget($item,$last_minutes),true);
+            if(isset($single["l18"])){
+            $all[$item] = $single["l18"];
+            }
+            
+        }
+        return response()->json($all);
+         */
+    
+
+
+       /**
+        * 
+        * get all time data for namad sort by time
+
+         $all = [];
+          $redis_data = Redis::hgetall("IRO1SEFH0001");
+          ksort($redis_data);
+          foreach ($redis_data as $key => $item) {
+             $all[$key] = json_decode($item, true);
+          }
+          return response()->json($all);
+
+          */
+         
+
 
         $id = $request->id;
         $namad = Namad::find($id);
         $code = $namad->ir_code;
 
-        $last_minutes = Carbon::now()->subMinutes(1)->format('H:i');
-        if (substr($last_minutes, -2, 1) == 0) {
-            $last_minutes = str_replace(substr($last_minutes, -2, 1), '', $last_minutes);
-        }
-        $redis_data = Redis::hgetall($code)[$last_minutes];
-        $data_obj = json_decode($redis_data, true);
+       
+        $redis_data = Redis::hgetall('IRO9PNES4591')[$last_minutes];
+       return $data_obj = json_decode($redis_data, true);
 
         if (is_null(($data_obj))) {
             return response()->json(['error' => 'نماد مورد نظر پیدا نشد', 'data' => []], 401);
