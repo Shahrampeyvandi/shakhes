@@ -31,7 +31,6 @@ class NamadsController extends Controller
     public function getnamad(Request $request)
     {
         
-   
 
    $last_minutes = Carbon::now()->subMinutes(3)->format('H:i');
         if (substr($last_minutes, -2, 1) == 0) {
@@ -92,11 +91,11 @@ class NamadsController extends Controller
 
         $id = $request->id;
         $namad = Namad::find($id);
-        $code = $namad->ir_code;
+        $code = $namad->code;
 
        
-        $redis_data = Redis::hgetall('IRO9PNES4591')[$last_minutes];
-       return $data_obj = json_decode($redis_data, true);
+        $redis_data = Redis::hgetall($code)[$last_minutes];
+       $data_obj = json_decode($redis_data, true);
 
         if (is_null(($data_obj))) {
             return response()->json(['error' => 'نماد مورد نظر پیدا نشد', 'data' => []], 401);
