@@ -13,6 +13,7 @@ use App\Models\VolumeTrade;
 use App\Setting;
 use Carbon\Carbon;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Redis;
 
 class MembersDataController extends Controller
 {
@@ -49,16 +50,23 @@ class MembersDataController extends Controller
     $member = $this->token($request->header('Authorization'));
     // $member=Member::find(2);
 
-    $namads_array = $member->namads;
 
+    $namads_array = $member->namads;
+    $last_minutes = Carbon::now()->subMinutes(3)->format('H:i');
+        if (substr($last_minutes, -2, 1) == 0) {
+            $last_minutes = str_replace(substr($last_minutes, -2, 1), '', $last_minutes); // 12:02 => 12:2
+        }
 
     $array = [];
     foreach ($namads_array as $key => $namad_data) {
+      $redis_namad_data = json_decode(Redis::hget($namad_data->code,'16:20:47'),true);
       $array[$key]['id'] = $namad_data->id;
       $array[$key]['symbol'] = $namad_data->symbol;
-      $array[$key]['final_price_value'] = $namad_data->dailyReports()->latest()->first()->last_price_value;
-      $array[$key]['final_price_percent'] = $namad_data->dailyReports()->latest()->first()->final_price_percent;
-      $array[$key]['last_price_status'] = $namad_data->dailyReports()->latest()->first()->last_price_status;
+      $array[$key]['final_price_value'] = $redis_namad_data['pl'];
+      $array[$key]['final_price_percent'] = $redis_namad_data['plp'];
+      $array[$key]['last_price_change'] = $redis_namad_data['plc'];
+      $array[$key]['last_price_status'] = $redis_namad_data['plc'] > 0 ? '1' : '0';
+
     }
 
     return response()->json(

@@ -37,18 +37,8 @@ class NamadsController extends Controller
         if (substr($last_minutes, -2, 1) == 0) {
             $last_minutes = str_replace(substr($last_minutes, -2, 1), '', $last_minutes);
         }
-         $all = [];
-          $redis_data = Redis::hkeys("ID");
-          
-          foreach ($redis_data as $key => $item) {
-             
-            $single = json_decode(Redis::hget($item,'10:44'),true);
-            
-           array_push($all,$single);
-            
-            
-        }
-        return response()->json(count($all));
+
+        
     //    return $redis_data =count(Redis::hkeys("ID"));
         /**
          * get all namad data in last minutes
