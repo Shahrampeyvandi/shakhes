@@ -56,3 +56,5 @@ Route::get('/education/addview/{id}', 'Api\EducationController@addViewCount');
 Route::get('/education/{id}', 'Api\EducationController@view'); 
 
 
+// market routes
+Route::get('/shakhes', 'Api\MarketController@shackes'); 

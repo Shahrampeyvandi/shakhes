@@ -78,5 +78,5 @@ Route::post('/getcapitalincreases', 'Ajax\CapitalIncreaseController@getCapitalIn
 Route::get('/getdata','RedisController@getmain');
 
 
-
+Route::get('/shakhes','RedisController@shakhes');
 

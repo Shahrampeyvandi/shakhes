@@ -1,43 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
 use Goutte;
-class RedisController extends Controller
+
+class MarketController extends Controller
 {
-    public function getmain(){
-        //$redis = Redis::connection();
-        $values = Redis::command('keys', ['*']);
-        // dd($values);
-
-        // foreach($values as $vla){
-        //     $data = Redis::hgetall($vla);
-        //     $data = json_decode(end($data), true);
-
-        //     //dd($data);
-        //     echo $data['l30'];
-        //     echo '</br>';
-
-        // }
-        $allmarket = Redis::hgetall('IRB3TB630091')['13:42'];
-        //$user = json_decode(end($user), true);
-        return $allmarket;
-        $all = [];
-        foreach ($allmarket as $key => $item) {
-            $item = [];
-
-        }
-       // echo $user;
-
-       
-
-    }
-
-    public function shakhes()
+    public function shackes()
     {
-         $inscode = [
+        
+        $inscode = [
             '32097828799138957' => 'شاخص کل',
             '5798407779416661' => 'شاخص قیمت',
             '67130298613737946' => 'شاخص کل(هم وزن)',
@@ -54,7 +28,7 @@ class RedisController extends Controller
             $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=15131J&i=' . $key . '');
             
             $crawler->filter('#MainContent')->each(function ($node) use ($name, $array, $all) {
-          
+                return 'dfs';
                 $last_val = $node->filter('tr:contains("آخرین مقدار شاخص") td:nth-of-type(2)')->text();
                 $high_val = $node->filter('tr:contains("بیشترین مقدار روز") td:nth-of-type(2)')->text();
                 $low_val = $node->filter('tr:contains("کمترین مقدار روز") td:nth-of-type(2)')->text();
@@ -68,8 +42,7 @@ class RedisController extends Controller
 
                 $percent_change = ($last_val - $prev_val) * 100 / $prev_val;
                 $array[$name] = $last_val;
-             
-              
+                return response()->json($last_val,200);
                 $all[] = $array;
                 // DB::table('market')->insert([
                 //     'name' => $name,
