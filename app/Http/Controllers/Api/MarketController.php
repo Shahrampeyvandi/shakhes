@@ -38,7 +38,7 @@ class MarketController extends Controller
 
     public function shackes()
     {
-        $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=778253364357513');
+        $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=50792786683910016');
         // $crawler->filter('#MainContent')->each(function ($node) {
             
         //     return $node->text();
@@ -48,15 +48,19 @@ class MarketController extends Controller
    $explode = \explode(',',$all);
     foreach ($explode as $key => $value) {
         if(strstr($value,'QTotTran5JAvg')) {
-            $array['monthavg'] = $value;
+            
             preg_match('/=\'(\d+)/', $value, $matches);
-            return $matches[1];
+             $array['monthavg'] = $matches[1];
 
         }
     }
+
 foreach ($explode as $key => $value) {
         if(strstr($value,'EstimatedEPS')) {
             $array['eps'] = $value;
+            preg_match('/=\'(\d+)/', $value, $matches);
+            $array['eps'] =  $matches[1];
+           
         }
     }
     
