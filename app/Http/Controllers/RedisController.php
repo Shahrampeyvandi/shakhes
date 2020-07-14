@@ -37,7 +37,26 @@ class RedisController extends Controller
 
     public function shakhes()
     {
-         $inscode = [
+        
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+        $inscode = [
             '32097828799138957' => 'شاخص کل',
             '5798407779416661' => 'شاخص قیمت',
             '67130298613737946' => 'شاخص کل(هم وزن)',
@@ -53,7 +72,7 @@ class RedisController extends Controller
 
             $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=15131J&i=' . $key . '');
             
-            $crawler->filter('#MainContent')->each(function ($node) use ($name, $array, $all) {
+            $crawler->filter('#MainContent')->each(function ($node) use ($key, &$array, &$all) {
           
                 $last_val = $node->filter('tr:contains("آخرین مقدار شاخص") td:nth-of-type(2)')->text();
                 $high_val = $node->filter('tr:contains("بیشترین مقدار روز") td:nth-of-type(2)')->text();
@@ -66,24 +85,22 @@ class RedisController extends Controller
                 $high_val = str_replace(',', '', $high_val);
                 $low_val = str_replace(',', '', $low_val);
 
+
                 $percent_change = ($last_val - $prev_val) * 100 / $prev_val;
-                $array[$name] = $last_val;
-             
-              
-                $all[] = $array;
-                // DB::table('market')->insert([
-                //     'name' => $name,
-                //     'high_val' => $high_val,
-                //     'low_val' => $low_val,
-                //     'last_val' => $last_val,
-                //     'time' => $time,
-                //     'prev_val' => $prev_val,
-                //     'change_val' => $last_val - $prev_val,
-                //     'percent_change' => number_format((float) $percent_change, 2, '.', ''),
-                // ]);
+            
+              $array['last_val']  = $last_val;
+              $array['prev_val'] = $prev_val;
+              $array['high_val'] = $high_val;
+              $array['low_val'] = $low_val;
+              $array['percent_change'] = number_format((float) $percent_change, 2, '.', '');
+
+                $all[$key] = $array;
+                
+                
             });
 
         }
+        dd($all);
         return response()->json($all,200);
     }
 }
