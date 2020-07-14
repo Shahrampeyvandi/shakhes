@@ -94,7 +94,7 @@ class NamadsController extends Controller
         $code = $namad->code;
 
        
-        $redis_data = Redis::hgetall($code)[$last_minutes];
+       $redis_data = Redis::hgetall($code)[$last_minutes];
        $data_obj = json_decode($redis_data, true);
 
         if (is_null(($data_obj))) {
