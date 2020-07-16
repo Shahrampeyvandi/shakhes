@@ -12,113 +12,78 @@ class MarketController extends Controller
     public function getNamad()
     {
 
-        $url = 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=778253364357513&c=57';
-        $crawler = Goutte::request('GET', $url);
-        $array = [];
-        $all = [];
-        $crawler->filter('td:nth-of-type(1) a')->each(function ($node) use (&$array, &$all) {
+        $id = request()->id;
+        $inscode = Namad::find($id);
+        if ($namad) {
+            $inscode = $namad->inscode;
+            $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=' . $inscode . '&c=57');
+            $all = \strip_tags($crawler->html());
 
-            $symbol = $node->attr('href');
-            if ($symbol) {
-                $parse = parse_url($symbol);
-                parse_str($parse['query'], $query);
-                $inscode = $query['i'];
-            } else {
-                $inscode = '';
-            }
+            $explode_all = explode(';', $all);
+            $main_data = $explode_all[0];
+            $buy_sell = $explode_all[4];
+            $orders = $explode_all[2];
 
-            $array[] = $inscode;
-            // get symbol data from redis with $inscode's
+            $explode_orders = explode('@', $orders);
+            $array['orders'][] = array('type' => 'buy', 'order' => '1', 'tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2]);
+            $array['orders'][] = array('type' => 'buy', 'order' => '2', 'tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7]);
+            $array['orders'][] = array('type' => 'buy', 'order' => '3', 'tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12]);
+            $array['orders'][] = array('type' => 'sell', 'order' => '1', 'tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3]);
+            $array['orders'][] = array('type' => 'sell', 'order' => '2', 'tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8]);
+            $array['orders'][] = array('type' => 'sell', 'order' => '3', 'tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13]);
 
-        });
-        return response()->json($array, 200);
+            $array['personbuy'] = explode(',', $buy_sell)[0];
+            $array['legalbuy'] = explode(',', $buy_sell)[1];
+            $array['personsell'] = explode(',', $buy_sell)[3];
+            $array['legalsell'] = explode(',', $buy_sell)[4];
+            $array['personbuycount'] = explode(',', $buy_sell)[5];
+            $array['legalbuycount'] = explode(',', $buy_sell)[6];
+            $array['personsellcount'] = explode(',', $buy_sell)[8];
+            $array['legalsellcount'] = explode(',', $buy_sell)[9];
+
+            $array['pl'] = explode(',', $main_data)[2];
+            $array['pc'] = explode(',', $main_data)[3];
+            $array['pf'] = explode(',', $main_data)[4];
+            $array['py'] = explode(',', $main_data)[5];
+            $array['pmax'] = explode(',', $main_data)[6];
+            $array['pmin'] = explode(',', $main_data)[7];
+            $array['pmin'] = explode(',', $main_data)[8];
+            $array['tradevol'] = explode(',', $main_data)[9];
+            $array['tradecash'] = explode(',', $main_data)[10];
+
+
+            $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=' . $inscode . '');
+            $all = \strip_tags($crawler->html());
+            $explode = \explode(',', $all);
+
+            preg_match('/=\'?(\d+)/', $explode[23], $matches);
+            $array['flow'] = count($matches) ? $matches[1] : '';
+            preg_match('/\'?(\d+)/', $explode[24], $matches);
+            $array['ID'] = count($matches) ? $matches[1] : '';
+            preg_match('/=\'?(\d+)/', $explode[26], $matches);
+            $array['BaseVol'] = count($matches) ? $matches[1] : '';
+            preg_match('/\'?(\d+)/', $explode[27], $matches);
+            $array['EPS'] = count($matches) ? $matches[1] : '';
+
+            preg_match('/=\'?(\d+)/', $explode[38], $matches);
+            $array['minweek'] = count($matches) ? $matches[1] : '';
+            preg_match('/=\'?(\d+)/', $explode[39], $matches);
+            $array['maxweek'] = count($matches) ? $matches[1] : '';
+            preg_match('/=\'?(\d+)/', $explode[42], $matches);
+            $array['monthAVG'] = count($matches) ? $matches[1] : '';
+            preg_match('/\'?(\d+)/', $explode[43], $matches);
+            $array['groupPE'] = count($matches) ? $matches[1] : '';
+            preg_match('/=\'?(\d+)/', $explode[44], $matches);
+            $array['sahamShenavar'] = count($matches) ? $matches[1] : '';
+
+            return response()->json($array, 200);
+        }
+
     }
 
     public function shackes()
     {
-        $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=44818950263583523');
-        // $crawler->filter('#MainContent')->each(function ($node) {
-
-        //     return $node->text();
-        // });
-        //  $adminhelp = file_get_contents('http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=778253364357513&c=57');
-        $all = \strip_tags($crawler->html());
-        $explode = \explode(',', $all);
-        // return array_search("'45128.00'", $explode);
-        preg_match('/\'?(\d+)/', $explode[51], $matches);
-        $array['pf'] = count($matches) ? $matches[1] : '';
-        preg_match('/\'?(\d+)/', $explode[48], $matches);
-        $array['pc'] = count($matches) ? $matches[1] : '';
-        preg_match('/\'?(\d+)/', $explode[49], $matches);
-        $array['py'] = count($matches) ? $matches[1] : '';
-        preg_match('/=\'?(\d+)/', $explode[23], $matches);
-        $array['flow'] = count($matches) ? $matches[1] : '';
-        preg_match('/\'?(\d+)/', $explode[24], $matches);
-        $array['ID'] = count($matches) ? $matches[1] : '';
-        preg_match('/=\'?(\d+)/', $explode[26], $matches);
-        $array['BaseVol'] = count($matches) ? $matches[1] : '';
-        preg_match('/\'?(\d+)/', $explode[27], $matches);
-        $array['EPS'] = count($matches) ? $matches[1] : '';
-        preg_match('/=\'?(\d+)/', $explode[34], $matches);
-        $array['pmax'] = count($matches) ? $matches[1] : '';
-        preg_match('/=\'?(\d+)/', $explode[35], $matches);
-        $array['pmin'] = count($matches) ? $matches[1] : '';
-        preg_match('/=\'?(\d+)/', $explode[38], $matches);
-        $array['minweek'] = count($matches) ? $matches[1] : '';
-        preg_match('/=\'?(\d+)/', $explode[39], $matches);
-        $array['maxweek'] = count($matches) ? $matches[1] : '';
-        preg_match('/=\'?(\d+)/', $explode[42], $matches);
-        $array['monthAVG'] = count($matches) ? $matches[1] : '';
-        preg_match('/\'?(\d+)/', $explode[43], $matches);
-        $array['groupPE'] = count($matches) ? $matches[1] : '';
-        preg_match('/=\'?(\d+)/', $explode[44], $matches);
-        $array['sahamShenavar'] = count($matches) ? $matches[1] : '';
-
-        return $array;
-
-        foreach ($explode as $key => $value) {
-            if (strstr($value, 'EstimatedEPS')) {
-                $array['eps'] = $value;
-                preg_match('/=\'(-?\d+)/', $value, $matches);
-                return $array['eps'] = $matches[1];
-
-            }
-        }
-        foreach ($explode as $key => $value) {
-            if (strstr($value, 'ZTitad')) {
-                $array['tedadsaham'] = $value;
-                preg_match('/=(\d+)/', $value, $matches);
-                return $array['tedadsaham'] = $matches[1];
-
-            }
-        }
-
-        foreach ($explode as $key => $value) {
-            if (strstr($value, 'QTotTran5JAvg')) {
-                preg_match('/=\'(\d+)/', $value, $matches);
-                $array['monthavg'] = $matches[1];
-
-            }
-        }
-
-        //  return \strpos($all,'QTotTran5JAvg',12);
-        // return \strripos($all,'QTotTran5JAvg');
-        return \substr($all, \strpos($all, 'QTotTran5JAvg'), 20);
-        return $explode_all = explode(';', $all);
-        $first_line = \substr($all, 0, \strpos($all, ';'));
-        $explode = \explode(',', $first_line);
-        $array['time'] = $explode[0];
-        $array['pl'] = $explode[2]; //akharin
-        $array['pc'] = $explode[3]; //payani
-        $array['pf'] = $explode[4]; // avalin
-        $array['py'] = $explode[5]; // diroz
-        $array['pmax'] = $explode[6]; //max
-        $array['pmin'] = $explode[7]; //min
-        $array['tno'] = $explode[8]; //tedad moamelat
-        $array['tvol'] = $explode[9]; // hajm moamelat
-        $array['tval'] = $explode[10]; // arzesh moamelat
-
-        return $array;
+        
 
         $inscode = [
             '32097828799138957' => 'شاخص کل',
