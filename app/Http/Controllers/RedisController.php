@@ -40,15 +40,8 @@ class RedisController extends Controller
 
     public function shakhes()
     {
-$client = new \GuzzleHttp\Client();
-$response = $client->request('GET', "http://www.tsetmc.com/tsev2/data/MarketWatchInit.aspx?h=0&r=0");
 
 
-  return $response->getBody(); 
-      
-
-
-  
         $inscode = [
             '32097828799138957' => 'شاخص کل',
             '5798407779416661' => 'شاخص قیمت',
