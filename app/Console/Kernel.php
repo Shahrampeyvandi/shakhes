@@ -27,7 +27,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 
-        $schedule->call(new ApiScheduler)->daily();
+
+        $schedule->call(new DailyReportScheduler)->daily();
 
         $schedule->call(new ApiScheduler)->everyMinute();
 

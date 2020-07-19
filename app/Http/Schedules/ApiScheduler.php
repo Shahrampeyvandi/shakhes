@@ -8,6 +8,7 @@ use App\Models\Namad\NamadsDailyReport;
 use Exception;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Cache;
+use Goutte;
 
 class ApiScheduler
 {
@@ -128,8 +129,9 @@ class ApiScheduler
         $dailyReport->groupPE = $array['groupPE'];
         $dailyReport->sahamShenavar = $array['sahamShenavar'];
 
-        Cache::store()->put($namad->inscode, $array, 600); // 10 Minutes
+        Cache::store()->put($namad->id, $array, 6000); // 10 Minutes
 
+        echo 'pomad = '.$namad->symbol.PHP_EOL;
 
         //$dailyReport->save();
 
