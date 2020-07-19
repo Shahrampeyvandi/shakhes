@@ -5,6 +5,7 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Http\Schedules\ApiScheduler;
+use App\Http\Schedules\DailyReportScheduler;
 
 class Kernel extends ConsoleKernel
 {
@@ -25,7 +26,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+
+        $schedule->call(new ApiScheduler)->daily();
+
         $schedule->call(new ApiScheduler)->everyMinute();
+
 
         // $schedule->command('inspire')
         //          ->hourly();

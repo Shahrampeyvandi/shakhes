@@ -9,7 +9,7 @@ use Exception;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Cache;
 
-class ApiScheduler
+class DailyReportScheduler
 {
 
 
@@ -19,7 +19,6 @@ class ApiScheduler
         $namads = Namad::all();
 
         foreach ($namads as $namad) {
-
             try {
                 $this->saveDailyReport($namad);
             } catch (Exception $e) {
@@ -128,10 +127,9 @@ class ApiScheduler
         $dailyReport->groupPE = $array['groupPE'];
         $dailyReport->sahamShenavar = $array['sahamShenavar'];
 
-        Cache::store()->put($namad->inscode, $array, 600); // 10 Minutes
+        //Cache::store()->put($namad->inscode, $array , 600); // 10 Minutes
 
 
-        //$dailyReport->save();
-
+        $dailyReport->save();
     }
 }
