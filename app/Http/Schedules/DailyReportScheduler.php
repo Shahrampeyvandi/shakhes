@@ -10,28 +10,33 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Cache;
 use Goutte;
 
-class ApiScheduler
+class DailyReportScheduler
 {
 
 
     public function __invoke()
     {
 
-        $namads = Namad::all();
+        $client = new \GuzzleHttp\Client();
+        $response = $client->request('GET', "http://www.tsetmc.com/tsev2/data/MarketWatchInit.aspx?h=0&r=0");
 
-        foreach ($namads as $namad) {
+        $datas = explode(';', explode('@', $response->getBody())[2]);
 
+        foreach ($datas as $data) {
             try {
-                $this->saveDailyReport($namad);
+                $datafor = explode(',', $data);
+                $this->saveDailyReport($datafor);
             } catch (Exception $e) {
             }
         }
     }
 
-    public function saveDailyReport($namad)
+    public function saveDailyReport($data)
     {
 
-        $inscode = $namad->inscode;
+        $inscode = $data[0];
+
+
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=' . $inscode . '&c=57');
         $all = \strip_tags($crawler->html());
 
@@ -40,8 +45,6 @@ class ApiScheduler
         $buy_sell = $explode_all[4];
         $orders = $explode_all[2];
 
-        $dailyReport = new NamadsDailyReport;
-        $dailyReport->namad_id = $namad->id;
 
 
         $explode_orders = explode('@', $orders);
@@ -49,13 +52,10 @@ class ApiScheduler
         $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7]);
         $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12]);
 
-        $dailyReport->lastbuys = serialize($array['lastbuys']);
-
         $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3]);
         $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8]);
         $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13]);
 
-        $dailyReport->lastsells = serialize($array['lastsells']);
 
         $array['personbuy'] = explode(',', $buy_sell)[0];
         $array['legalbuy'] = explode(',', $buy_sell)[1];
@@ -67,14 +67,7 @@ class ApiScheduler
         $array['legalsellcount'] = explode(',', $buy_sell)[9];
 
 
-        $dailyReport->personbuy = $array['personbuy'];
-        $dailyReport->legalbuy = $array['legalbuy'];
-        $dailyReport->personsell = $array['personsell'];
-        $dailyReport->legalsell = $array['legalsell'];
-        $dailyReport->personbuycount = $array['personbuycount'];
-        $dailyReport->legalbuycount = $array['legalbuycount'];
-        $dailyReport->personsellcount = $array['personsellcount'];
-        $dailyReport->legalsellcount = $array['legalsellcount'];
+
 
 
         $array['pl'] = explode(',', $main_data)[2];
@@ -87,14 +80,6 @@ class ApiScheduler
         $array['tradevol'] = explode(',', $main_data)[9];
         $array['tradecash'] = explode(',', $main_data)[10];
 
-        $dailyReport->pl = $array['pl'];
-        $dailyReport->pc = $array['pc'];
-        $dailyReport->pf = $array['pf'];
-        $dailyReport->py = $array['py'];
-        $dailyReport->pmax = $array['pmax'];
-        $dailyReport->pmin = $array['pmin'];
-        $dailyReport->tradevol = $array['tradevol'];
-        $dailyReport->tradecash = $array['tradecash'];
 
 
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=' . $inscode . '');
@@ -121,6 +106,25 @@ class ApiScheduler
         preg_match('/=\'?(\d+)/', $explode[44], $matches);
         $array['sahamShenavar'] = count($matches) ? $matches[1] : '';
 
+        $dailyReport = new NamadsDailyReport;
+        $dailyReport->lastbuys = serialize($array['lastbuys']);
+        $dailyReport->lastsells = serialize($array['lastsells']);
+        $dailyReport->personbuy = $array['personbuy'];
+        $dailyReport->legalbuy = $array['legalbuy'];
+        $dailyReport->personsell = $array['personsell'];
+        $dailyReport->legalsell = $array['legalsell'];
+        $dailyReport->personbuycount = $array['personbuycount'];
+        $dailyReport->legalbuycount = $array['legalbuycount'];
+        $dailyReport->personsellcount = $array['personsellcount'];
+        $dailyReport->legalsellcount = $array['legalsellcount'];
+        $dailyReport->pl = $array['pl'];
+        $dailyReport->pc = $array['pc'];
+        $dailyReport->pf = $array['pf'];
+        $dailyReport->py = $array['py'];
+        $dailyReport->pmax = $array['pmax'];
+        $dailyReport->pmin = $array['pmin'];
+        $dailyReport->tradevol = $array['tradevol'];
+        $dailyReport->tradecash = $array['tradecash'];
         $dailyReport->BaseVol = $array['BaseVol'];
         $dailyReport->EPS = $array['EPS'];
         $dailyReport->minweek = $array['minweek'];
@@ -129,11 +133,24 @@ class ApiScheduler
         $dailyReport->groupPE = $array['groupPE'];
         $dailyReport->sahamShenavar = $array['sahamShenavar'];
 
-        Cache::store()->put($namad->id, $array, 6000); // 10 Minutes
 
-        echo 'pomad = '.$namad->symbol.PHP_EOL;
+        $namad = Namad::where('inscode', $inscode)->first();
+        if (!$namad) {
+            $namad = new Namad;
+            $namad->symbol =$data[2];
+            $namad->name = $data[3];
+            $namad->inscode =  $inscode;
 
-        //$dailyReport->save();
+            if ($array['flow'] == 1) {
+                $namad->flow = 'بورس';
+            } else {
+                $namad->flow = 'فرابورس';
+            }
+            $namad->save();
+        }
 
+        echo 'namad = '.$namad->symbol.PHP_EOL;
+        $dailyReport->namad_id = $namad->id;
+        $dailyReport->save();
     }
 }

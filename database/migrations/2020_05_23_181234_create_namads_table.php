@@ -18,11 +18,10 @@ class CreateNamadsTable extends Migration
             $table->bigIncrements('id');
             $table->string('symbol');
             $table->string('name');
-            $table->string('market');
             $table->string('flow');
             $table->string('mahemali')->nullable();
             $table->boolean('is_holding')->default(0);
-            $table->string('code')->nullable();
+            $table->string('inscode')->nullable();
             $table->timestamps();
         });
         DB::table('namads')->insert(
