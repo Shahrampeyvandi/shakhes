@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Goutte;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
-use Goutte;
+use Illuminate\Support\Facades\Storage;
+
 class RedisController extends Controller
 {
     public function getmain(){
@@ -37,12 +39,16 @@ class RedisController extends Controller
 
     public function shakhes()
     {
-        
-       
-       
-       
-       
-       
+
+       $ch = curl_init();
+
+
+curl_setopt( $ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; U; Linux i686; pt-BR; rv:1.9.2.18) Gecko/20110628 Ubuntu/10.04 (lucid) Firefox/3.6.18' );
+curl_setopt( $ch, CURLOPT_URL, "http://www.tsetmc.com/tsev2/data/MarketWatchInit.aspx?h=0&r=0" );
+curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+$result = curl_exec ( $ch );
+curl_close ( $ch );
+echo $result;
        
        
        
