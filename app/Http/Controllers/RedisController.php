@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Goutte;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
 use App\Models\Namad\Namad;
 use App\Models\Namad\NamadsDailyReport;
+use Goutte;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Redis;
 
 class RedisController extends Controller
 {
@@ -38,25 +36,20 @@ class RedisController extends Controller
         }
         // echo $user;
 
-
-
     }
 
     public function shakhes()
     {
-       
+
         // $value = Cache::get('778253364357513');
         // dd($value);
-$client = new \GuzzleHttp\Client();
-$response = $client->request('GET', "http://www.tsetmc.com/tsev2/data/MarketWatchInit.aspx?h=0&r=0");
+        $client = new \GuzzleHttp\Client();
+        $response = $client->request('GET', "http://www.tsetmc.com/tsev2/data/MarketWatchInit.aspx?h=0&r=0");
 
-$data=explode(',',explode(';',explode('@',$response->getBody())[2])[222])[2]; 
+        $data = explode(',', explode(';', explode('@', $response->getBody())[2])[222])[2];
 
-  return $data;
-      
+        return $data;
 
-
-  
         $inscode = [
             '32097828799138957' => 'شاخص کل',
             '5798407779416661' => 'شاخص قیمت',
@@ -86,22 +79,21 @@ $data=explode(',',explode(';',explode('@',$response->getBody())[2])[222])[2];
         $buy_sell = $explode_all[4];
         $orders = $explode_all[2];
 
-        $dailyReport=new NamadsDailyReport;
-        $dailyReport->namad_id=$namad->id;
-
+        $dailyReport = new NamadsDailyReport;
+        $dailyReport->namad_id = $namad->id;
 
         $explode_orders = explode('@', $orders);
-        $array['lastbuys'][] = array( 'tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2]);
-        $array['lastbuys'][] = array( 'tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7]);
-        $array['lastbuys'][] = array( 'tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12]);
+        $array['lastbuys'][] = array('tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2]);
+        $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7]);
+        $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12]);
 
-        $dailyReport->lastbuys=serialize($array['lastbuys']);
+        $dailyReport->lastbuys = serialize($array['lastbuys']);
 
-        $array['lastsells'][] = array( 'tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3]);
+        $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3]);
         $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8]);
         $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13]);
-        
-        $dailyReport->lastsells=serialize($array['lastsells']);
+
+        $dailyReport->lastsells = serialize($array['lastsells']);
 
         $array['personbuy'] = explode(',', $buy_sell)[0];
         $array['legalbuy'] = explode(',', $buy_sell)[1];
@@ -112,16 +104,14 @@ $data=explode(',',explode(';',explode('@',$response->getBody())[2])[222])[2];
         $array['personsellcount'] = explode(',', $buy_sell)[8];
         $array['legalsellcount'] = explode(',', $buy_sell)[9];
 
-
-        $dailyReport->personbuy=$array['personbuy'];
-        $dailyReport->legalbuy=$array['legalbuy'];
-        $dailyReport->personsell=$array['personsell'];
-        $dailyReport->legalsell=$array['legalsell'];
-        $dailyReport->personbuycount=$array['personbuycount'];
-        $dailyReport->legalbuycount=$array['legalbuycount'];
-        $dailyReport->personsellcount=$array['personsellcount'];
-        $dailyReport->legalsellcount=$array['legalsellcount'];
-
+        $dailyReport->personbuy = $array['personbuy'];
+        $dailyReport->legalbuy = $array['legalbuy'];
+        $dailyReport->personsell = $array['personsell'];
+        $dailyReport->legalsell = $array['legalsell'];
+        $dailyReport->personbuycount = $array['personbuycount'];
+        $dailyReport->legalbuycount = $array['legalbuycount'];
+        $dailyReport->personsellcount = $array['personsellcount'];
+        $dailyReport->legalsellcount = $array['legalsellcount'];
 
         $array['pl'] = explode(',', $main_data)[2];
         $array['pc'] = explode(',', $main_data)[3];
@@ -133,15 +123,14 @@ $data=explode(',',explode(';',explode('@',$response->getBody())[2])[222])[2];
         $array['tradevol'] = explode(',', $main_data)[9];
         $array['tradecash'] = explode(',', $main_data)[10];
 
-        $dailyReport->pl=$array['pl'];
-        $dailyReport->pc=$array['pc'];
-        $dailyReport->pf=$array['pf'];
-        $dailyReport->py=$array['py'];
-        $dailyReport->pmax=$array['pmax'];
-        $dailyReport->pmin=$array['pmin'];
-        $dailyReport->tradevol=$array['tradevol'];
-        $dailyReport->tradecash=$array['tradecash'];
-
+        $dailyReport->pl = $array['pl'];
+        $dailyReport->pc = $array['pc'];
+        $dailyReport->pf = $array['pf'];
+        $dailyReport->py = $array['py'];
+        $dailyReport->pmax = $array['pmax'];
+        $dailyReport->pmin = $array['pmin'];
+        $dailyReport->tradevol = $array['tradevol'];
+        $dailyReport->tradecash = $array['tradecash'];
 
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=' . $inscode . '');
         $all = \strip_tags($crawler->html());
@@ -167,21 +156,19 @@ $data=explode(',',explode(';',explode('@',$response->getBody())[2])[222])[2];
         preg_match('/=\'?(\d+)/', $explode[44], $matches);
         $array['sahamShenavar'] = count($matches) ? $matches[1] : '';
 
-        $dailyReport->BaseVol=$array['BaseVol'];
-        $dailyReport->EPS=$array['EPS'];
-        $dailyReport->minweek=$array['minweek'];
-        $dailyReport->maxweek=$array['maxweek'];
-        $dailyReport->monthAVG=$array['monthAVG'];
-        $dailyReport->groupPE=$array['groupPE'];
-        $dailyReport->sahamShenavar=$array['sahamShenavar'];
+        $dailyReport->BaseVol = $array['BaseVol'];
+        $dailyReport->EPS = $array['EPS'];
+        $dailyReport->minweek = $array['minweek'];
+        $dailyReport->maxweek = $array['maxweek'];
+        $dailyReport->monthAVG = $array['monthAVG'];
+        $dailyReport->groupPE = $array['groupPE'];
+        $dailyReport->sahamShenavar = $array['sahamShenavar'];
 
-        Cache::store()->put($namad->inscode, $array , 600); // 10 Minutes
-
+        Cache::store()->put($namad->inscode, $array, 600); // 10 Minutes
 
         //$dailyReport->save();
 
         dd($array);
     }
 
-    
 }

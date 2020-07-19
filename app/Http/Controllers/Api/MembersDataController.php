@@ -41,6 +41,8 @@ class MembersDataController extends Controller
         );
     }
 
+
+
     public function namads(Request $request)
     {
         $member = $this->token($request->header('Authorization'));

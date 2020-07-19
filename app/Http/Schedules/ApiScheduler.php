@@ -132,7 +132,7 @@ class ApiScheduler
         Cache::store()->put($namad->id, $array, 6000); // 10 Minutes
 
         echo 'pomad = '.$namad->symbol.PHP_EOL;
-
+     
         //$dailyReport->save();
 
     }

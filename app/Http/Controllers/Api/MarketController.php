@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Namad\Namad;
 use Goutte;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class MarketController extends Controller
 {
@@ -51,40 +53,39 @@ class MarketController extends Controller
             $array['tradevol'] = explode(',', $main_data)[9];
             $array['tradecash'] = explode(',', $main_data)[10];
 
-        $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=9211775239375291');
-        $all = \strip_tags($crawler->html());
-        $explode = \explode(',', $all);
+            $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=9211775239375291');
+            $all = \strip_tags($crawler->html());
+            $explode = \explode(',', $all);
 
-        preg_match('/=\'?(\d+)/', $explode[25], $matches);
-        $array['Inscode'] = count($matches) ? $matches[1] : '';
-        preg_match('/=\'?(\d+)/', $explode[23], $matches);
-        $array['flow'] = count($matches) ? $matches[1] : '';
-        preg_match('/\'?(\d+)/', $explode[24], $matches);
-        $array['ID'] = count($matches) ? $matches[1] : '';
-        preg_match('/=\'?(\d+)/', $explode[26], $matches);
-        $array['BaseVol'] = count($matches) ? $matches[1] : '';
-        preg_match('/\'?(\d+)/', $explode[27], $matches);
-        $array['EPS'] = count($matches) ? $matches[1] : '';
+            preg_match('/=\'?(\d+)/', $explode[25], $matches);
+            $array['Inscode'] = count($matches) ? $matches[1] : '';
+            preg_match('/=\'?(\d+)/', $explode[23], $matches);
+            $array['flow'] = count($matches) ? $matches[1] : '';
+            preg_match('/\'?(\d+)/', $explode[24], $matches);
+            $array['ID'] = count($matches) ? $matches[1] : '';
+            preg_match('/=\'?(\d+)/', $explode[26], $matches);
+            $array['BaseVol'] = count($matches) ? $matches[1] : '';
+            preg_match('/\'?(\d+)/', $explode[27], $matches);
+            $array['EPS'] = count($matches) ? $matches[1] : '';
 
-        preg_match('/=\'?(\d+)/', $explode[38], $matches);
-        $array['minweek'] = count($matches) ? $matches[1] : '';
-        preg_match('/=\'?(\d+)/', $explode[39], $matches);
-        $array['maxweek'] = count($matches) ? $matches[1] : '';
-        preg_match('/=\'?(\d+)/', $explode[42], $matches);
-        $array['monthAVG'] = count($matches) ? $matches[1] : '';
-        preg_match('/\'?(\d+)/', $explode[43], $matches);
-        $array['groupPE'] = count($matches) ? $matches[1] : '';
-        preg_match('/=\'?(\d+)/', $explode[44], $matches);
-        $array['sahamShenavar'] = count($matches) ? $matches[1] : '';
+            preg_match('/=\'?(\d+)/', $explode[38], $matches);
+            $array['minweek'] = count($matches) ? $matches[1] : '';
+            preg_match('/=\'?(\d+)/', $explode[39], $matches);
+            $array['maxweek'] = count($matches) ? $matches[1] : '';
+            preg_match('/=\'?(\d+)/', $explode[42], $matches);
+            $array['monthAVG'] = count($matches) ? $matches[1] : '';
+            preg_match('/\'?(\d+)/', $explode[43], $matches);
+            $array['groupPE'] = count($matches) ? $matches[1] : '';
+            preg_match('/=\'?(\d+)/', $explode[44], $matches);
+            $array['sahamShenavar'] = count($matches) ? $matches[1] : '';
 
-        return response()->json($array, 200);
+            return response()->json($array, 200);
         }
 
     }
 
     public function shackes()
     {
-        
 
         $inscode = [
             '32097828799138957' => 'شاخص کل',
@@ -131,7 +132,7 @@ class MarketController extends Controller
         }
 
         return response()->json([
-            'data'=>$all
+            'data' => $all,
         ], 200);
     }
 
@@ -152,12 +153,49 @@ class MarketController extends Controller
             } else {
                 $inscode = '';
             }
+            
 
             $array[] = $inscode;
             // get symbol data from redis with $inscode's
-
+            
         });
-        return response()->json($array, 200);
+    //  return sort($array);
+        // return $array;
+        $all = [];
+        foreach ($array as $key => $inscode) {
+            $namad = Namad::where('inscode', $inscode)->first();
+            if ($namad) {
+                $id = $namad->id;
+                $information = Cache::get($id);
+                // return $information;
+                if(!is_null($information)) {
+                if (array_key_exists('pl', $information) && array_key_exists('py', $information)) {
+                    $pl = $information['pl'];
+                    $py = $information['py'];
+                    if ($pl && $py) {
+                        $data['symbol'] = $namad->symbol;
+                        $data['name'] = $namad->name;
+                        $data['final_price_value'] = $pl;
+                        $data['final_price_percent'] = $py ? (($pl - $py) * 100) / $py : '';
+                        $data['last_price_change'] = $pl - $py;
+                        $data['last_price_status'] = ($pl - $py) > 0 ? '1' : '0';
+                    } else {
+                        $data['symbol'] = $namad->symbol;
+                        $data['name'] = $namad->name;
+                        $data['final_price_value'] = '';
+                        $data['final_price_percent'] = '';
+                        $data['last_price_change'] = '';
+                        $data['last_price_status'] = '';
+                    }
+
+                    $all[] = $data;
+                }
+
+            }
+        }
+
+        }
+        return response()->json($all, 200);
     }
 
     public function farabourceMostVisited()
