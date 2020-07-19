@@ -129,7 +129,9 @@ class MarketController extends Controller
 
         }
 
-        return response()->json($all, 200);
+        return response()->json([
+            'data'=>$all
+        ], 200);
     }
 
     public function bourseMostVisited()
@@ -180,4 +182,5 @@ class MarketController extends Controller
         });
         return response()->json($array, 200);
     }
+
 }
