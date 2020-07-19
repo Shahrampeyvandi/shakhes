@@ -51,32 +51,33 @@ class MarketController extends Controller
             $array['tradevol'] = explode(',', $main_data)[9];
             $array['tradecash'] = explode(',', $main_data)[10];
 
+        $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=9211775239375291');
+        $all = \strip_tags($crawler->html());
+        $explode = \explode(',', $all);
 
-            $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=' . $inscode . '');
-            $all = \strip_tags($crawler->html());
-            $explode = \explode(',', $all);
+        preg_match('/=\'?(\d+)/', $explode[25], $matches);
+        $array['Inscode'] = count($matches) ? $matches[1] : '';
+        preg_match('/=\'?(\d+)/', $explode[23], $matches);
+        $array['flow'] = count($matches) ? $matches[1] : '';
+        preg_match('/\'?(\d+)/', $explode[24], $matches);
+        $array['ID'] = count($matches) ? $matches[1] : '';
+        preg_match('/=\'?(\d+)/', $explode[26], $matches);
+        $array['BaseVol'] = count($matches) ? $matches[1] : '';
+        preg_match('/\'?(\d+)/', $explode[27], $matches);
+        $array['EPS'] = count($matches) ? $matches[1] : '';
 
-            preg_match('/=\'?(\d+)/', $explode[23], $matches);
-            $array['flow'] = count($matches) ? $matches[1] : '';
-            preg_match('/\'?(\d+)/', $explode[24], $matches);
-            $array['ID'] = count($matches) ? $matches[1] : '';
-            preg_match('/=\'?(\d+)/', $explode[26], $matches);
-            $array['BaseVol'] = count($matches) ? $matches[1] : '';
-            preg_match('/\'?(\d+)/', $explode[27], $matches);
-            $array['EPS'] = count($matches) ? $matches[1] : '';
+        preg_match('/=\'?(\d+)/', $explode[38], $matches);
+        $array['minweek'] = count($matches) ? $matches[1] : '';
+        preg_match('/=\'?(\d+)/', $explode[39], $matches);
+        $array['maxweek'] = count($matches) ? $matches[1] : '';
+        preg_match('/=\'?(\d+)/', $explode[42], $matches);
+        $array['monthAVG'] = count($matches) ? $matches[1] : '';
+        preg_match('/\'?(\d+)/', $explode[43], $matches);
+        $array['groupPE'] = count($matches) ? $matches[1] : '';
+        preg_match('/=\'?(\d+)/', $explode[44], $matches);
+        $array['sahamShenavar'] = count($matches) ? $matches[1] : '';
 
-            preg_match('/=\'?(\d+)/', $explode[38], $matches);
-            $array['minweek'] = count($matches) ? $matches[1] : '';
-            preg_match('/=\'?(\d+)/', $explode[39], $matches);
-            $array['maxweek'] = count($matches) ? $matches[1] : '';
-            preg_match('/=\'?(\d+)/', $explode[42], $matches);
-            $array['monthAVG'] = count($matches) ? $matches[1] : '';
-            preg_match('/\'?(\d+)/', $explode[43], $matches);
-            $array['groupPE'] = count($matches) ? $matches[1] : '';
-            preg_match('/=\'?(\d+)/', $explode[44], $matches);
-            $array['sahamShenavar'] = count($matches) ? $matches[1] : '';
-
-            return response()->json($array, 200);
+        return response()->json($array, 200);
         }
 
     }

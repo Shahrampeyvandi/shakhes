@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use Goutte;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
+<<<<<<< HEAD
 use Goutte;
 use App\Models\Namad\Namad;
 use App\Models\Namad\NamadsDailyReport;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
+=======
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
+>>>>>>> 51c8d21ca23a2fd4cefcf99900c54e27dfa7062d
 
 class RedisController extends Controller
 {
@@ -79,6 +85,24 @@ class RedisController extends Controller
         dd(explode(';',$data));
         // $value = Cache::get('778253364357513');
         // dd($value);
+$client = new \GuzzleHttp\Client();
+$response = $client->request('GET', "http://www.tsetmc.com/tsev2/data/MarketWatchInit.aspx?h=0&r=0");
+
+
+  return $response->getBody(); 
+      
+
+
+  
+        $inscode = [
+            '32097828799138957' => 'شاخص کل',
+            '5798407779416661' => 'شاخص قیمت',
+            '67130298613737946' => 'شاخص کل(هم وزن)',
+            '8384385859414435' => 'شاخص قیمت(هم وزن)',
+            '49579049405614711' => 'شاخص آزاد شناور',
+            '62752761908615603' => 'شاخص بازار اول',
+            '71704845530629737' => 'شاخص بازار دوم',
+        ];
 
         $namads = Namad::all();
 
