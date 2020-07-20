@@ -140,6 +140,54 @@ class MarketController extends Controller
     {
 
         $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151317&Type=MostVisited&Flow=1';
+        return $this->getFromTSE($url);
+    }
+
+    public function farabourceMostVisited()
+    {
+        $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151317&Type=MostVisited&Flow=2';
+        return $this->getFromTSE($url);
+    }
+
+    public function bourseEffectInShakhes()
+    {
+        $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151316&Flow=1';
+        return $this->getFromTSE($url);
+    }
+     public function farabourseEffectInShakhes()
+    {
+        $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151316&Flow=2';
+        return $this->getFromTSE($url);
+    }
+
+      public function bourseMostPriceIncreases()
+    {
+        $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151317&Type=PClosingTop&Flow=1';
+        return $this->getFromTSE($url);
+    }
+
+      public function farabourseMostPriceIncreases()
+    {
+        $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151317&Type=PClosingTop&Flow=2';
+        return $this->getFromTSE($url);
+    }
+
+      public function bourseMostPriceDecreases()
+    {
+        $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151317&Type=PClosingBtm&Flow=1';
+        return $this->getFromTSE($url);
+    }
+
+      public function farabourseMostPriceDecreases()
+    {
+        $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151317&Type=PClosingBtm&Flow=2';
+        return $this->getFromTSE($url);
+    }
+
+
+
+    private function getFromTSE($url)
+    {
         $crawler = Goutte::request('GET', $url);
         $array = [];
         $all = [];
@@ -153,13 +201,12 @@ class MarketController extends Controller
             } else {
                 $inscode = '';
             }
-            
 
             $array[] = $inscode;
             // get symbol data from redis with $inscode's
-            
+
         });
-    //  return sort($array);
+        //  return sort($array);
         // return $array;
         $all = [];
         foreach ($array as $key => $inscode) {
@@ -168,58 +215,33 @@ class MarketController extends Controller
                 $id = $namad->id;
                 $information = Cache::get($id);
                 // return $information;
-                if(!is_null($information)) {
-                if (array_key_exists('pl', $information) && array_key_exists('py', $information)) {
-                    $pl = $information['pl'];
-                    $py = $information['py'];
-                    if ($pl && $py) {
-                        $data['symbol'] = $namad->symbol;
-                        $data['name'] = $namad->name;
-                        $data['final_price_value'] = $pl;
-                        $data['final_price_percent'] = $py ? (($pl - $py) * 100) / $py : '';
-                        $data['last_price_change'] = $pl - $py;
-                        $data['last_price_status'] = ($pl - $py) > 0 ? '1' : '0';
-                    } else {
-                        $data['symbol'] = $namad->symbol;
-                        $data['name'] = $namad->name;
-                        $data['final_price_value'] = '';
-                        $data['final_price_percent'] = '';
-                        $data['last_price_change'] = '';
-                        $data['last_price_status'] = '';
+                if (!is_null($information)) {
+                    if (array_key_exists('pl', $information) && array_key_exists('py', $information)) {
+                        $pl = $information['pl'];
+                        $py = $information['py'];
+                        if ($pl && $py) {
+                            $data['symbol'] = $namad->symbol;
+                            $data['name'] = $namad->name;
+                            $data['final_price_value'] = $pl;
+                            $data['final_price_percent'] = $py ? (($pl - $py) * 100) / $py : '';
+                            $data['last_price_change'] = $pl - $py;
+                            $data['last_price_status'] = ($pl - $py) > 0 ? '1' : '0';
+                        } else {
+                            $data['symbol'] = $namad->symbol;
+                            $data['name'] = $namad->name;
+                            $data['final_price_value'] = '';
+                            $data['final_price_percent'] = '';
+                            $data['last_price_change'] = '';
+                            $data['last_price_status'] = '';
+                        }
+
+                        $all[] = $data;
                     }
 
-                    $all[] = $data;
                 }
-
             }
-        }
-
         }
         return response()->json($all, 200);
+
     }
-
-    public function farabourceMostVisited()
-    {
-        $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151317&Type=MostVisited&Flow=2';
-        $crawler = Goutte::request('GET', $url);
-        $array = [];
-        $all = [];
-        $crawler->filter('td:nth-of-type(1) a')->each(function ($node) use (&$array, &$all) {
-
-            $symbol = $node->attr('href');
-            if ($symbol) {
-                $parse = parse_url($symbol);
-                parse_str($parse['query'], $query);
-                $inscode = $query['i'];
-            } else {
-                $inscode = '';
-            }
-
-            $array[] = $inscode;
-            // get symbol data from redis with $inscode's
-
-        });
-        return response()->json($array, 200);
-    }
-
 }

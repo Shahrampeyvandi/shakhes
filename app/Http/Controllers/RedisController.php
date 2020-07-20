@@ -40,7 +40,7 @@ class RedisController extends Controller
 
     public function shakhes()
     {
-
+       
         // $value = Cache::get('778253364357513');
         // dd($value);
         $client = new \GuzzleHttp\Client();

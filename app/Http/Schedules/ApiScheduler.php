@@ -76,7 +76,7 @@ class ApiScheduler
         $dailyReport->personsellcount = $array['personsellcount'];
         $dailyReport->legalsellcount = $array['legalsellcount'];
 
-
+        $array['time']  = explode(',', $main_data)[0];
         $array['pl'] = explode(',', $main_data)[2];
         $array['pc'] = explode(',', $main_data)[3];
         $array['pf'] = explode(',', $main_data)[4];
@@ -129,7 +129,7 @@ class ApiScheduler
         $dailyReport->groupPE = $array['groupPE'];
         $dailyReport->sahamShenavar = $array['sahamShenavar'];
 
-        Cache::store()->put($namad->id, $array, 6000); // 10 Minutes
+        Cache::store()->put($namad->id, $array, 1000000); // 10 Minutes
 
         echo 'pomad = '.$namad->symbol.PHP_EOL;
      
