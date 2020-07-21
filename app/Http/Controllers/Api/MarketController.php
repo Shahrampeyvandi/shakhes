@@ -219,6 +219,7 @@ class MarketController extends Controller
                     if (array_key_exists('pl', $information) && array_key_exists('py', $information)) {
                         $pl = $information['pl'];
                         $py = $information['py'];
+                        $data['id'] = $namad->id;
                         if ($pl && $py) {
                             $data['symbol'] = $namad->symbol;
                             $data['name'] = $namad->name;
@@ -241,7 +242,7 @@ class MarketController extends Controller
                 }
             }
         }
-        return response()->json($all, 200);
+        return response()->json(['data'=>$all], 200);
 
     }
 }
