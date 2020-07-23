@@ -27,7 +27,7 @@ Route::get('/getalldata/{id}', 'Api\NamadsController@getalldata'); // افشای
 
 
 
-Route::get('/namad', 'Api\NamadsController@getnamad');
+
 Route::get('/namads/search', 'Api\NamadsController@search');
 
 
@@ -66,5 +66,4 @@ Route::get('/bourse/mostpriceincreases', 'Api\MarketController@bourseMostPriceIn
 Route::get('/farabourse/mostpriceincreases', 'Api\MarketController@farabourseMostPriceIncreases');
 Route::get('/bourse/mostpricedecreases', 'Api\MarketController@bourseMostPriceDecreases');
 Route::get('/farabourse/mostpricedecreases', 'Api\MarketController@farabourseMostPriceDecreases');
-
-
+Route::get('/namad', 'Api\NamadsController@getnamad');

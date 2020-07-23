@@ -7,6 +7,7 @@ use App\Models\Namad\Namad;
 use Goutte;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Morilog\Jalali\Jalalian;
 
 class MarketController extends Controller
 {
@@ -81,11 +82,22 @@ class MarketController extends Controller
 
             return response()->json($array, 200);
         }
-
     }
 
     public function shackes()
     {
+        $client = new \GuzzleHttp\Client();
+        $response = $client->request('GET', "http://www.tsetmc.com/tsev2/data/MarketWatchInit.aspx?h=0&r=0");
+        return  explode('@', $response->getBody())[1];
+      return  $datas = explode(',', explode('@', $response->getBody())[1]);
+
+
+         Cache::forever('shakhes','$all');
+
+        $day = Jalalian::forge('today')->format('%A'); // جمعه، 23 اسفند 97
+        $time = date('H:s');
+        $days = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه شنبه', 'چهار شنبه'];
+
 
         $inscode = [
             '32097828799138957' => 'شاخص کل',
@@ -98,38 +110,50 @@ class MarketController extends Controller
         ];
 
         $all = [];
-        foreach ($inscode as $key => $name) {
+        if (in_array($day, $days) && strtotime($time) >= '1595478600' &&  strtotime($time) <= '1595491140') {
+             foreach ($inscode as $key => $name) {
             $array = [];
 
             $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=15131J&i=' . $key . '');
 
-            $crawler->filter('#MainContent')->each(function ($node) use ($key, &$name, &$array, &$all) {
+            $crawler->filter('#MainContent')->each(function ($node) use ($key, &$name, &$array, &$all, &$current_time) {
 
                 $last_val = $node->filter('tr:contains("آخرین مقدار شاخص") td:nth-of-type(2)')->text();
-                $high_val = $node->filter('tr:contains("بیشترین مقدار روز") td:nth-of-type(2)')->text();
-                $low_val = $node->filter('tr:contains("کمترین مقدار روز") td:nth-of-type(2)')->text();
+                // $high_val = $node->filter('tr:contains("بیشترین مقدار روز") td:nth-of-type(2)')->text();
+                // $low_val = $node->filter('tr:contains("کمترین مقدار روز") td:nth-of-type(2)')->text();
                 $time = $node->filter('tr:contains("زمان انتشار") td:nth-of-type(2)')->text();
                 $prev_val = $node->filter('.silver.tbl tr:nth-of-type(1) td:nth-of-type(2)')->text();
 
                 $last_val = str_replace(',', '', $last_val);
-                $prev_val = str_replace(',', '', $prev_val);
-                $high_val = str_replace(',', '', $high_val);
-                $low_val = str_replace(',', '', $low_val);
+                $prev_val = str_replace(',', '', '1,916,194.10');
+                $value_change = abs($last_val - $prev_val);
+                if ($value_change !== 0) {
 
-                $percent_change = ($last_val - $prev_val) * 100 / $prev_val;
+                    $percent_change = ($value_change * 100) / $prev_val;
+                } else {
+                    $percent_change = 0;
+                }
+
+
                 $array['title'] = $name;
                 $array['inscode'] = $key;
                 $array['last_val'] = $last_val;
                 $array['prev_val'] = $prev_val;
-                $array['high_val'] = $high_val;
-                $array['low_val'] = $low_val;
+                $array['time'] = $time;
+                $array['value_change'] = number_format((float) $value_change, 2, '.', '');
+                // $array['percent_change'] = $percent_change;
                 $array['percent_change'] = number_format((float) $percent_change, 2, '.', '');
 
                 $all[] = $array;
-
             });
-
         }
+        
+        Cache::forever('shakhes',$all);
+
+        } else {
+            return 'false';
+        }
+       
 
         return response()->json([
             'data' => $all,
@@ -140,54 +164,59 @@ class MarketController extends Controller
     {
 
         $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151317&Type=MostVisited&Flow=1';
-        return $this->getFromTSE($url);
+        return $this->getFromTSE($url, 'boursemosetvisit');
     }
 
     public function farabourceMostVisited()
     {
         $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151317&Type=MostVisited&Flow=2';
-        return $this->getFromTSE($url);
+        return $this->getFromTSE($url, 'faraboursemostvisit');
     }
 
     public function bourseEffectInShakhes()
     {
         $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151316&Flow=1';
-        return $this->getFromTSE($url);
+        return $this->getFromTSE($url, 'bourseffectshakhes');
     }
-     public function farabourseEffectInShakhes()
+    public function farabourseEffectInShakhes()
     {
         $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151316&Flow=2';
-        return $this->getFromTSE($url);
+        return $this->getFromTSE($url, 'farabourseffectshakhes');
     }
 
-      public function bourseMostPriceIncreases()
+    public function bourseMostPriceIncreases()
     {
         $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151317&Type=PClosingTop&Flow=1';
-        return $this->getFromTSE($url);
+        return $this->getFromTSE($url, 'boursepriceincrease');
     }
 
-      public function farabourseMostPriceIncreases()
+    public function farabourseMostPriceIncreases()
     {
         $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151317&Type=PClosingTop&Flow=2';
-        return $this->getFromTSE($url);
+        return $this->getFromTSE($url, 'faraboursepriceincrease');
     }
 
-      public function bourseMostPriceDecreases()
+    public function bourseMostPriceDecreases()
     {
         $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151317&Type=PClosingBtm&Flow=1';
-        return $this->getFromTSE($url);
+        return $this->getFromTSE($url, 'boursepricedecrease');
     }
 
-      public function farabourseMostPriceDecreases()
+    public function farabourseMostPriceDecreases()
     {
         $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151317&Type=PClosingBtm&Flow=2';
-        return $this->getFromTSE($url);
+        return $this->getFromTSE($url, 'faraboursepricedecrease');
     }
 
 
 
-    private function getFromTSE($url)
+    private function getFromTSE($url, $idd)
     {
+        $information = Cache::get($idd);
+        if ($information) {
+            return $information;
+        }
+
         $crawler = Goutte::request('GET', $url);
         $array = [];
         $all = [];
@@ -224,7 +253,9 @@ class MarketController extends Controller
                             $data['symbol'] = $namad->symbol;
                             $data['name'] = $namad->name;
                             $data['final_price_value'] = $pl;
-                            $data['final_price_percent'] = $py ? (($pl - $py) * 100) / $py : '';
+                            $percent = (($pl - $py) * 100) / $py;
+                            $percent =  number_format((float)$percent, 2, '.', '');
+                            $data['final_price_percent'] = $percent;
                             $data['last_price_change'] = $pl - $py;
                             $data['last_price_status'] = ($pl - $py) > 0 ? '1' : '0';
                         } else {
@@ -238,11 +269,11 @@ class MarketController extends Controller
 
                         $all[] = $data;
                     }
-
                 }
             }
         }
-        return response()->json(['data'=>$all], 200);
 
+        Cache::store()->put($idd, $all, 100); // 10 Minutes
+        return response()->json(['data' => $all], 200);
     }
 }
