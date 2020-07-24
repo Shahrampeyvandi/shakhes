@@ -34,6 +34,11 @@ class NamadsController extends Controller
         $namad = Namad::find($request->id);
         if ($namad) {
             $information = Cache::get($namad->id);
+            $information['symbol']=$namad->symbol;
+            $information['name']=$namad->name;
+            $information['id']=$namad->id;
+            $information['flow']=$namad->flow;
+
             return response()->json($information, 200);
         } else {
             return response()->json('namad not found', 401);
