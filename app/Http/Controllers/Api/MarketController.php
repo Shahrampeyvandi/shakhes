@@ -16,7 +16,7 @@ class MarketController extends Controller
     {
 
         $id = request()->id;
-        $inscode = Namad::find($id);
+        $namad = Namad::find($id);
         if ($namad) {
             $inscode = $namad->inscode;
             $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=' . $inscode . '&c=57');
@@ -86,74 +86,62 @@ class MarketController extends Controller
 
     public function shackes()
     {
-        $client = new \GuzzleHttp\Client();
-        $response = $client->request('GET', "http://www.tsetmc.com/tsev2/data/MarketWatchInit.aspx?h=0&r=0");
-        return  explode('@', $response->getBody())[1];
-      return  $datas = explode(',', explode('@', $response->getBody())[1]);
 
+        if (Cache::has('shakhes')) {
 
-         Cache::forever('shakhes','$all');
-
-        $day = Jalalian::forge('today')->format('%A'); // جمعه، 23 اسفند 97
-        $time = date('H:s');
-        $days = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه شنبه', 'چهار شنبه'];
-
-
-        $inscode = [
-            '32097828799138957' => 'شاخص کل',
-            '5798407779416661' => 'شاخص قیمت',
-            '67130298613737946' => 'شاخص کل(هم وزن)',
-            '8384385859414435' => 'شاخص قیمت(هم وزن)',
-            '49579049405614711' => 'شاخص آزاد شناور',
-            '62752761908615603' => 'شاخص بازار اول',
-            '71704845530629737' => 'شاخص بازار دوم',
-        ];
-
+            return response()->json([
+                'data' => Cache::get('shakhes'),
+            ], 200);
+        }
+        $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151315&Flow=1';
         $all = [];
-        if (in_array($day, $days) && strtotime($time) >= '1595478600' &&  strtotime($time) <= '1595491140') {
-             foreach ($inscode as $key => $name) {
-            $array = [];
+        $crawler = Goutte::request('GET', $url);
+        $crawler->filter('table')->each(function ($node) use (&$all) {
+            $array['title'] = $node->filter('tr:nth-of-type(54) td')->text();
+            $array['time'] =  $node->filter('tr:nth-of-type(54) td:nth-of-type(2)')->text();
+            $array['last_val'] =  $node->filter('tr:nth-of-type(54) td:nth-of-type(3)')->text();
+            $array['value_change'] =  $node->filter('tr:nth-of-type(54) td:nth-of-type(4)')->text();
+            $array['percent_change'] =  $node->filter('tr:nth-of-type(54) td:nth-of-type(5) div')->text();
+            $all[] = $array;
+            $array['title'] = $node->filter('tr:nth-of-type(55) td')->text();
+            $array['time'] =  $node->filter('tr:nth-of-type(55) td:nth-of-type(2)')->text();
+            $array['last_val'] =  $node->filter('tr:nth-of-type(55) td:nth-of-type(3)')->text();
+            $array['value_change'] =  $node->filter('tr:nth-of-type(55) td:nth-of-type(4)')->text();
+            $array['percent_change'] =  $node->filter('tr:nth-of-type(55) td:nth-of-type(5) div')->text();
+            $all[] = $array;
+            $array['title'] = $node->filter('tr:nth-of-type(51) td')->text();
+            $array['time'] =  $node->filter('tr:nth-of-type(51) td:nth-of-type(2)')->text();
+            $array['last_val'] =  $node->filter('tr:nth-of-type(51) td:nth-of-type(3)')->text();
+            $array['value_change'] =  $node->filter('tr:nth-of-type(51) td:nth-of-type(4)')->text();
+            $array['percent_change'] =  $node->filter('tr:nth-of-type(51) td:nth-of-type(5) div')->text();
+            $all[] = $array;
+            $array['title'] = $node->filter('tr:nth-of-type(53) td')->text();
+            $array['time'] =  $node->filter('tr:nth-of-type(53) td:nth-of-type(2)')->text();
+            $array['last_val'] =  $node->filter('tr:nth-of-type(53) td:nth-of-type(3)')->text();
+            $array['value_change'] =  $node->filter('tr:nth-of-type(53) td:nth-of-type(4)')->text();
+            $array['percent_change'] =  $node->filter('tr:nth-of-type(53) td:nth-of-type(5) div')->text();
+            $all[] = $array;
+            $array['title'] = $node->filter('tr:nth-of-type(47) td')->text();
+            $array['time'] =  $node->filter('tr:nth-of-type(47) td:nth-of-type(2)')->text();
+            $array['last_val'] =  $node->filter('tr:nth-of-type(47) td:nth-of-type(3)')->text();
+            $array['value_change'] =  $node->filter('tr:nth-of-type(47) td:nth-of-type(4)')->text();
+            $array['percent_change'] =  $node->filter('tr:nth-of-type(47) td:nth-of-type(5) div')->text();
+            $all[] = $array;
+            $array['title'] = $node->filter('tr:nth-of-type(48) td')->text();
+            $array['time'] =  $node->filter('tr:nth-of-type(48) td:nth-of-type(2)')->text();
+            $array['last_val'] =  $node->filter('tr:nth-of-type(48) td:nth-of-type(3)')->text();
+            $array['value_change'] =  $node->filter('tr:nth-of-type(48) td:nth-of-type(4)')->text();
+            $array['percent_change'] =  $node->filter('tr:nth-of-type(48) td:nth-of-type(5) div')->text();
+            $all[] = $array;
+            $array['title'] = $node->filter('tr:nth-of-type(46) td')->text();
+            $array['time'] =  $node->filter('tr:nth-of-type(46) td:nth-of-type(2)')->text();
+            $array['last_val'] =  $node->filter('tr:nth-of-type(46) td:nth-of-type(3)')->text();
+            $array['value_change'] =  $node->filter('tr:nth-of-type(46) td:nth-of-type(4)')->text();
+            $array['percent_change'] =  $node->filter('tr:nth-of-type(46) td:nth-of-type(5) div')->text();
+            $all[] = $array;
+        });
 
-            $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=15131J&i=' . $key . '');
-
-            $crawler->filter('#MainContent')->each(function ($node) use ($key, &$name, &$array, &$all, &$current_time) {
-
-                $last_val = $node->filter('tr:contains("آخرین مقدار شاخص") td:nth-of-type(2)')->text();
-                // $high_val = $node->filter('tr:contains("بیشترین مقدار روز") td:nth-of-type(2)')->text();
-                // $low_val = $node->filter('tr:contains("کمترین مقدار روز") td:nth-of-type(2)')->text();
-                $time = $node->filter('tr:contains("زمان انتشار") td:nth-of-type(2)')->text();
-                $prev_val = $node->filter('.silver.tbl tr:nth-of-type(1) td:nth-of-type(2)')->text();
-
-                $last_val = str_replace(',', '', $last_val);
-                $prev_val = str_replace(',', '', '1,916,194.10');
-                $value_change = abs($last_val - $prev_val);
-                if ($value_change !== 0) {
-
-                    $percent_change = ($value_change * 100) / $prev_val;
-                } else {
-                    $percent_change = 0;
-                }
-
-
-                $array['title'] = $name;
-                $array['inscode'] = $key;
-                $array['last_val'] = $last_val;
-                $array['prev_val'] = $prev_val;
-                $array['time'] = $time;
-                $array['value_change'] = number_format((float) $value_change, 2, '.', '');
-                // $array['percent_change'] = $percent_change;
-                $array['percent_change'] = number_format((float) $percent_change, 2, '.', '');
-
-                $all[] = $array;
-            });
-        }
-        
-        Cache::forever('shakhes',$all);
-
-        } else {
-            return 'false';
-        }
-       
+        Cache::put('shakhes', $all, 5000);
 
         return response()->json([
             'data' => $all,
