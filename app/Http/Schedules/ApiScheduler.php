@@ -129,7 +129,7 @@ class ApiScheduler
         $dailyReport->groupPE = $array['groupPE'];
         $dailyReport->sahamShenavar = $array['sahamShenavar'];
 
-        Cache::store()->put($namad->id, $array, 1000000); // 10 Minutes
+        Cache::store()->put($namad->id, $array, 10000000); // 10 Minutes
 
         echo 'pomad = '.$namad->symbol.PHP_EOL;
      
