@@ -83,7 +83,7 @@ class ApiScheduler
         $array['py'] = explode(',', $main_data)[5];
         $array['pmax'] = explode(',', $main_data)[6];
         $array['pmin'] = explode(',', $main_data)[7];
-        $array['pmin'] = explode(',', $main_data)[8];
+        $array['tradecount'] = explode(',', $main_data)[8];
         $array['tradevol'] = explode(',', $main_data)[9];
         $array['tradecash'] = explode(',', $main_data)[10];
 
