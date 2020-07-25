@@ -28,6 +28,11 @@ class MarketController extends Controller
     public function getNamad(Request $request)
     {
 
+    
+    
+
+
+
         $namad = Namad::find($request->id);
         if ($namad) {
             $information = Cache::get($namad->id);

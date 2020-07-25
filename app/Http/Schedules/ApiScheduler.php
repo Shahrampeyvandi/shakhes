@@ -67,6 +67,45 @@ class ApiScheduler
         $array['legalsellcount'] = explode(',', $buy_sell)[9];
 
 
+
+        if ($array['personbuy'] &&  $array['personbuycount'] &&  $array['personsell'] && $array['personsellcount']) {
+            $array['person_buy_power'] = number_format((float)(($array['personbuy'] / $array['personbuycount']) / (($array['personbuy'] / $array['personbuycount']) + ($array['personsell'] / $array['personsellcount']))), 2, '.', '');
+            $array['person_sell_power'] = number_format((float)(100 - $array['person_buy_power']), 2, '.', '');
+        } else {
+            $array['person_buy_power'] = 0;
+            $array['person_sell_power'] = 0;
+        }
+
+
+
+        $totalbuy =  explode(',', $buy_sell)[0] + explode(',', $buy_sell)[1];
+        $totalsell =  explode(',', $buy_sell)[3] + explode(',', $buy_sell)[4];
+
+        if ($totalbuy && $buy_sell) {
+            $array['percent_person_buy'] = number_format((float)((explode(',', $buy_sell)[0] * 100) / $totalbuy), 2, '.', '');
+        } else {
+            $array['percent_person_buy'] = 0;
+        }
+        if ($totalbuy && $buy_sell) {
+            $array['percent_legal_buy'] = number_format((float)((explode(',', $buy_sell)[1] * 100) / $totalbuy), 2, '.', '');
+        } else {
+            $array['percent_legal_buy'] = 0;
+        }
+
+        if ($totalsell && $buy_sell) {
+            $array['percent_person_sell'] = number_format((float)((explode(',', $buy_sell)[3] * 100) / $totalsell), 2, '.', '');
+        } else {
+            $array['percent_person_sell'] = 0;
+        }
+        if ($totalsell && $buy_sell) {
+            $array['percent_legal_sell'] = number_format((float)((explode(',', $buy_sell)[4] * 100) / $totalsell), 2, '.', '');
+        } else {
+
+            $array['percent_legal_sell'] = 0;
+        }
+
+
+
         $dailyReport->personbuy = $array['personbuy'];
         $dailyReport->legalbuy = $array['legalbuy'];
         $dailyReport->personsell = $array['personsell'];
@@ -86,7 +125,12 @@ class ApiScheduler
         $array['tradecount'] = explode(',', $main_data)[8];
         $array['tradevol'] = explode(',', $main_data)[9];
         $array['tradecash'] = explode(',', $main_data)[10];
+        if ($array['pl'] && $array['py']) {
 
+            $array['status'] =  ($array['pl'] - $array['py'])  > 0 ? 'green' : 'red';
+        } else {
+            $array['status'] = null;
+        }
         $dailyReport->pl = $array['pl'];
         $dailyReport->pc = $array['pc'];
         $dailyReport->pf = $array['pf'];
@@ -131,8 +175,8 @@ class ApiScheduler
 
         Cache::store()->put($namad->id, $array, 10000000); // 10 Minutes
 
-        echo 'pomad = '.$namad->symbol.PHP_EOL;
-     
+        echo 'pomad = ' . $namad->symbol . PHP_EOL;
+
         //$dailyReport->save();
 
     }
