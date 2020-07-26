@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Namad\Namad;
+use App\Models\Holding\Holding;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -38,8 +39,20 @@ class NamadsController extends Controller
             $information['name']=$namad->name;
             $information['id']=$namad->id;
             $information['flow']=$namad->flow;
+            if(isset($information['pl'])){
+                $information['status'] = $information['status'] ;
+            }else{
+                $information['status'] = 'red' ;
+            }
 
-            return response()->json($information, 200);
+            if(Holding::where('name',$namad->id)->first()){
+                $namad['holding'] = 1;
+            }else{
+                $namad['holding'] = 0;
+            }
+            $result =  array_merge($information,$namad->getNamadNotifications());
+
+            return response()->json($result, 200);
         } else {
             return response()->json('namad not found', 401);
         }

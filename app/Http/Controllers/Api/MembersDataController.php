@@ -53,27 +53,33 @@ class MembersDataController extends Controller
 
         $array = [];
         foreach ($namads_array as $key => $namad) {
-           
           $information = Cache::get($namad->id);
-            $information['symbol'] = $namad->symbol;
-            $information['name'] = $namad->name;
-            $information['id'] = $namad->id;
-            $information['flow'] = $namad->flow;
-            $information['time'] = date('g:i', strtotime($information['time']));
-            if ($information['pl'] && $information['py']) {
 
-                $information['final_price_value'] = $information['pl'];
-                $information['final_price_percent'] = $information['py'] ?  abs(number_format((float)(($information['pl'] - $information['py']) * 100) / $information['py'], 2, '.', '')) : '';
-                $information['last_price_change'] = abs($information['pl'] - $information['py']);
-                $information['last_price_status'] = ($information['pl'] - $information['py']) > 0 ? '1' : '0';
+          $data=[];
+            $data['symbol'] = $namad->symbol;
+            $data['name'] = $namad->name;
+            $data['id'] = $namad->id;
+            $data['flow'] = $namad->flow;
+            if (isset($information['pl']) && isset($information['py'])) {
+
+                $data['final_price_value'] = $information['pl'];
+                $data['final_price_percent'] = $information['py'] ?  abs(number_format((float)(($information['pl'] - $information['py']) * 100) / $information['py'], 2, '.', '')) : '';
+                $data['last_price_change'] = abs($information['pl'] - $information['py']);
+                $data['last_price_status'] = ($information['pl'] - $information['py']) > 0 ? '1' : '0';
+                if(isset($information['pl'])){
+                    $data['status'] = $information['status'] ;
+                }else{
+                    $data['status'] = 'red' ;
+                }
             } else {
-                $information['final_price_value'] = '';
-                $information['final_price_percent'] = '';
-                $information['last_price_change'] = '';
-                $information['last_price_status'] = '';
+                $data['final_price_value'] = '0';
+                $data['final_price_percent'] = '0';
+                $data['last_price_change'] = '0';
+                $data['last_price_status'] = '0';
+                $data['status'] = 'red' ;
             }
 
-          $all[] = $information;
+          $all[] = $data;
 
         }
 
