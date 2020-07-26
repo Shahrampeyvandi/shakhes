@@ -142,8 +142,17 @@ class ApiScheduler
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=' . $inscode . '');
         $all = \strip_tags($crawler->html());
         $explode = \explode(',', $all);
-        $array['pmin'] =  \explode(',', $all)[50];
-        $array['pmax'] =  \explode(',', $all)[51];
+       // $array['pmin'] =  \explode(',', $all)[50];
+       // $array['pmax'] =  \explode(',', $all)[51];
+        if (explode(',', $all)[50] && explode(',', $all)[50] !== '') {
+
+            $array['pmin'] = (int)preg_replace('/^(\'(.*)\'|"(.*)")$/', '$2$3', \explode(',', $all)[50]);
+        }
+        if (explode(',', $all)[51] && explode(',', $all)[51] !== '') {
+
+            $array['pmax'] = (int)preg_replace('/^(\'(.*)\'|"(.*)")$/', '$2$3', \explode(',', $all)[51]);
+        }
+
 
         preg_match('/=\'?(\d+)/',  explode(',', $all)[28], $matches);
         $array['tedadmoamelat'] =  count($matches) ? $matches[1] : '';
