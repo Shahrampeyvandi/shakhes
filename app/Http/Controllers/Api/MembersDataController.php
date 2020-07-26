@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\CapitalIncrease\CapitalIncrease;
-use App\Models\clarification;
-use App\Models\Namad\Disclosures;
-use App\Models\Namad\Namad;
-use App\Models\VolumeTrade;
 use App\Setting;
 use Carbon\Carbon;
+use App\Models\Namad\Namad;
+use App\Models\VolumeTrade;
 use Illuminate\Http\Request;
+use App\Models\clarification;
+use App\Models\Namad\Disclosures;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
+use App\Models\CapitalIncrease\CapitalIncrease;
 
 class MembersDataController extends Controller
 {
@@ -51,35 +52,33 @@ class MembersDataController extends Controller
         $namads_array = $member->namads;
 
         $array = [];
-        foreach ($namads_array as $key => $namad_data) {
+        foreach ($namads_array as $key => $namad) {
            
-            $array[$key]['id'] = $namad_data->id;
-            $array[$key]['symbol'] = $namad_data->symbol;
+          $information = Cache::get($namad->id);
+            $information['symbol'] = $namad->symbol;
+            $information['name'] = $namad->name;
+            $information['id'] = $namad->id;
+            $information['flow'] = $namad->flow;
+            $information['time'] = date('g:i', strtotime($information['time']));
+            if ($information['pl'] && $information['py']) {
 
-            $inscode = $namad_data->inscode;
-            $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=' . $inscode . '&c=57');
-            $all = \strip_tags($crawler->html());
-
-            $explode_all = explode(';', $all);
-            $main_data = $explode_all[0];
-            $pl = explode(',', $main_data)[2];
-            $py = explode(',', $main_data)[5];
-            if($pl && $py) {
-            $array[$key]['final_price_value'] = $pl;
-            $array[$key]['final_price_percent'] = $py ? (($pl-$py) * 100) / $py : '';
-            $array[$key]['last_price_change'] = $pl - $py ;
-            $array[$key]['last_price_status'] = ($pl - $py) > 0 ? '1' : '0';
-            }else{
-            $array[$key]['final_price_value'] = '';
-            $array[$key]['final_price_percent'] = '';
-            $array[$key]['last_price_change'] = '' ;
-            $array[$key]['last_price_status'] = '';
+                $information['final_price_value'] = $information['pl'];
+                $information['final_price_percent'] = $information['py'] ?  abs(number_format((float)(($information['pl'] - $information['py']) * 100) / $information['py'], 2, '.', '')) : '';
+                $information['last_price_change'] = abs($information['pl'] - $information['py']);
+                $information['last_price_status'] = ($information['pl'] - $information['py']) > 0 ? '1' : '0';
+            } else {
+                $information['final_price_value'] = '';
+                $information['final_price_percent'] = '';
+                $information['last_price_change'] = '';
+                $information['last_price_status'] = '';
             }
+
+          $all[] = $information;
 
         }
 
         return response()->json(
-            ['data' => $array],
+            ['data' => $all],
             200
         );
     }
