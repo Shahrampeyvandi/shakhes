@@ -144,12 +144,17 @@ class ApiScheduler
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=' . $inscode . '');
         $all = \strip_tags($crawler->html());
         $explode = \explode(',', $all);
+       // $array['pmin'] =  \explode(',', $all)[50];
+       // $array['pmax'] =  \explode(',', $all)[51];
         // if (explode(',', $all)[50] && explode(',', $all)[50] !== '') {
+
         //     $array['pmin'] = (int)preg_replace('/^(\'(.*)\'|"(.*)")$/', '$2$3', \explode(',', $all)[50]);
         // }
         // if (explode(',', $all)[51] && explode(',', $all)[51] !== '') {
+
         //     $array['pmax'] = (int)preg_replace('/^(\'(.*)\'|"(.*)")$/', '$2$3', \explode(',', $all)[51]);
         // }
+
 
         preg_match('/=\'?(\d+)/',  explode(',', $all)[28], $matches);
         $array['tedadmoamelat'] =  count($matches) ? $matches[1] : '';
@@ -175,6 +180,19 @@ class ApiScheduler
         $array['groupPE'] = count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/', $explode[44], $matches);
         $array['sahamShenavar'] = count($matches) ? $matches[1] : '';
+
+        if (isset($array['pl']) && isset($array['py'])) {
+            $array['final_price_value'] = $array['pl'];
+            $array['final_price_percent'] = $array['py'] ?  abs(number_format((float)(($array['pl'] - $array['py']) * 100) / $array['py'], 2, '.', '')) : '';
+            $array['last_price_change'] = abs($array['pl'] - $array['py']);
+            $array['last_price_status'] = ($array['pl'] - $array['py']) > 0 ? '1' : '0';
+        } else {
+            $array['final_price_value'] = '0';
+            $array['final_price_percent'] = '0';
+            $array['last_price_change'] = '0';
+            $array['last_price_status'] = '0';
+        }
+
         $dailyReport->pmax = $array['pmax'];
         $dailyReport->pmin = $array['pmin'];
         $dailyReport->BaseVol = $array['BaseVol'];
