@@ -69,7 +69,7 @@ class ApiScheduler
 
 
         if ($array['personbuy'] &&  $array['personbuycount'] &&  $array['personsell'] && $array['personsellcount']) {
-            $array['person_buy_power'] = number_format((float)(($array['personbuy'] / $array['personbuycount']) / (($array['personbuy'] / $array['personbuycount']) + ($array['personsell'] / $array['personsellcount']))), 2, '.', '');
+            $array['person_buy_power'] = number_format((float)(($array['personbuy'] / $array['personbuycount']) / (($array['personbuy'] / $array['personbuycount']) + ($array['personsell'] / $array['personsellcount']))), 2, '.', '') * 100;
             $array['person_sell_power'] = number_format((float)(100 - $array['person_buy_power']), 2, '.', '');
         } else {
             $array['person_buy_power'] = 0;
@@ -120,8 +120,7 @@ class ApiScheduler
         $array['pc'] = explode(',', $main_data)[3];
         $array['pf'] = explode(',', $main_data)[4];
         $array['py'] = explode(',', $main_data)[5];
-        $array['pmax'] = explode(',', $main_data)[6];
-        $array['pmin'] = explode(',', $main_data)[7];
+
         $array['tradecount'] = explode(',', $main_data)[8];
         $array['tradevol'] = explode(',', $main_data)[9];
         $array['tradecash'] = explode(',', $main_data)[10];
@@ -135,8 +134,7 @@ class ApiScheduler
         $dailyReport->pc = $array['pc'];
         $dailyReport->pf = $array['pf'];
         $dailyReport->py = $array['py'];
-        $dailyReport->pmax = $array['pmax'];
-        $dailyReport->pmin = $array['pmin'];
+
         $dailyReport->tradevol = $array['tradevol'];
         $dailyReport->tradecash = $array['tradecash'];
 
@@ -144,7 +142,16 @@ class ApiScheduler
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=' . $inscode . '');
         $all = \strip_tags($crawler->html());
         $explode = \explode(',', $all);
+        $array['pmax'] =  \explode(',', $all)[50];
+        $array['pmin'] =  \explode(',', $all)[51];
 
+        preg_match('/=\'?(\d+)/',  explode(',', $all)[28], $matches);
+        $array['tedadmoamelat'] =  count($matches) ? $matches[1] : '';
+
+        preg_match('/=\'?(\d+)/',  \explode(',', $all)[34], $matches);
+        $array['maxrange'] =  count($matches) ? $matches[1] : '';
+        preg_match('/=\'?(\d+)/',  \explode(',', $all)[35], $matches);
+        $array['minrange'] = count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/', $explode[23], $matches);
         $array['flow'] = count($matches) ? $matches[1] : '';
         preg_match('/\'?(\d+)/', $explode[24], $matches);
@@ -165,6 +172,8 @@ class ApiScheduler
         preg_match('/=\'?(\d+)/', $explode[44], $matches);
         $array['sahamShenavar'] = count($matches) ? $matches[1] : '';
 
+        $dailyReport->pmax = $array['pmax'];
+        $dailyReport->pmin = $array['pmin'];
         $dailyReport->BaseVol = $array['BaseVol'];
         $dailyReport->EPS = $array['EPS'];
         $dailyReport->minweek = $array['minweek'];
