@@ -56,20 +56,34 @@ class ApiScheduler
         $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13]);
 
         $dailyReport->lastsells = serialize($array['lastsells']);
-
-        $array['personbuy'] = explode(',', $buy_sell)[0];
-        $array['legalbuy'] = explode(',', $buy_sell)[1];
-        $array['personsell'] = explode(',', $buy_sell)[3];
-        $array['legalsell'] = explode(',', $buy_sell)[4];
-        $array['personbuycount'] = explode(',', $buy_sell)[5];
-        $array['legalbuycount'] = explode(',', $buy_sell)[6];
-        $array['personsellcount'] = explode(',', $buy_sell)[8];
-        $array['legalsellcount'] = explode(',', $buy_sell)[9];
-
+        $data['personbuy'] = explode(',', $buy_sell)[0];
+        $data['legalbuy'] = explode(',', $buy_sell)[1];
+        $data['personsell'] = explode(',', $buy_sell)[3];
+        $data['legalsell'] = explode(',', $buy_sell)[4];
+        $data['personbuycount'] = explode(',', $buy_sell)[5];
+        $data['legalbuycount'] = explode(',', $buy_sell)[6];
+        $data['personsellcount'] = explode(',', $buy_sell)[8];
+        $data['legalsellcount'] = explode(',', $buy_sell)[9];
 
 
-        if ($array['personbuy'] &&  $array['personbuycount'] &&  $array['personsell'] && $array['personsellcount']) {
-            $array['person_buy_power'] = number_format((float)(($array['personbuy'] / $array['personbuycount']) / (($array['personbuy'] / $array['personbuycount']) + ($array['personsell'] / $array['personsellcount']))), 2, '.', '') * 100;
+
+        foreach ($data as $key => $item) {
+            if ((int)$item > 1000000 && (int)$item < 1000000000) {
+                $array[$key] = number_format((int)$item / 1000000, 3) . "M";
+            } elseif ((int)$item > 1000000000) {
+                $array[$key] = number_format((int)$item / 1000000000, 3) . "B";
+            } else {
+                $array[$key] = (int)$item;
+            }
+        }
+
+
+
+
+
+
+        if ($data['personbuy'] &&  $data['personbuycount'] &&  $data['personsell'] && $data['personsellcount']) {
+            $array['person_buy_power'] = number_format((float)(($data['personbuy'] / $data['personbuycount']) / (($data['personbuy'] / $data['personbuycount']) + ($data['personsell'] / $data['personsellcount']))), 2, '.', '') * 100;
             $array['person_sell_power'] = number_format((float)(100 - $array['person_buy_power']), 2, '.', '');
         } else {
             $array['person_buy_power'] = 0;
@@ -106,6 +120,8 @@ class ApiScheduler
 
 
 
+
+
         $dailyReport->personbuy = $array['personbuy'];
         $dailyReport->legalbuy = $array['legalbuy'];
         $dailyReport->personsell = $array['personsell'];
@@ -124,8 +140,34 @@ class ApiScheduler
         $array['pmax'] = explode(',', $main_data)[6];
 
         $array['tradecount'] = explode(',', $main_data)[8];
-        $array['tradevol'] = explode(',', $main_data)[9];
-        $array['tradecash'] = explode(',', $main_data)[10];
+
+
+        $tradeVOL = explode(',', $main_data)[9];
+
+        if ((int)$tradeVOL > 1000000 && (int)$tradeVOL < 1000000000) {
+            $array['tradevol'] = number_format((int)$tradeVOL / 1000000, 3) . "M";
+        } elseif ((int)$tradeVOL > 1000000000) {
+            $array['tradevol'] = number_format((int)explode(',', $main_data)[10] / 1000000000, 3) . "B";
+        } else {
+            $array['tradevol'] = (int)$tradeVOL;
+        }
+
+
+        $tradeCASH = explode(',', $main_data)[10];
+        if ((int)$tradeCASH > 1000000 && (int)$tradeCASH < 1000000000) {
+            $array['tradecash'] =  number_format((int)$tradeCASH / 1000000, 3) . "M";
+        } elseif ((int)$tradeCASH > 1000000000) {
+
+            $array['tradecash'] =  number_format((int)$tradeCASH / 1000000000, 3) . "B";
+        } else {
+            $array['tradecash'] =  (int)$tradeCASH;
+        }
+
+
+
+
+
+
         if ($array['pl'] && $array['py']) {
 
             $array['status'] =  ($array['pl'] - $array['py'])  > 0 ? 'green' : 'red';
@@ -140,24 +182,11 @@ class ApiScheduler
         $dailyReport->tradevol = $array['tradevol'];
         $dailyReport->tradecash = $array['tradecash'];
 
-
+ 
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=' . $inscode . '');
         $all = \strip_tags($crawler->html());
         $explode = \explode(',', $all);
-       // $array['pmin'] =  \explode(',', $all)[50];
-       // $array['pmax'] =  \explode(',', $all)[51];
-        // if (explode(',', $all)[50] && explode(',', $all)[50] !== '') {
 
-        //     $array['pmin'] = (int)preg_replace('/^(\'(.*)\'|"(.*)")$/', '$2$3', \explode(',', $all)[50]);
-        // }
-        // if (explode(',', $all)[51] && explode(',', $all)[51] !== '') {
-
-        //     $array['pmax'] = (int)preg_replace('/^(\'(.*)\'|"(.*)")$/', '$2$3', \explode(',', $all)[51]);
-        // }
-
-
-        preg_match('/=\'?(\d+)/',  explode(',', $all)[28], $matches);
-        $array['tedadmoamelat'] =  count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/',  \explode(',', $all)[34], $matches);
         $array['maxrange'] =  count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/',  \explode(',', $all)[35], $matches);
@@ -167,7 +196,13 @@ class ApiScheduler
         preg_match('/\'?(\d+)/', $explode[24], $matches);
         $array['ID'] = count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/', $explode[26], $matches);
-        $array['BaseVol'] = count($matches) ? $matches[1] : '';
+       
+        $array['BaseVol'] =  count($matches) ? $matches[1] : '';
+        
+
+
+
+
         preg_match('/\'?(\d+)/', $explode[27], $matches);
         $array['EPS'] = count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/', $explode[38], $matches);
@@ -176,6 +211,7 @@ class ApiScheduler
         $array['maxweek'] = count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/', $explode[42], $matches);
         $array['monthAVG'] = count($matches) ? $matches[1] : '';
+
         preg_match('/\'?(\d+)/', $explode[43], $matches);
         $array['groupPE'] = count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/', $explode[44], $matches);
