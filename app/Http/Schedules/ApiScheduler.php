@@ -69,17 +69,13 @@ class ApiScheduler
 
         foreach ($data as $key => $item) {
             if ((int)$item > 1000000 && (int)$item < 1000000000) {
-                $array[$key] = number_format((int)$item / 1000000, 3) . "M";
+                $array[$key] = number_format((int)$item / 1000000, 1) . "M";
             } elseif ((int)$item > 1000000000) {
-                $array[$key] = number_format((int)$item / 1000000000, 3) . "B";
+                $array[$key] = number_format((int)$item / 1000000000, 1) . "B";
             } else {
                 $array[$key] = (int)$item;
             }
         }
-
-
-
-
 
 
         if ($data['personbuy'] &&  $data['personbuycount'] &&  $data['personsell'] && $data['personsellcount']) {
@@ -145,9 +141,9 @@ class ApiScheduler
         $tradeVOL = explode(',', $main_data)[9];
 
         if ((int)$tradeVOL > 1000000 && (int)$tradeVOL < 1000000000) {
-            $array['tradevol'] = number_format((int)$tradeVOL / 1000000, 3) . "M";
+            $array['tradevol'] = number_format((int)$tradeVOL / 1000000, 1) . "M";
         } elseif ((int)$tradeVOL > 1000000000) {
-            $array['tradevol'] = number_format((int)explode(',', $main_data)[10] / 1000000000, 3) . "B";
+            $array['tradevol'] = number_format((int)explode(',', $main_data)[10] / 1000000000, 1) . "B";
         } else {
             $array['tradevol'] = (int)$tradeVOL;
         }
@@ -155,10 +151,10 @@ class ApiScheduler
 
         $tradeCASH = explode(',', $main_data)[10];
         if ((int)$tradeCASH > 1000000 && (int)$tradeCASH < 1000000000) {
-            $array['tradecash'] =  number_format((int)$tradeCASH / 1000000, 3) . "M";
+            $array['tradecash'] =  number_format((int)$tradeCASH / 1000000, 1) . "M";
         } elseif ((int)$tradeCASH > 1000000000) {
 
-            $array['tradecash'] =  number_format((int)$tradeCASH / 1000000000, 3) . "B";
+            $array['tradecash'] =  number_format((int)$tradeCASH / 1000000000, 1) . "B";
         } else {
             $array['tradecash'] =  (int)$tradeCASH;
         }
@@ -182,7 +178,7 @@ class ApiScheduler
         $dailyReport->tradevol = $array['tradevol'];
         $dailyReport->tradecash = $array['tradecash'];
 
- 
+
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=' . $inscode . '');
         $all = \strip_tags($crawler->html());
         $explode = \explode(',', $all);
@@ -196,11 +192,41 @@ class ApiScheduler
         preg_match('/\'?(\d+)/', $explode[24], $matches);
         $array['ID'] = count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/', $explode[26], $matches);
-       
         $array['BaseVol'] =  count($matches) ? $matches[1] : '';
-        
+
+        preg_match('/=\'?(\d+)/', $explode[28], $matches);
+        $array['TedadShaham'] =  count($matches) ? $matches[1] : '';
 
 
+
+
+
+
+
+        if ($array['TedadShaham'] && $array['TedadShaham'] !== '' && $array['pl']) {
+            $array['MarketCash'] = $array['TedadShaham'] * $array['pl'];
+            if ((int)$array['MarketCash'] > 1000000 && (int)$array['MarketCash'] < 1000000000) {
+                $array['MarketCash'] =  number_format((int)$array['MarketCash'] / 1000000, 1) . "M";
+            } elseif ((int)$array['MarketCash'] > 1000000000) {
+
+                $array['MarketCash'] =  number_format((int)$array['MarketCash'] / 1000000000, 1) . "B";
+            } else {
+                $array['MarketCash'] =  (int)$array['MarketCash'];
+            }
+        }
+
+
+         if ($array['TedadShaham'] && $array['TedadShaham'] !== '' ) {
+          
+            if ((int)$array['TedadShaham'] > 1000000 && (int)$array['TedadShaham'] < 1000000000) {
+                $array['TedadShaham'] =  number_format((int)$array['TedadShaham'] / 1000000, 1) . "M";
+            } elseif ((int)$array['TedadShaham'] > 1000000000) {
+
+                $array['TedadShaham'] =  number_format((int)$array['TedadShaham'] / 1000000000, 1) . "B";
+            } else {
+                $array['TedadShaham'] =  (int)$array['TedadShaham'];
+            }
+        }
 
 
         preg_match('/\'?(\d+)/', $explode[27], $matches);

@@ -27,12 +27,9 @@ class MarketController extends Controller
 
     public function getNamad(Request $request)
     {
-
- 
-
       
      
-        $namad = Namad::find($request->id);
+        $namad = Namad::find(509);
         if ($namad) {
             $information = Cache::get($namad->id);
             $information['symbol'] = $namad->symbol;
@@ -40,18 +37,17 @@ class MarketController extends Controller
             $information['id'] = $namad->id;
             $information['flow'] = $namad->flow;
             $information['time'] = date('g:i', strtotime($information['time']));
-            // if ($information['pl'] && $information['py']) {
-
-            //     $information['final_price_value'] = $information['pl'];
-            //     $information['final_price_percent'] = $information['py'] ?  abs(number_format((float)(($information['pl'] - $information['py']) * 100) / $information['py'], 2, '.', '')) : '';
-            //     $information['last_price_change'] = abs($information['pl'] - $information['py']);
-            //     $information['last_price_status'] = ($information['pl'] - $information['py']) > 0 ? '1' : '0';
-            // } else {
-            //     $information['final_price_value'] = '';
-            //     $information['final_price_percent'] = '';
-            //     $information['last_price_change'] = '';
-            //     $information['last_price_status'] = '';
-            // }
+            if ($information['pl'] && $information['py']) {
+                $information['final_price_value'] = $information['pl'];
+                $information['final_price_percent'] = $information['py'] ?  abs(number_format((float)(($information['pl'] - $information['py']) * 100) / $information['py'], 2, '.', '')) : '';
+                $information['last_price_change'] = abs($information['pl'] - $information['py']);
+                $information['last_price_status'] = ($information['pl'] - $information['py']) > 0 ? '1' : '0';
+            } else {
+                $information['final_price_value'] = '';
+                $information['final_price_percent'] = '';
+                $information['last_price_change'] = '';
+                $information['last_price_status'] = '';
+            }
 
             return response()->json($information, 200);
         } else {
