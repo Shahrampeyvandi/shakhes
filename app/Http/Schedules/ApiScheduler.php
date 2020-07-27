@@ -80,7 +80,7 @@ class ApiScheduler
 
         if ($data['personbuy'] &&  $data['personbuycount'] &&  $data['personsell'] && $data['personsellcount']) {
             $array['person_buy_power'] = number_format((float)(($data['personbuy'] / $data['personbuycount']) / (($data['personbuy'] / $data['personbuycount']) + ($data['personsell'] / $data['personsellcount']))), 2, '.', '') * 100;
-            $array['person_sell_power'] = number_format((float)(100 - $array['person_buy_power']), 2, '.', '');
+            $array['person_sell_power'] = number_format((float)(100 - $array['person_buy_power']), 0, '.', '');
         } else {
             $array['person_buy_power'] = 0;
             $array['person_sell_power'] = 0;
@@ -92,23 +92,23 @@ class ApiScheduler
         $totalsell =  explode(',', $buy_sell)[3] + explode(',', $buy_sell)[4];
 
         if ($totalbuy && $buy_sell) {
-            $array['percent_person_buy'] = number_format((float)((explode(',', $buy_sell)[0] * 100) / $totalbuy), 2, '.', '');
+            $array['percent_person_buy'] = number_format((float)((explode(',', $buy_sell)[0] * 100) / $totalbuy), 0, '.', '');
         } else {
             $array['percent_person_buy'] = 0;
         }
         if ($totalbuy && $buy_sell) {
-            $array['percent_legal_buy'] = number_format((float)((explode(',', $buy_sell)[1] * 100) / $totalbuy), 2, '.', '');
+            $array['percent_legal_buy'] = number_format((float)((explode(',', $buy_sell)[1] * 100) / $totalbuy), 0, '.', '');
         } else {
             $array['percent_legal_buy'] = 0;
         }
 
         if ($totalsell && $buy_sell) {
-            $array['percent_person_sell'] = number_format((float)((explode(',', $buy_sell)[3] * 100) / $totalsell), 2, '.', '');
+            $array['percent_person_sell'] = number_format((float)((explode(',', $buy_sell)[3] * 100) / $totalsell), 0, '.', '');
         } else {
             $array['percent_person_sell'] = 0;
         }
         if ($totalsell && $buy_sell) {
-            $array['percent_legal_sell'] = number_format((float)((explode(',', $buy_sell)[4] * 100) / $totalsell), 2, '.', '');
+            $array['percent_legal_sell'] = number_format((float)((explode(',', $buy_sell)[4] * 100) / $totalsell), 0, '.', '');
         } else {
 
             $array['percent_legal_sell'] = 0;
