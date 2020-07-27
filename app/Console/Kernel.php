@@ -29,6 +29,7 @@ class Kernel extends ConsoleKernel
 
 
         $schedule->call(new DailyReportScheduler)->daily();
+        //$schedule->call(new DailyReportScheduler)->dailyAt('11:55');
 
         $schedule->call(new ApiScheduler)->everyMinute();
 

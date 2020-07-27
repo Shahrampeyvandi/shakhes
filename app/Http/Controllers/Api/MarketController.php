@@ -15,16 +15,6 @@ class MarketController extends Controller
 
 
 
-    public function search(Request $request)
-    {
-        $key = $request->search;
-        $key = str_replace('ی','ي',$key);
-        $namads = Namad::where('symbol', 'like', '%' . $key . '%')
-            ->take(5)->get();
-        return response()->json([
-            'data' => $namads
-        ], 200);
-    }
 
     public function getNamad(Request $request)
     {
@@ -498,5 +488,52 @@ class MarketController extends Controller
 
         Cache::store()->put($idd, $all, 100); // 10 Minutes
         return response()->json(['data' => $all], 200);
+    }
+
+    public function search(Request $request)
+    {
+
+
+        $key = $request->search;
+        $key = str_replace('ی','ي',$key);
+
+        $namads = Namad::where('symbol', 'like', '%' . $key . '%')
+            ->take(5)->get();
+
+            $all=[];
+            foreach($namads as $namad){
+            $id = $namad->id;
+            $information = Cache::get($id);
+            // return $information;
+            if (!is_null($information)) {
+                if (array_key_exists('pl', $information) && array_key_exists('py', $information)) {
+                    $pl = $information['pl'];
+                    $py = $information['py'];
+                    $data['id'] = $namad->id;
+                    if ($pl && $py) {
+                        $data['symbol'] = $namad->symbol;
+                        $data['name'] = $namad->name;
+                        $data['final_price_value'] = $pl;
+                        $percent = (($pl - $py) * 100) / $py;
+                        $percent =  number_format((float)$percent, 2, '.', '');
+                        $data['final_price_percent'] = $percent;
+                        $data['last_price_change'] = $pl - $py;
+                        $data['last_price_status'] = ($pl - $py) > 0 ? '1' : '0';
+                    } else {
+                        $data['symbol'] = $namad->symbol;
+                        $data['name'] = $namad->name;
+                        $data['final_price_value'] = '';
+                        $data['final_price_percent'] = '';
+                        $data['last_price_change'] = '';
+                        $data['last_price_status'] = '';
+                    }
+
+                    $all[] = $data;
+                }
+            }
+        }
+        return response()->json([
+            'data' => $all
+        ], 200);
     }
 }
