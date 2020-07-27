@@ -67,3 +67,4 @@ Route::get('/farabourse/mostpriceincreases', 'Api\MarketController@farabourseMos
 Route::get('/bourse/mostpricedecreases', 'Api\MarketController@bourseMostPriceDecreases');
 Route::get('/farabourse/mostpricedecreases', 'Api\MarketController@farabourseMostPriceDecreases');
 Route::get('/bnamad', 'Api\MarketController@getNamad');
+Route::get('/bnamads/search', 'Api\MarketController@search');
