@@ -45,16 +45,57 @@ class ApiScheduler
 
 
         $explode_orders = explode('@', $orders);
+        if ((int) $explode_orders[1] > 1000000 && (int) $explode_orders[1] < 1000000000) {
+            $explode_orders[1] = number_format((int) $explode_orders[1] / 1000000, 2) . "M";
+        } elseif ((int) $explode_orders[1] > 1000000000) {
+            $explode_orders[1] = number_format((int) $explode_orders[1] / 1000000000, 1) . "B";
+        } else {
+            $explode_orders[1] = (int) $explode_orders[1];
+        }
         $array['lastbuys'][] = array('tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2]);
+        if ((int) $explode_orders[6] > 1000000 && (int) $explode_orders[6] < 1000000000) {
+            $explode_orders[6] = number_format((int) $explode_orders[6] / 1000000, 2) . "M";
+        } elseif ((int) $explode_orders[6] > 1000000000) {
+            $explode_orders[6] = number_format((int) $explode_orders[6] / 1000000000, 1) . "B";
+        } else {
+            $explode_orders[6] = (int) $explode_orders[6];
+        }
         $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7]);
+        if ((int) $explode_orders[11] > 1000000 && (int) $explode_orders[11] < 1000000000) {
+            $explode_orders[11] = number_format((int) $explode_orders[11] / 1000000, 2) . "M";
+        } elseif ((int) $explode_orders[11] > 1000000000) {
+            $explode_orders[11] = number_format((int) $explode_orders[11] / 1000000000, 1) . "B";
+        } else {
+            $explode_orders[11] = (int) $explode_orders[11];
+        }
+
         $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12]);
 
         $dailyReport->lastbuys = serialize($array['lastbuys']);
-
+        if ((int) $explode_orders[4] > 1000000 && (int) $explode_orders[4] < 1000000000) {
+            $explode_orders[4] = number_format((int) $explode_orders[4] / 1000000, 2) . "M";
+        } elseif ((int) $explode_orders[4] > 1000000000) {
+            $explode_orders[4] = number_format((int) $explode_orders[4] / 1000000000, 1) . "B";
+        } else {
+            $explode_orders[4] = (int) $explode_orders[4];
+        }
         $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3]);
+        if ((int) $explode_orders[9] > 1000000 && (int) $explode_orders[9] < 1000000000) {
+            $explode_orders[9] = number_format((int) $explode_orders[9] / 1000000, 2) . "M";
+        } elseif ((int) $explode_orders[9] > 1000000000) {
+            $explode_orders[9] = number_format((int) $explode_orders[9] / 1000000000, 1) . "B";
+        } else {
+            $explode_orders[9] = (int) $explode_orders[9];
+        }
         $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8]);
+        if ((int) $explode_orders[14] > 1000000 && (int) $explode_orders[14] < 1000000000) {
+            $explode_orders[14] = number_format((int) $explode_orders[14] / 1000000, 2) . "M";
+        } elseif ((int) $explode_orders[14] > 1000000000) {
+            $explode_orders[14] = number_format((int) $explode_orders[14] / 1000000000, 1) . "B";
+        } else {
+            $explode_orders[14] = (int) $explode_orders[14];
+        }
         $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13]);
-
         $dailyReport->lastsells = serialize($array['lastsells']);
         $data['personbuy'] = explode(',', $buy_sell)[0];
         $data['legalbuy'] = explode(',', $buy_sell)[1];
@@ -64,8 +105,6 @@ class ApiScheduler
         $data['legalbuycount'] = explode(',', $buy_sell)[6];
         $data['personsellcount'] = explode(',', $buy_sell)[8];
         $data['legalsellcount'] = explode(',', $buy_sell)[9];
-
-
 
         foreach ($data as $key => $item) {
             if ((int)$item > 1000000 && (int)$item < 1000000000) {
@@ -77,7 +116,6 @@ class ApiScheduler
             }
         }
 
-
         if ($data['personbuy'] &&  $data['personbuycount'] &&  $data['personsell'] && $data['personsellcount']) {
             $array['person_buy_power'] = number_format((float)(($data['personbuy'] / $data['personbuycount']) / (($data['personbuy'] / $data['personbuycount']) + ($data['personsell'] / $data['personsellcount']))), 2, '.', '') * 100;
             $array['person_sell_power'] = number_format((float)(100 - $array['person_buy_power']), 0, '.', '');
@@ -85,8 +123,6 @@ class ApiScheduler
             $array['person_buy_power'] = 0;
             $array['person_sell_power'] = 0;
         }
-
-
 
         $totalbuy =  explode(',', $buy_sell)[0] + explode(',', $buy_sell)[1];
         $totalsell =  explode(',', $buy_sell)[3] + explode(',', $buy_sell)[4];
@@ -115,9 +151,6 @@ class ApiScheduler
         }
 
 
-
-
-
         $dailyReport->personbuy = $array['personbuy'];
         $dailyReport->legalbuy = $array['legalbuy'];
         $dailyReport->personsell = $array['personsell'];
@@ -134,12 +167,9 @@ class ApiScheduler
         $array['py'] = explode(',', $main_data)[5];
         $array['pmin'] = explode(',', $main_data)[7];
         $array['pmax'] = explode(',', $main_data)[6];
-
         $array['tradecount'] = explode(',', $main_data)[8];
 
-
         $tradeVOL = explode(',', $main_data)[9];
-
         if ((int)$tradeVOL > 1000000 && (int)$tradeVOL < 1000000000) {
             $array['tradevol'] = number_format((int)$tradeVOL / 1000000, 1) . "M";
         } elseif ((int)$tradeVOL > 1000000000) {
@@ -147,7 +177,6 @@ class ApiScheduler
         } else {
             $array['tradevol'] = (int)$tradeVOL;
         }
-
 
         $tradeCASH = explode(',', $main_data)[10];
         if ((int)$tradeCASH > 1000000 && (int)$tradeCASH < 1000000000) {
@@ -158,11 +187,6 @@ class ApiScheduler
         } else {
             $array['tradecash'] =  (int)$tradeCASH;
         }
-
-
-
-
-
 
         if ($array['pl'] && $array['py']) {
 
@@ -216,8 +240,8 @@ class ApiScheduler
         }
 
 
-         if ($array['TedadShaham'] && $array['TedadShaham'] !== '' ) {
-          
+        if ($array['TedadShaham'] && $array['TedadShaham'] !== '') {
+
             if ((int)$array['TedadShaham'] > 1000000 && (int)$array['TedadShaham'] < 1000000000) {
                 $array['TedadShaham'] =  number_format((int)$array['TedadShaham'] / 1000000, 1) . "M";
             } elseif ((int)$array['TedadShaham'] > 1000000000) {
