@@ -19,10 +19,10 @@ class MarketController extends Controller
     public function getNamad(Request $request)
     {
 
-   
+
 
         $namad = Namad::find($request->id);
-      
+
         if ($namad) {
             $information = Cache::get($namad->id);
             $information['symbol'] = $namad->symbol;
@@ -30,7 +30,7 @@ class MarketController extends Controller
             $information['id'] = $namad->id;
             $information['flow'] = $namad->flow;
             $information['time'] = date('g:i', strtotime($information['time']));
-       
+
             if ($information['pl'] && $information['py']) {
                 $information['final_price_value'] = $information['pl'];
                 $information['final_price_percent'] = $information['py'] ?  abs(number_format((float)(($information['pl'] - $information['py']) * 100) / $information['py'], 2, '.', '')) : '';
@@ -44,7 +44,6 @@ class MarketController extends Controller
             }
 
             return response()->json($information, 200);
-            
         }
     }
 
@@ -71,6 +70,7 @@ class MarketController extends Controller
             $array['value_change'] =  $node->filter('tr:nth-of-type(53) td:nth-of-type(4)')->text();
             $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
             $array['percent_change'] =  $node->filter('tr:nth-of-type(53) td:nth-of-type(5) div')->text();
+            $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
             if ($node->filter('tr:nth-of-type(53) td:nth-of-type(5) div.pn')->count()) {
                 $array['status'] = 'positive';
             }
@@ -86,6 +86,7 @@ class MarketController extends Controller
             $array['value_change'] =  $node->filter('tr:nth-of-type(54) td:nth-of-type(4)')->text();
             $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
             $array['percent_change'] =  $node->filter('tr:nth-of-type(54) td:nth-of-type(5) div')->text();
+            $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
             if ($node->filter('tr:nth-of-type(54) td:nth-of-type(5) div.pn')->count()) {
                 $array['status'] = 'positive';
             }
@@ -100,6 +101,7 @@ class MarketController extends Controller
             $array['value_change'] =  $node->filter('tr:nth-of-type(47) td:nth-of-type(4)')->text();
             $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
             $array['percent_change'] =  $node->filter('tr:nth-of-type(47) td:nth-of-type(5) div')->text();
+            $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
             if ($node->filter('tr:nth-of-type(47) td:nth-of-type(5) div.pn')->count()) {
                 $array['status'] = 'positive';
             }
@@ -114,6 +116,7 @@ class MarketController extends Controller
             $array['value_change'] =  $node->filter('tr:nth-of-type(48) td:nth-of-type(4)')->text();
             $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
             $array['percent_change'] =  $node->filter('tr:nth-of-type(48) td:nth-of-type(5) div')->text();
+            $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
             if ($node->filter('tr:nth-of-type(48) td:nth-of-type(5) div.pn')->count()) {
                 $array['status'] = 'positive';
             }
@@ -128,6 +131,7 @@ class MarketController extends Controller
             $array['value_change'] =  $node->filter('tr:nth-of-type(55) td:nth-of-type(4)')->text();
             $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
             $array['percent_change'] =  $node->filter('tr:nth-of-type(55) td:nth-of-type(5) div')->text();
+            $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
             if ($node->filter('tr:nth-of-type(55) td:nth-of-type(5) div.pn')->count()) {
                 $array['status'] = 'positive';
             }
@@ -143,6 +147,7 @@ class MarketController extends Controller
             $array['value_change'] =  $node->filter('tr:nth-of-type(51) td:nth-of-type(4)')->text();
             $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
             $array['percent_change'] =  $node->filter('tr:nth-of-type(51) td:nth-of-type(5) div')->text();
+            $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
             if ($node->filter('tr:nth-of-type(51) td:nth-of-type(5) div.pn')->count()) {
                 $array['status'] = 'positive';
             }
@@ -158,6 +163,7 @@ class MarketController extends Controller
             $array['value_change'] =  $node->filter('tr:nth-of-type(46) td:nth-of-type(4)')->text();
             $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
             $array['percent_change'] =  $node->filter('tr:nth-of-type(46) td:nth-of-type(5) div')->text();
+            $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
             if ($node->filter('tr:nth-of-type(46) td:nth-of-type(5) div.pn')->count()) {
                 $array['status'] = 'positive';
             }
@@ -193,6 +199,7 @@ class MarketController extends Controller
             $array['value_change'] =  $node->filter('tr:nth-of-type(5) td:nth-of-type(4)')->text();
             $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
             $array['percent_change'] =  $node->filter('tr:nth-of-type(5) td:nth-of-type(5) div')->text();
+            $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
             if ($node->filter('tr:nth-of-type(5) td:nth-of-type(5) div.pn')->count()) {
                 $array['status'] = 'positive';
             }
@@ -208,6 +215,7 @@ class MarketController extends Controller
             $array['value_change'] =  $node->filter('tr:nth-of-type(1) td:nth-of-type(4)')->text();
             $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
             $array['percent_change'] =  $node->filter('tr:nth-of-type(1) td:nth-of-type(5) div')->text();
+            $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
             if ($node->filter('tr:nth-of-type(1) td:nth-of-type(5) div.pn')->count()) {
                 $array['status'] = 'positive';
             }
@@ -223,6 +231,7 @@ class MarketController extends Controller
             $array['value_change'] =  $node->filter('tr:nth-of-type(2) td:nth-of-type(4)')->text();
             $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
             $array['percent_change'] =  $node->filter('tr:nth-of-type(2) td:nth-of-type(5) div')->text();
+            $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
             if ($node->filter('tr:nth-of-type(2) td:nth-of-type(5) div.pn')->count()) {
                 $array['status'] = 'positive';
             }
@@ -239,6 +248,7 @@ class MarketController extends Controller
             $array['value_change'] =  $node->filter('tr:nth-of-type(3) td:nth-of-type(4)')->text();
             $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
             $array['percent_change'] =  $node->filter('tr:nth-of-type(3) td:nth-of-type(5) div')->text();
+            $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
             if ($node->filter('tr:nth-of-type(3) td:nth-of-type(5) div.pn')->count()) {
                 $array['status'] = 'positive';
             }
@@ -255,6 +265,7 @@ class MarketController extends Controller
             $array['value_change'] =  $node->filter('tr:nth-of-type(4) td:nth-of-type(4)')->text();
             $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
             $array['percent_change'] =  $node->filter('tr:nth-of-type(4) td:nth-of-type(5) div')->text();
+            $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
             if ($node->filter('tr:nth-of-type(4) td:nth-of-type(5) div.pn')->count()) {
                 $array['status'] = 'positive';
             }
