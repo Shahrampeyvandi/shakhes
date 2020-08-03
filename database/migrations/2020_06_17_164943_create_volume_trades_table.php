@@ -16,6 +16,8 @@ class CreateVolumeTradesTable extends Migration
         Schema::create('volume_trades', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('namad_id');
+            $table->string('trade_vol');
+            $table->string('month_avg');
             $table->string('volume_ratio')->nullable();
             $table->timestamps();
         });

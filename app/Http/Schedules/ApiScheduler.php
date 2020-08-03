@@ -2,13 +2,15 @@
 
 namespace App\Http\Schedules;
 
-use Illuminate\Http\Request;
-use App\Models\Namad\Namad;
-use App\Models\Namad\NamadsDailyReport;
-use Exception;
-use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\Cache;
 use Goutte;
+use Exception;
+use Carbon\Carbon;
+use App\Models\Namad\Namad;
+use App\Models\VolumeTrade;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
+use App\Models\Namad\NamadsDailyReport;
 
 class ApiScheduler
 {
@@ -168,7 +170,7 @@ class ApiScheduler
         $array['pmin'] = explode(',', $main_data)[7];
         $array['pmax'] = explode(',', $main_data)[6];
         $array['tradecount'] = explode(',', $main_data)[8];
-
+        $array['N_tradeVol'] =  explode(',', $main_data)[9];
         $tradeVOL = explode(',', $main_data)[9];
         if ((int)$tradeVOL > 1000000 && (int)$tradeVOL < 1000000000) {
             $array['tradevol'] = number_format((int)$tradeVOL / 1000000, 1) . "M";
@@ -260,7 +262,20 @@ class ApiScheduler
         preg_match('/=\'?(\d+)/', $explode[39], $matches);
         $array['maxweek'] = count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/', $explode[42], $matches);
-        $array['monthAVG'] = count($matches) ? $matches[1] : '';
+        $array['N_monthAVG'] = count($matches) ? $matches[1] : '';
+
+
+        if ($array['N_monthAVG']) {
+
+            if ((int)$array['N_monthAVG'] > 1000000 && (int)$array['N_monthAVG'] < 1000000000) {
+                $array['monthAVG'] =  number_format((int)$array['N_monthAVG'] / 1000000, 1) . "M";
+            } elseif ((int)$array['N_monthAVG'] > 1000000000) {
+
+                $array['monthAVG'] =  number_format((int)$array['N_monthAVG'] / 1000000000, 1) . "B";
+            } else {
+                $array['monthAVG'] =  (int)$array['N_monthAVG'];
+            }
+        }
 
         preg_match('/\'?(\d+)/', $explode[43], $matches);
         $array['groupPE'] = count($matches) ? $matches[1] : '';
@@ -288,6 +303,19 @@ class ApiScheduler
         $dailyReport->monthAVG = $array['monthAVG'];
         $dailyReport->groupPE = $array['groupPE'];
         $dailyReport->sahamShenavar = $array['sahamShenavar'];
+
+
+        $start = Carbon::parse('09:00')->timestamp;
+        $end = Carbon::parse('12:30')->timestamp;
+        $time = Carbon::parse($array['time'])->timestamp;
+       
+        // if (($time > $start) && ($time < $end) &&  ((int)$array['N_tradevol'] > (int)$array['N_monthAVG'])) {
+        //     $zarib =   (int)$array['N_tradevol'] / (int)$array['N_monthAVG'];
+        //     if ($zarib > 4 && VolumeTrade::check($namad->id)) {
+        //         VolumeTrade::create(['namad_id' => $namad->id, 'trade_vol' => $array['N_tradevol'], 'month_avg' => $array['N_monthAVG'], 'volume_ratio' => $zarib]);
+        //     }
+        // }
+        
 
         Cache::store()->put($namad->id, $array, 10000000); // 10 Minutes
 
