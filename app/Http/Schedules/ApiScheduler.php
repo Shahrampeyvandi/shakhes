@@ -304,18 +304,22 @@ class ApiScheduler
         $dailyReport->groupPE = $array['groupPE'];
         $dailyReport->sahamShenavar = $array['sahamShenavar'];
 
-
         $start = Carbon::parse('09:00')->timestamp;
         $end = Carbon::parse('12:30')->timestamp;
-        $time = Carbon::parse($array['time'])->timestamp;
-       
-        // if (($time > $start) && ($time < $end) &&  ((int)$array['N_tradevol'] > (int)$array['N_monthAVG'])) {
-        //     $zarib =   (int)$array['N_tradevol'] / (int)$array['N_monthAVG'];
-        //     if ($zarib > 4 && VolumeTrade::check($namad->id)) {
-        //         VolumeTrade::create(['namad_id' => $namad->id, 'trade_vol' => $array['N_tradevol'], 'month_avg' => $array['N_monthAVG'], 'volume_ratio' => $zarib]);
-        //     }
-        // }
-        
+        //$time = Carbon::parse($array['time'])->timestamp;
+        $time = Carbon::now()->timestamp;
+
+        //dd([Carbon::now()->timestamp,$start,$end,$time]);
+
+
+        if (($time > $start) && ($time < $end) &&  ((int)$array['N_tradeVol'] > (int)$array['N_monthAVG'])) {
+            $zarib =   (int)$array['N_tradeVol'] / (int)$array['N_monthAVG'];
+            if ($zarib > 4 && VolumeTrade::check($namad->id)) {
+               // dd($namad->id);
+                VolumeTrade::create(['namad_id' => $namad->id, 'trade_vol' => $array['N_tradeVol'], 'month_avg' => $array['N_monthAVG'], 'volume_ratio' => $zarib]);
+            }
+        }
+
 
         Cache::store()->put($namad->id, $array, 10000000); // 10 Minutes
 
