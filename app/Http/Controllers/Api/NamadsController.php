@@ -46,9 +46,9 @@ class NamadsController extends Controller
             }
 
             if(Holding::where('name',$namad->id)->first()){
-                $namad['holding'] = 1;
+                $information['holding'] = 1;
             }else{
-                $namad['holding'] = 0;
+                $information['holding'] = 0;
             }
             $result =  array_merge($information,$namad->getNamadNotifications());
 

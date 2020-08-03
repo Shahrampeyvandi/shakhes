@@ -59,8 +59,6 @@ Route::get('/education/{id}', 'Api\EducationController@view');
 // market routes
 Route::get('/bourse/shakhes', 'Api\MarketController@bshackes');
 Route::get('/farabourse/shakhes', 'Api\MarketController@fshackes');
-
-
 Route::get('/bourse/mostvisited', 'Api\MarketController@bourseMostVisited'); 
 Route::get('/farabourse/mostvisited', 'Api\MarketController@farabourceMostVisited');
 Route::get('/bourse/mosteffect', 'Api\MarketController@bourseEffectInShakhes');
