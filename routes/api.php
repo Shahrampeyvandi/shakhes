@@ -49,7 +49,17 @@ Route::get('/capitalincreases', 'Api\CapitalIncreasesController@getall'); // get
 Route::get('/continuingpaterns', 'Api\PaternsController@getContinuingPaterns'); // get all capitalincreases
 
 
-Route::get('/getvolumetrades/{id?}', 'Api\VolumeTradesController@get'); // افشای اطلاعات با اهمیت سهم
+Route::get('/getvolumetrades/{id?}', 'Api\VolumeTradesController@get'); 
+
+
+
+// *************  S A H A M     M A N   ***************** //
+
+Route::get('/volumetradeincrease/{id}', 'Api\VolumeTradesController@VolumeTradeIncease'); 
+
+
+
+
 Route::get('/education/list', 'Api\EducationController@list'); 
 
 Route::get('/education/addview/{id}', 'Api\EducationController@addViewCount'); 

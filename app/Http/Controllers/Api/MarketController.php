@@ -9,6 +9,7 @@ use Morilog\Jalali\Jalalian;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Namad\NamadsDailyReport;
+use Carbon\Carbon;
 
 class MarketController extends Controller
 {
@@ -18,8 +19,7 @@ class MarketController extends Controller
 
     public function getNamad(Request $request)
     {
-
-
+     
 
         $namad = Namad::find($request->id);
 
@@ -42,6 +42,8 @@ class MarketController extends Controller
                 $information['last_price_change'] = '';
                 $information['last_price_status'] = '';
             }
+            
+           
 
             return response()->json($information, 200);
         }

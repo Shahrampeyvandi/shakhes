@@ -43,7 +43,6 @@ class MembersDataController extends Controller
     }
 
 
-
     public function namads(Request $request)
     {
         $member = $this->token($request->header('Authorization'));
@@ -161,7 +160,7 @@ class MembersDataController extends Controller
         // $member = $this->token(request()->header('Authorization'));
         $namad = Namad::where('id', $namad_id)->first();
         if ($namad) {
-
+            
             if (count($capitalincreases_array = $namad->capital_increases)) {
                 $count = 1;
                 $all = [];
