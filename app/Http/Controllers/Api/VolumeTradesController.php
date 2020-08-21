@@ -26,11 +26,12 @@ class VolumeTradesController extends Controller
             $array['trades_volume'] =  $volume->namad->dailyReports()->latest()->first()->trades_volume;
             $array['base_zarib'] = Setting::first()->trading_volume_ratio;
             $array['current_zarib'] = $volume->volume_ratio;
+            $array['publish_date'] = $volume->created_at;
             $all[] = $array;
         }
 
         return response()->json(
-            $all,
+           ['data'=> $all],
             200
         );
     }
@@ -53,10 +54,10 @@ class VolumeTradesController extends Controller
             $array['vol'] = $this->show_with_symbol($obj->trade_vol);
             $array['ratio'] = $obj->volume_ratio;
             $array['new'] = $obj->new();
-            $array['date'] = $obj->created_at;
+            $array['publish_date'] = $obj->created_at;
             $all[] = $array;
         }
 
-        return response()->json($all, 200);
+        return response()->json(['data'=>$all], 200);
     }
 }
