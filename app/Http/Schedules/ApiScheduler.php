@@ -5,6 +5,7 @@ namespace App\Http\Schedules;
 use Goutte;
 use Exception;
 use Carbon\Carbon;
+use App\MovingAverage;
 use App\Models\Namad\Namad;
 use App\Models\VolumeTrade;
 use Illuminate\Http\Request;
@@ -36,7 +37,7 @@ class ApiScheduler
         $inscode = $namad->inscode;
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=' . $inscode . '&c=57');
         $all = \strip_tags($crawler->html());
-
+        $array['symbol'] = $namad->symbol;
         $explode_all = explode(';', $all);
         $main_data = $explode_all[0];
         $buy_sell = $explode_all[4];
@@ -313,12 +314,63 @@ class ApiScheduler
 
 
         if (($time > $start) && ($time < $end) &&  ((int)$array['N_tradeVol'] > (int)$array['N_monthAVG'])) {
-            $zarib =   (int)$array['N_tradeVol'] / (int)$array['N_monthAVG'];
+            $zarib =   number_format((float)((int)$array['N_tradeVol'] / (int)$array['N_monthAVG']),1,'.','');
             if ($zarib > 4 && VolumeTrade::check($namad->id)) {
                // dd($namad->id);
+             
                 VolumeTrade::create(['namad_id' => $namad->id, 'trade_vol' => $array['N_tradeVol'], 'month_avg' => $array['N_monthAVG'], 'volume_ratio' => $zarib]);
+            }else{
+                VolumeTrade::where('namad_id',$namad->id)->update([
+                    'trade_vol' => $array['N_tradeVol'],
+                    'month_avg' => $array['N_monthAVG'],
+                    'volume_ratio' => $zarib
+                ]);
             }
         }
+// echo $array['pl'] . '<br/>';
+// echo ($array['pl'] - ($array['pl'] * 5) / 100) . ' ';
+        // $days = 100;
+       
+        // $url = 'http://www.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=' . $inscode . '&Top=' . $days . '&A=1';
+        // $crawler = Goutte::request('GET', $url);
+        // $history = \strip_tags($crawler->html());
+        // $explode_history = explode(';', $history);
+        // foreach ($explode_history as $key => $row) {
+        //     (int)$last_price_day = isset(explode('@', $row)[4]) ? explode('@', $row)[4] : '';
+        //     $array[] = (int)$last_price_day;
+        // }
+        // $count =  count($array);
+        // $sum = array_sum($array);
+       
+        //  $avg = number_format((float)($sum / $count), 2, '.', '');
+      
+        // $five_percent = ($array['pl'] * 5) / 100;
+        // $min_check = $array['pl'] - $five_percent;
+        // $max_check = $array['pl'] + $five_percent;
+    
+        // if ($avg > $min_check && $avg < $max_check) {
+        //     $oneDayAgo = $array[0];
+        //     $twoDayAgo = $array[1];
+        //     $threeDayAgo = $array[2];
+        //     if($avg > $oneDayAgo && $avg > $twoDayAgo && $avg >  $threeDayAgo ){
+        //         MovingAverage::create([
+        //             'namad_id' => $namad->id,
+        //             'symbol' => $namad->symbol,
+        //             'avg' => $avg ,
+        //             'status' => 'moghavemat',
+        //             'days' => $days
+        //         ]);
+        //     }
+        //      if($avg < $oneDayAgo && $avg < $twoDayAgo && $avg <  $threeDayAgo ){
+        //         MovingAverage::create([
+        //             'namad_id' => $namad->id,
+        //             'symbol' => $namad->symbol,
+        //             'avg' => $avg ,
+        //             'status' => 'hemayat',
+        //             'days' => $days
+        //         ]);
+        //     }
+        // }
 
 
         Cache::store()->put($namad->id, $array, 10000000); // 10 Minutes

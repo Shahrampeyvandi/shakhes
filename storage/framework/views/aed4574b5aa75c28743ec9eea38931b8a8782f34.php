@@ -37,7 +37,13 @@
                        <?php echo e($disclosure->subject); ?>
 
                     </td>
-                    <td><?php echo e($disclosure->namad->name); ?></td>
+                    <td>
+                        <?php if($disclosure->namad): ?>
+                            
+                        <?php echo e($disclosure->namad->name); ?>
+
+                        <?php endif; ?>
+                    </td>
                      <td><?php echo e(\Morilog\Jalali\Jalalian::forge($disclosure->publish_date)->format('%B %d، %Y')); ?></td>
                 <td>
                     <a href="<?php echo e($disclosure->link_to_codal); ?>" class="text-primary">لینک </a>

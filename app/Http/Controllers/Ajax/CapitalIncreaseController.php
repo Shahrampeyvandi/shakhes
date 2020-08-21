@@ -63,7 +63,7 @@ class CapitalIncreaseController extends Controller
                 if ($item->from == 'compound') {
                     $amounts .= '<span>' . $name2 . '</span><span class="float-left">' . $amount->percent . ' ریال</span></br>';
                 } else {
-                    $amounts .= '<span>' . $amount->percent . ' ریال</span></br>';
+                    $amounts .= '<span>' . $amount->percent . ' درصد</span></br>';
                 }
             }
 

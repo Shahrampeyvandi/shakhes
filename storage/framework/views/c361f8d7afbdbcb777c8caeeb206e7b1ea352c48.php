@@ -25,7 +25,7 @@
                     <div class="form-group col-md-12">
                         <label for="subject" class="col-form-label">موضوع: </label>
                         <input type="text" class="form-control" name="subject" id="subject"
-                            placeholder="">
+                            placeholder="" required>
                     </div>
                     
 
@@ -39,7 +39,7 @@
 
                             </div>
                             <input type="text" class="form-control datepicker-fa" placeholder="" id="date_mind_1"
-                                aria-label="Small" name="date" aria-describedby="inputGroup-sizing-sm">
+                                aria-label="Small" name="date" aria-describedby="inputGroup-sizing-sm" required>
 
                         </div>
                     </div>

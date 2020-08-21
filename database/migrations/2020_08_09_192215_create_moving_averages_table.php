@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateHoldingsTable extends Migration
+class CreateMovingAveragesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,13 @@ class CreateHoldingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('holdings', function (Blueprint $table) {
+        Schema::create('moving_averages', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('namad_id');
+            $table->integer('namad_id');
+            $table->string('avg');
+            $table->string('symbol');
+            $table->string('status');
+            $table->integer('days');
             $table->timestamps();
         });
     }
@@ -27,6 +31,6 @@ class CreateHoldingsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('holdings');
+        Schema::dropIfExists('moving_averages');
     }
 }

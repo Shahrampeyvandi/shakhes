@@ -10,15 +10,13 @@ Route::get('/member', 'Api\MembersDataController@personaldata');
 Route::get('/member/namads', 'Api\MembersDataController@namads');
 Route::post('/member/namads/add', 'Api\MembersDataController@add');
 Route::get('/member/clarifications', 'Api\MembersDataController@getclarifications'); // دریافت شفاف سازی سهام من
-Route::get('/member/clarifications/{id}', 'Api\MembersDataController@namadclarifications'); // دریافت شفاف سازی های یک نماد از سهام من
 
 Route::get('/member/capitalincreases', 'Api\MembersDataController@getcapitalincreases'); // دریافت افزایش سرمایه سهام من
-Route::get('/member/capitalincreases/{id}', 'Api\MembersDataController@namadcapitalincreases'); // دریافت افزایش سرمایه های یک نماد از سهام من
 
 Route::get('/member/notifications', 'Api\MembersDataController@notifications'); 
 
 
-Route::get('/member/disclosures/{id}', 'Api\MembersDataController@namadDisclosures'); // افشای اطلاعات با اهمیت سهم
+Route::get('disclosures/{id}', 'Api\MembersDataController@namadDisclosures'); // افشای اطلاعات با اهمیت سهم
 
 
 // پایان سهام من
@@ -49,14 +47,6 @@ Route::get('/capitalincreases', 'Api\CapitalIncreasesController@getall'); // get
 Route::get('/continuingpaterns', 'Api\PaternsController@getContinuingPaterns'); // get all capitalincreases
 
 
-Route::get('/getvolumetrades/{id?}', 'Api\VolumeTradesController@get'); 
-
-
-
-// *************  S A H A M     M A N   ***************** //
-
-Route::get('/volumetradeincrease/{id}', 'Api\VolumeTradesController@VolumeTradeIncease'); 
-
 
 
 
@@ -79,3 +69,10 @@ Route::get('/bourse/mostpricedecreases', 'Api\MarketController@bourseMostPriceDe
 Route::get('/farabourse/mostpricedecreases', 'Api\MarketController@farabourseMostPriceDecreases');
 Route::get('/bnamad', 'Api\MarketController@getNamad');
 Route::get('/bnamads/search', 'Api\MarketController@search');
+
+
+Route::get('/volumetradeincrease/{id?}', 'Api\VolumeTradesController@VolumeTradeIncease'); 
+Route::get('/getvolumetrades/{id?}', 'Api\VolumeTradesController@get'); 
+Route::get('capitalincreases/{id?}', 'Api\MembersDataController@namadcapitalincreases'); // دریافت افزایش سرمایه های یک نماد از سهام من
+Route::get('clarifications/{id?}', 'Api\MembersDataController@namadclarifications'); // دریافت شفاف سازی های یک نماد از سهام من
+

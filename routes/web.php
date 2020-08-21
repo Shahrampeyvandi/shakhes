@@ -79,4 +79,5 @@ Route::get('/getdata','RedisController@getmain');
 
 
 Route::get('/shakhes','RedisController@shakhes');
+Route::get('/saveDailyReport','RedisController@saveDailyReport');
 

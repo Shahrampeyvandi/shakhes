@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Holding\Holding;
 use App\Models\Namad\Namad;
+use Illuminate\Support\Facades\Cache;
 
 class MoneyReportsController extends Controller
 {
@@ -13,7 +14,8 @@ class MoneyReportsController extends Controller
 
     public function get_holding_data()
     {
-        $holding_obj = Holding::where('name', request()->id)->first();
+        $holding_obj = Holding::where('namad_id', request()->id)->first();
+        $namad = Namad::where('id',request()->id)->first();
         if (is_null($holding_obj)){
             return response()->json(
                 [
@@ -24,36 +26,24 @@ class MoneyReportsController extends Controller
             );
         }
            
- 
-        $getnamadsdata = $holding_obj->showPercentNamads($holding_obj->id);
-
+        $array['arzeshbazar'] = Cache::get($namad->id)['MarketCash'];
+        $getnamadsdata = $holding_obj->showPercentNamads($holding_obj->id,$namad);
         // پرتفوی لحظه ای شرکت
         $portfoy_array = Holding::GetPortfoyAndYesterdayPortfoy($holding_obj);
-        $array['portfoy'] = $portfoy_array[0];
+        // $array['portfoy'] = $portfoy_array[0];
+        // $array['yesterday_portfoy'] = $portfoy_array[1];
         // درصد تغییر پرتفوی
         $array['percent_change_porftoy'] = $portfoy_array[1] == 0 ? 0 : ($portfoy_array[0] - $portfoy_array[1]) / $portfoy_array[1];
         $array['saham'] = $getnamadsdata;
         return response()->json(
            $array,
-                
-            
             200
         );
     }
 
     public function check_if_holding($id)
     {
-        /**
-         * 
-         * شرکت سرمایه کذاری به این صورت هست که از توی پنل خودش انتخاب میکنه که این نماد جزو شرکت های سرمایه گزاریه 
-         * یعنی از توی پنل باید درست کنم مه اگه انتخابش کرد بیاد توی تیبل هلدینگ ها 
-         * پس ما اینجا چک میکنیم که اگه شرکت سرمایه گزاری بود دیگه صورت های مالیشو نمیاریم 
-         * 
-         * اوکیه همینجوری؟؟
-         * 
-         */
-
-
+       
         $namad_obj =  Namad::whereId($id)->first();
         if (!is_null($namad_obj)) {
             $name = $namad_obj->name;
@@ -87,6 +77,8 @@ class MoneyReportsController extends Controller
             );
         }
     }
+
+
     public function getnamadmonthlyreports(Request $request)
     {
 

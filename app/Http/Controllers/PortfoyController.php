@@ -6,6 +6,7 @@ use App\Models\Holding\Holding;
 use App\Models\Namad\Namad;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class PortfoyController extends Controller
@@ -16,10 +17,10 @@ class PortfoyController extends Controller
         $holdings = Holding::latest()->get();
 
 
-        $array=[];
+        $array = [];
         foreach ($holdings as $key => $holding_obj) {
             $name = Namad::where('id', $holding_obj->name)->first()->name;
-           $getportfoy = Holding::GetPortfoyAndYesterdayPortfoy($holding_obj);
+            $getportfoy = Holding::GetPortfoyAndYesterdayPortfoy($holding_obj);
             // پرتفوی لحظه ای شرکت
             $array[$name]['portfoy'] = $getportfoy[0];
             // درصد تغییر پرتفوی
@@ -27,7 +28,7 @@ class PortfoyController extends Controller
             $array[$name]['namad_counts'] = count($holding_obj->namads);
             $array[$name]['id'] = $holding_obj->id;
         }
-       
+
 
         return view('Portfoy.index', compact('array'));
     }
@@ -38,43 +39,45 @@ class PortfoyController extends Controller
 
     public function InsertHolding(Request $request)
     {
-        
+
+
         if (is_null($request->name)) {
             $request->session()->flash('Error', 'نام شرکت را وارد نمایید');
             return back();
         }
-        $total=0;
-    
+        $total = 0;
+
         // جمع ارزش مالی شرکت از ضرب تعداد هرسهم شرکت در  آخرین قیمت سهم
         foreach ($request->namads as $key => $id) {
             $namad = Namad::where('id', $id)->first();
-            $last_price_value = count($namad->dailyReports) ? $namad->dailyReports()->latest()->first()->last_price_value : 0;
 
-            $total += $request->persent[$key] * $last_price_value;
-            
+            $pl = Cache::get($id)['pl'];
+
+            $total += $request->persent[$key] * $pl;
         }
-       
-       
-      
         $holding = new Holding();
         $holding->name = $request->name;
-        if ($holding->save()) {
-            foreach ($request->namads as $key => $id) {
+        
+        $holding->save();
+        foreach ($request->namads as $key => $id) {
+            if (!is_null($id) &&  DB::table('holdings_namads')
+                ->whereNamad_id($id)
+                ->whereHolding_id($holding->id)
+                ->count() == 0
+            ) {
+                $namad = Namad::where('id', $id)->first();
+                $last_price_value =  Cache::get($id)['pl'];
+                $count =  $request->persent[$key] * $last_price_value;
+                $percent = ($count * 100) / $total;
+                $holding->namads()->attach($id, [
+                    'amount_percent' => $percent,
+                    'amount_value' =>  $request->persent[$key],
+                    'change' => 0
 
-                if (!is_null($id) &&  DB::table('holdings_namads')
-                    ->whereNamad_id($id)
-                    ->whereHolding_id($holding->id)
-                    ->count() == 0
-                ) {
-                    $namad = Namad::where('id', $id)->first();
-                    $last_price_value = count($namad->dailyReports) ? $namad->dailyReports()->latest()->first()->last_price_value : 0;        
-                  $count =  $request->persent[$key] * $last_price_value; 
-                  $percent = ($count * 100) / $total; 
-                    
-                    $holding->namads()->attach($id, ['amount_percent' => $percent, 'amount_value' =>  $request->persent[$key], 'change' => 0]);
-                }
+                ]);
             }
         }
+
         return redirect()->route('PortfoyList');
     }
 
@@ -99,34 +102,34 @@ class PortfoyController extends Controller
     {
 
         Holding::where('id', $request->holding)->first()->namads()->detach($request->id);
-        $holding = Holding::where('id',$request->holding)->first();
+        $holding = Holding::where('id', $request->holding)->first();
         // بررسی دوباره درصد پرتفوی سهم ها
-        $total =0;
+        $total = 0;
         foreach ($holding->namads as $key => $namad) {
-          $amount_value =  DB::table('holdings_namads')
-            ->whereNamad_id($namad->id)
-            ->whereHolding_id($request->holding)->first()->amount_value;
+            $amount_value =  DB::table('holdings_namads')
+                ->whereNamad_id($namad->id)
+                ->whereHolding_id($request->holding)->first()->amount_value;
             $last_price_value = count($namad->dailyReports) ? $namad->dailyReports()->latest()->first()->last_price_value : 0;
             $total += $amount_value * $last_price_value;
         }
 
-       
+
 
         foreach ($holding->namads as $key => $namad) {
             $amount_value =  DB::table('holdings_namads')
-            ->whereNamad_id($namad->id)
-            ->whereHolding_id($request->holding)->first()->amount_value;
-            $count =  $amount_value * $last_price_value; 
-            $percent = ($count * 100) / $total; 
+                ->whereNamad_id($namad->id)
+                ->whereHolding_id($request->holding)->first()->amount_value;
+            $count =  $amount_value * $last_price_value;
+            $percent = ($count * 100) / $total;
             DB::table('holdings_namads')
-            ->whereNamad_id($namad->id)
-            ->whereHolding_id($request->holding)
-            ->update([
-                'amount_percent' => $percent,
-            ]);
+                ->whereNamad_id($namad->id)
+                ->whereHolding_id($request->holding)
+                ->update([
+                    'amount_percent' => $percent,
+                ]);
         }
 
-       
+
 
 
         return back();

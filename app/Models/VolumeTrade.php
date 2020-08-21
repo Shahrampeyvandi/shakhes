@@ -11,6 +11,7 @@ class VolumeTrade extends Model
 
 
     protected $guarded  = ['id'];
+    protected $table = 'volume_trades';
     public function namad()
     {
         return $this->belongsTo(Namad::class,'namad_id');
@@ -23,5 +24,10 @@ class VolumeTrade extends Model
         }else{
             return false;
         }
+    }
+
+    public function new()
+    {
+       return $this->created_at->isToday() ? true : false ;
     }
 }

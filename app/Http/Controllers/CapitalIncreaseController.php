@@ -14,7 +14,8 @@ class CapitalIncreaseController extends Controller
     }
     public function Insert(Request $request)
     {
-        
+        // dd($request->all());
+
         $capitalincrease = new CapitalIncrease();
         $capitalincrease->namad_id = $request->namad;
         $capitalincrease->from = $request->type;
@@ -27,14 +28,14 @@ class CapitalIncreaseController extends Controller
                     if(is_null($value)) continue;
                     $percents = new CapitalIncreasePercents();
                     $percents->capital_increase_id = $capitalincrease->id;
-                    $percents->percent = $request->percentarray[$key];
+                    $percents->percent = ($request->percentarray[$key]  * 100) / (int)$request->feli;;
                     $percents->type = $value;
                     $percents->save();
                 }
            }else{
             $percents = new CapitalIncreasePercents();
             $percents->capital_increase_id = $capitalincrease->id;
-            $percents->percent = $request->percent;
+            $percents->percent = ((int)$request->percent * 100) / (int)$request->feli;
             $percents->type = $capitalincrease->from;
             $percents->save();
            }

@@ -19,14 +19,13 @@
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </select>
 
-
-
+            <h6 class="mt-4">سرمایه فعلی:  </h6>
+            <div class="form-group">
+                <input type="number" class="form-control" name="feli" id="feli"  />
+            </div>
             <div class="row m-4 ajax-table">
 
             </div>
-
-
-
 
             <h6 class="mt-4">نوع افزایش سرمایه</h6>
             <div class="d-block">
@@ -87,10 +86,11 @@
 
                             </select>
                         </div>
+
                         <div class="form-group col-md-4">
 
                             <input type="number" class="form-control" name="percentarray[]" id=""
-                                placeholder="میزان افزایش سرمایه برحسب ریال" />
+                                placeholder="مبلغ افزایش سرمایه" />
                         </div>
 
                     </div>
@@ -109,14 +109,16 @@
                 </div>
                 <div class="row ">
                     <div class="form-group col-md-6">
-
-                        <select required name="step" class="form-control" id="exampleFormControlSelect2">
-                            <option value="">مرحله</option>
-                            <option value="اول">اول</option>
-                            <option value="دوم">دوم</option>
-                            <option value="سوم">سوم</option>
-
-
+                        <select name="step" class="form-control" id="exampleFormControlSelect2">
+                            <option value="پیشنهاد هیئت مدیره به مجمع عمومی فوق العاده">پیشنهاد هیئت مدیره به مجمع عمومی
+                                فوق العاده</option>
+                            <option value="اظهار نظر حسابرس و بازرس قانونی">اظهار نظر حسابرس و بازرس قانونی</option>
+                            <option value="مدارک و مستندات درخواست افزایش سرمایه">مدارک و مستندات درخواست افزایش سرمایه
+                            </option>
+                            <option value="تمدید مهلت استفاده از مجوز افزایش سرمایه">تمدید مهلت استفاده از مجوز افزایش
+                                سرمایه</option>
+                            <option value="اصلاحیه">اصلاحیه</option>
+                            <option value="دعوت به مجمع فوق العاده">دعوت به مجمع فوق العاده</option>
                         </select>
                     </div>
                     <div class="col-md-6">

@@ -9,17 +9,73 @@ use Morilog\Jalali\Jalalian;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Namad\NamadsDailyReport;
+use App\MovingAverage;
 use Carbon\Carbon;
 
 class MarketController extends Controller
 {
 
 
-
-
     public function getNamad(Request $request)
     {
-     
+
+
+
+    //     $days = 100;
+
+    //     $url = 'http://www.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=70289374539527245&Top=' . $days . '&A=1';
+    //     $crawler = Goutte::request('GET', $url);
+    //     $history = \strip_tags($crawler->html());
+    //    return $explode_history = explode(';', $history);
+    //     foreach ($explode_history as $key => $row) {
+    //         (int)$last_price_day = isset(explode('@', $row)[4]) ? explode('@', $row)[4] : '';
+    //         $array[] = (int)$last_price_day;
+    //     }
+    //     return $array;
+
+    //     $count =  count($array);
+    //     $sum = array_sum($array);
+    //     $avg = number_format((float)($sum / $count), 2, '.', '');
+    //     $five_percent = ($array['pl'] * 5) / 100;
+    //     $min_check = $array['pl'] - $five_percent;
+    //     $max_check = $array['pl'] + $five_percent;
+
+    //     if ($avg > $min_check && $avg < $max_check) {
+    //         $oneDayAgo = $array[0];
+    //         $twoDayAgo = $array[1];
+    //         $threeDayAgo = $array[2];
+    //         if ($avg > $oneDayAgo && $avg > $twoDayAgo && $avg >  $threeDayAgo) {
+    //             MovingAverage::create([
+    //                 'namad_id' => $namad->id,
+    //                 'symbol' => $namad->symbol,
+    //                 'avg' => $avg,
+    //                 'status' => 'moghavemat',
+    //                 'days' => $days
+    //             ]);
+    //         }
+    //         if ($avg < $oneDayAgo && $avg < $twoDayAgo && $avg <  $threeDayAgo) {
+    //             MovingAverage::create([
+    //                 'namad_id' => $namad->id,
+    //                 'symbol' => $namad->symbol,
+    //                 'avg' => $avg,
+    //                 'status' => 'hemayat',
+    //                 'days' => $days
+    //             ]);
+    //         }
+    //     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         $namad = Namad::find($request->id);
 
@@ -42,8 +98,8 @@ class MarketController extends Controller
                 $information['last_price_change'] = '';
                 $information['last_price_status'] = '';
             }
-            
-           
+
+
 
             return response()->json($information, 200);
         }

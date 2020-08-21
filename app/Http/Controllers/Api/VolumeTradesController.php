@@ -35,22 +35,28 @@ class VolumeTradesController extends Controller
         );
     }
 
-    public function VolumeTradeIncease($id)
+    public function VolumeTradeIncease($id = null)
     {
-
-        $namad = Namad::where('id', $id)->first();
-        if ($namad) {
-
-            $information = Cache::get($namad->id);
-            $monthAVG = $information['N_monthAVG'];
-            $tradevol = $information['N_tradevol'];
-
-            $zarib = $tradevol / $monthAVG;
-            if ($zarib > 4) {
-                VolumeTrade::create(['namad_id' => $id, 'trade_vol' => $tradevol, 'month_avg' => $monthAVG, 'volume_ratio' => $zarib]);
-            }
-
-            return response()->json($information, 200);
+        if ($id !== null) {
+            $namad = Namad::where('id', $id)->first();
+            $collection = VolumeTrade::where('namad_id', $namad->id)->get();
+        } else {
+            $collection = VolumeTrade::latest()->get();
         }
+
+        $all = [];
+        $array = [];
+        foreach ($collection as $key => $obj) {
+            $array['symbol'] = $obj->namad ? $obj->namad->symbol : '';
+            $array['name'] = $obj->namad ? $obj->namad->name : '';
+            $array['mothAVG'] = $this->show_with_symbol($obj->month_avg);
+            $array['vol'] = $this->show_with_symbol($obj->trade_vol);
+            $array['ratio'] = $obj->volume_ratio;
+            $array['new'] = $obj->new();
+            $array['date'] = $obj->created_at;
+            $all[] = $array;
+        }
+
+        return response()->json($all, 200);
     }
 }

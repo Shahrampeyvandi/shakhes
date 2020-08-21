@@ -44,6 +44,10 @@ class RedisController extends Controller
     public function shakhes()
     {
 
+  
+    
+
+
         // $value = Cache::get('778253364357513');
         // dd($value);
         // $client = new \GuzzleHttp\Client();
@@ -64,13 +68,12 @@ class RedisController extends Controller
         // ];
 
         $namads = Namad::all();
-       $this->saveDailyReport(Namad::find(248));
-
+     
+            $array = [];
          foreach ($namads as $namad) {
-            try {
+            
                 $this->saveDailyReport($namad);
-            } catch (Exception $e) {
-            }
+           
          }
     }
 
@@ -78,10 +81,11 @@ class RedisController extends Controller
     {
 
         $inscode = $namad->inscode;
-        $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=' . $inscode . '&c=57');
+        $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i='.$inscode.'&c=57');
         $all = \strip_tags($crawler->html());
 
         $explode_all = explode(';', $all);
+        var_dump($explode_all);
         $main_data = $explode_all[0];
         $buy_sell = $explode_all[4];
         $orders = $explode_all[2];
@@ -141,10 +145,13 @@ class RedisController extends Controller
         } else {
             $explode_orders[14] = (int) $explode_orders[14];
         }
+        
         $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13]);
         $dailyReport->lastsells = serialize($array['lastsells']);
         $data['personbuy'] = explode(',', $buy_sell)[0];
         $data['legalbuy'] = explode(',', $buy_sell)[1];
+        // dd($buy_sell);
+        // dd($data['legalbuy']);
         $data['personsell'] = explode(',', $buy_sell)[3];
         $data['legalsell'] = explode(',', $buy_sell)[4];
         $data['personbuycount'] = explode(',', $buy_sell)[5];
@@ -247,7 +254,7 @@ class RedisController extends Controller
 
         $dailyReport->tradevol = $array['tradevol'];
         $dailyReport->tradecash = $array['tradecash'];
-
+        
 
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=' . $inscode . '');
         $all = \strip_tags($crawler->html());
@@ -348,7 +355,7 @@ class RedisController extends Controller
         $dailyReport->groupPE = $array['groupPE'];
         $dailyReport->sahamShenavar = $array['sahamShenavar'];
 
-
+       
         $start = Carbon::parse('09:00')->timestamp;
         $end = Carbon::parse('18:30')->timestamp;
         //$time = Carbon::parse($array['time'])->timestamp;
@@ -357,7 +364,7 @@ class RedisController extends Controller
         //dd([Carbon::now()->timestamp,$start,$end,$time]);
 
 
-        if (($time > $start) && ($time < $end) &&  ((int)$array['N_tradeVol'] > (int)$array['N_monthAVG'])) {
+        if ( ((int)$array['N_tradeVol'] > (int)$array['N_monthAVG'])) {
 
             $zarib =   (int)$array['N_tradeVol'] / (int)$array['N_monthAVG'];
             if ($zarib > 4 && VolumeTrade::check($namad->id)) {
@@ -367,7 +374,7 @@ class RedisController extends Controller
             }
         }
 
-        dd($dailyReport);
+        
 
         Cache::store()->put($namad->id, $array, 10000000); // 10 Minutes
 

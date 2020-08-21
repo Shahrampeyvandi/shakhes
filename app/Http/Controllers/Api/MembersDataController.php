@@ -52,9 +52,9 @@ class MembersDataController extends Controller
 
         $array = [];
         foreach ($namads_array as $key => $namad) {
-          $information = Cache::get($namad->id);
+            $information = Cache::get($namad->id);
 
-          $data=[];
+            $data = [];
             $data['symbol'] = $namad->symbol;
             $data['name'] = $namad->name;
             $data['id'] = $namad->id;
@@ -65,21 +65,20 @@ class MembersDataController extends Controller
                 $data['final_price_percent'] = $information['py'] ?  abs(number_format((float)(($information['pl'] - $information['py']) * 100) / $information['py'], 2, '.', '')) : '';
                 $data['last_price_change'] = abs($information['pl'] - $information['py']);
                 $data['last_price_status'] = ($information['pl'] - $information['py']) > 0 ? '1' : '0';
-                if(isset($information['pl'])){
-                    $data['status'] = $information['status'] ;
-                }else{
-                    $data['status'] = 'red' ;
+                if (isset($information['pl'])) {
+                    $data['status'] = $information['status'];
+                } else {
+                    $data['status'] = 'red';
                 }
             } else {
                 $data['final_price_value'] = '0';
                 $data['final_price_percent'] = '0';
                 $data['last_price_change'] = '0';
                 $data['last_price_status'] = '0';
-                $data['status'] = 'red' ;
+                $data['status'] = 'red';
             }
 
-          $all[] = $data;
-
+            $all[] = $data;
         }
 
         return response()->json(
@@ -104,17 +103,22 @@ class MembersDataController extends Controller
             200
         );
     }
-    public function namadclarifications($namad_id)
+
+
+    public function namadclarifications($namad_id = null)
     {
 
-        // $member = $this->token(request()->header('Authorization'));
+        if ($namad_id) {
+            $clarifications_array = clarification::where('namad_id', $namad_id)->latest()->get();
+        } else {
+            $clarifications_array = clarification::latest()->get();
+        }
 
-        // $member_namads = $member->namads->pluck('id')->toArray();
-
-        if (count($clarifications_array = clarification::where('namad_id', $namad_id)->latest()->get())) {
+        if (count($clarifications_array)) {
             $all = [];
             foreach ($clarifications_array as $key => $clarification_obj) {
-                $array['namad'] = $clarification_obj->namad->name;
+                $array['symbol'] = $clarification_obj->namad ? $clarification_obj->namad->symbol : '';
+                $array['name'] = $clarification_obj->namad ? $clarification_obj->namad->name : '';
                 $array['subject'] = $clarification_obj->subject;
                 $array['publish_date'] = $clarification_obj->publish_date;
                 $array['link_to_codal'] = $clarification_obj->link_to_codal;
@@ -132,6 +136,8 @@ class MembersDataController extends Controller
             );
         }
     }
+
+
     public function getclarifications()
     {
         $member = $this->token(request()->header('Authorization'));
@@ -154,54 +160,45 @@ class MembersDataController extends Controller
         );
     }
 
-    public function namadcapitalincreases($namad_id)
+    public function namadcapitalincreases($namad_id = null)
     {
+        if ($namad_id) {
+            $namad = Namad::where('id', $namad_id)->first();
+            $capitalincreases_array = $namad->capital_increases;
+        } else {
+            $capitalincreases_array = CapitalIncrease::latest()->get();
+        }
 
-        // $member = $this->token(request()->header('Authorization'));
-        $namad = Namad::where('id', $namad_id)->first();
-        if ($namad) {
-            
-            if (count($capitalincreases_array = $namad->capital_increases)) {
-                $count = 1;
-                $all = [];
-                foreach ($capitalincreases_array as $key => $capitalincrease_obj) {
+        if (count($capitalincreases_array)) {
+            $count = 1;
+            $all = [];
+            foreach ($capitalincreases_array as $key => $capitalincrease_obj) {
+                $array['symbol'] = $capitalincrease_obj->namad ?  $capitalincrease_obj->namad->symbol : '';
+                $array['name'] = $capitalincrease_obj->namad ?  $capitalincrease_obj->namad->name : '';
+                $array['step'] = $capitalincrease_obj->step;
 
-                    $array['namad'] = $capitalincrease_obj->namad->name;
-                    $array['step'] = $capitalincrease_obj->step;
-                    // چک میشود اگر افزایش سرمایه ترکیبی باشد
-                    $array["from_cash"] = 0;
-                    $array["from_stored_gain"] = 0;
-                    $array["from_assets"] = 0;
+                $array["from_cash"] = 0;
+                $array["from_stored_gain"] = 0;
+                $array["from_assets"] = 0;
 
-                    foreach ($capitalincrease_obj->amounts as $key => $item) {
-
-                        $array["from_$item->type"] = $item->percent;
-                    }
-
-                    $percents = $capitalincrease_obj->showPercents();
-                    $array["percent_from_cash"] = $percents['percent_from_cash'];
-                    $array["percent_from_stored_gain"] = $percents['percent_from_stored_gain'];
-                    $array["percent_from_assets"] = $percents['percent_from_assets'];
-
-                    $array['publish_date'] = $capitalincrease_obj->publish_date;
-                    $array['link_to_codal'] = $capitalincrease_obj->link_to_codal;
-                    $array['description'] = $capitalincrease_obj->description;
-                    $array['new'] = $capitalincrease_obj->new;
-                    $all[] = $array;
-                    $count++;
+                foreach ($capitalincrease_obj->amounts as $key => $item) {
+                    $array["from_$item->type"] = $item->percent;
                 }
-            } else {
-                return response()->json(
-                    ['error' => 'هیج اطلاعاتی وجود ندارد'],
-                    401
-                );
+
+                $array['publish_date'] = $capitalincrease_obj->publish_date;
+                $array['link_to_codal'] = $capitalincrease_obj->link_to_codal;
+                $array['description'] = $capitalincrease_obj->description;
+                $array['new'] = $capitalincrease_obj->new();
+                $all[] = $array;
+                $count++;
             }
         } else {
             return response()->json(
-                ['error' => 'نماد مورد نظر پیدا نشد'],
+                ['error' => 'هیج اطلاعاتی وجود ندارد'],
                 401
             );
         }
+
 
         return response()->json(
             ['data' => $all],

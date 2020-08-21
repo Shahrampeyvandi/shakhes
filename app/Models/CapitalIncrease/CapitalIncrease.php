@@ -40,4 +40,9 @@ class CapitalIncrease extends Model
         return $array;
 
     }
+
+      public function new()
+    {
+       return $this->created_at->isToday() ? true : false ;
+    }
 }
