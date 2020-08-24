@@ -50,6 +50,8 @@ class NamadsController extends Controller
             }else{
                 $information['holding'] = 0;
             }
+            $information['holding'] = 0;
+
             $result =  array_merge($information,$namad->getNamadNotifications());
 
             return response()->json($result, 200);
