@@ -40,7 +40,7 @@ Route::get('/getnamadmonthlyreports', 'Api\MoneyReportsController@getnamadmonthl
 Route::get('/getnamadseasonalreports', 'Api\MoneyReportsController@getnamadseasonalreports');
 Route::get('/getnamadyearlyreports', 'Api\MoneyReportsController@getnamadyearlyreports');
 
-Route::get('/getholdingdata', 'Api\MoneyReportsController@get_holding_data');
+
 
 Route::get('/clarifications', 'Api\ClarificationController@getall'); // get all clarifications
 Route::get('/capitalincreases', 'Api\CapitalIncreasesController@getall'); // get all capitalincreases
@@ -76,3 +76,6 @@ Route::get('/getvolumetrades/{id?}', 'Api\VolumeTradesController@get');
 Route::get('capitalincreases/{id?}', 'Api\MembersDataController@namadcapitalincreases'); // دریافت افزایش سرمایه های یک نماد از سهام من
 Route::get('clarifications/{id?}', 'Api\MembersDataController@namadclarifications'); // دریافت شفاف سازی های یک نماد از سهام من
 
+Route::get('/getholdingdata/{id}', 'Api\MoneyReportsController@get_holding_data');
+
+Route::get('/getholdings', 'Api\MoneyReportsController@getHoldings');

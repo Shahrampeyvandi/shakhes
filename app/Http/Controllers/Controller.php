@@ -7,6 +7,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Morilog\Jalali\Jalalian;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class Controller extends BaseController
@@ -54,5 +55,10 @@ class Controller extends BaseController
         } else {
             return (int)$value;
         }
+    }
+
+    public function get_current_date_shamsi()
+    {
+        return Jalalian::forge('now')->format('%Y/%m/%d');
     }
 }

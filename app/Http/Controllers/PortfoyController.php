@@ -19,7 +19,7 @@ class PortfoyController extends Controller
 
         $array = [];
         foreach ($holdings as $key => $holding_obj) {
-            $name = Namad::where('id', $holding_obj->name)->first()->name;
+            $name = Namad::where('id', $holding_obj->namad_id)->first()->name;
             $getportfoy = Holding::GetPortfoyAndYesterdayPortfoy($holding_obj);
             // پرتفوی لحظه ای شرکت
             $array[$name]['portfoy'] = $getportfoy[0];
@@ -56,7 +56,7 @@ class PortfoyController extends Controller
             $total += $request->persent[$key] * $pl;
         }
         $holding = new Holding();
-        $holding->name = $request->name;
+        $holding->namad_id = $request->name;
         
         $holding->save();
         foreach ($request->namads as $key => $id) {

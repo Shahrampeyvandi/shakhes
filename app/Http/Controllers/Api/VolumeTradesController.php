@@ -44,16 +44,19 @@ class VolumeTradesController extends Controller
             $collection = VolumeTrade::latest()->get();
         }
 
-        $all = [];
+        $all = [
+            'saat' => date('H:i'),
+            'tarikh' => $this->get_current_date_shamsi()
+            ];
         $array = [];
         foreach ($collection as $key => $obj) {
-            $array['symbol'] = $obj->namad ? $obj->namad->symbol : '';
-            $array['name'] = $obj->namad ? $obj->namad->name : '';
+            $array['namad'] = Cache::get($obj->id);
             $array['mothAVG'] = $this->show_with_symbol($obj->month_avg);
             $array['vol'] = $this->show_with_symbol($obj->trade_vol);
             $array['ratio'] = $obj->volume_ratio;
             $array['new'] = $obj->new();
             $array['date'] = $obj->created_at;
+           
             $all[] = $array;
         }
 

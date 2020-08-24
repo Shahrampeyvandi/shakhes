@@ -115,10 +115,12 @@ class MembersDataController extends Controller
         }
 
         if (count($clarifications_array)) {
-            $all = [];
+            $all = [
+            'saat' => date('H:i'),
+            'tarikh' => $this->get_current_date_shamsi()
+            ];
             foreach ($clarifications_array as $key => $clarification_obj) {
-                $array['symbol'] = $clarification_obj->namad ? $clarification_obj->namad->symbol : '';
-                $array['name'] = $clarification_obj->namad ? $clarification_obj->namad->name : '';
+                $array['namad'] = $clarification_obj->namad ? Cache::get($clarification_obj->namad->id) : '';
                 $array['subject'] = $clarification_obj->subject;
                 $array['publish_date'] = $clarification_obj->publish_date;
                 $array['link_to_codal'] = $clarification_obj->link_to_codal;
@@ -171,10 +173,12 @@ class MembersDataController extends Controller
 
         if (count($capitalincreases_array)) {
             $count = 1;
-            $all = [];
+            $all = [
+            'saat' => date('H:i'),
+            'tarikh' => $this->get_current_date_shamsi()
+            ];
             foreach ($capitalincreases_array as $key => $capitalincrease_obj) {
-                $array['symbol'] = $capitalincrease_obj->namad ?  $capitalincrease_obj->namad->symbol : '';
-                $array['name'] = $capitalincrease_obj->namad ?  $capitalincrease_obj->namad->name : '';
+                $array['namad'] = $capitalincrease_obj->namad ?  Cache::get($capitalincrease_obj->namad->id) : '';
                 $array['step'] = $capitalincrease_obj->step;
 
                 $array["from_cash"] = 0;
@@ -189,6 +193,7 @@ class MembersDataController extends Controller
                 $array['link_to_codal'] = $capitalincrease_obj->link_to_codal;
                 $array['description'] = $capitalincrease_obj->description;
                 $array['new'] = $capitalincrease_obj->new();
+
                 $all[] = $array;
                 $count++;
             }

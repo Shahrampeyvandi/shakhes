@@ -12,22 +12,22 @@ class MoneyReportsController extends Controller
 {
 
 
-    public function get_holding_data()
+    public function get_holding_data($id = null)
     {
-        $holding_obj = Holding::where('namad_id', request()->id)->first();
-        $namad = Namad::where('id',request()->id)->first();
-        if (is_null($holding_obj)){
+        $holding_obj = Holding::where('namad_id', $id)->first();
+        $namad = Namad::where('id', $id)->first();
+        if (is_null($holding_obj)) {
             return response()->json(
                 [
                     'data' => [],
-                    'error'=>true
+                    'error' => true
                 ],
                 401
             );
         }
-           
+
         $array['arzeshbazar'] = Cache::get($namad->id)['MarketCash'];
-        $getnamadsdata = $holding_obj->showPercentNamads($holding_obj->id,$namad);
+        $getnamadsdata = $holding_obj->showPercentNamads($holding_obj->id, $namad);
         // پرتفوی لحظه ای شرکت
         $portfoy_array = Holding::GetPortfoyAndYesterdayPortfoy($holding_obj);
         // $array['portfoy'] = $portfoy_array[0];
@@ -36,14 +36,40 @@ class MoneyReportsController extends Controller
         $array['percent_change_porftoy'] = $portfoy_array[1] == 0 ? 0 : ($portfoy_array[0] - $portfoy_array[1]) / $portfoy_array[1];
         $array['saham'] = $getnamadsdata;
         return response()->json(
-           $array,
+            $array,
+            200
+        );
+    }
+
+    public function getHoldings()
+    {
+        $all = [
+            'saat' => date('H:i'),
+            'tarikh' => $this->get_current_date_shamsi()
+        ];
+        
+        $collection = Holding::latest()->get();
+        foreach ($collection as $key => $item) {
+            $array = [];
+           $cache =  Cache::get($item->namad_id);
+            $namad = Namad::where('id', $item->namad_id)->first();
+            $array['name'] = $cache ? $cache['symbol'] : '';
+            $array['arzeshbazar'] = $cache ? $cache['MarketCash'] : '';
+            $portfoy_array = Holding::GetPortfoyAndYesterdayPortfoy($item);
+            $array['percent_change_porftoy'] = $portfoy_array[1] == 0 ? 0 : ($portfoy_array[0] - $portfoy_array[1]) / $portfoy_array[1];
+            $array['namads_count'] = count($item->namads);
+            $all['holdings'][] = $array;
+        }
+
+         return response()->json(
+            $all,
             200
         );
     }
 
     public function check_if_holding($id)
     {
-       
+
         $namad_obj =  Namad::whereId($id)->first();
         if (!is_null($namad_obj)) {
             $name = $namad_obj->name;
@@ -53,7 +79,7 @@ class MoneyReportsController extends Controller
                 return response()->json(
                     [
                         'data' => [],
-                        'error'=>true
+                        'error' => true
                     ],
                     401
                 );
