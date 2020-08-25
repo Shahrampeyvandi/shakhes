@@ -37,7 +37,9 @@ class ApiScheduler
         $inscode = $namad->inscode;
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=' . $inscode . '&c=57');
         $all = \strip_tags($crawler->html());
+        $array=[];
         $array['symbol'] = $namad->symbol;
+        $array['name'] = $namad->name;
         $explode_all = explode(';', $all);
         $main_data = $explode_all[0];
         $buy_sell = $explode_all[4];

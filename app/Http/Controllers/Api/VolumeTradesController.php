@@ -41,25 +41,40 @@ class VolumeTradesController extends Controller
         if ($id !== null) {
             $namad = Namad::where('id', $id)->first();
             $collection = VolumeTrade::where('namad_id', $namad->id)->get();
+
         } else {
             $collection = VolumeTrade::latest()->get();
+            $all = [
+                'time' => $this->get_current_date_shamsi().'_'.date('H:i'),
+                ];
         }
 
-        $all = [
-            'saat' => date('H:i'),
-            'tarikh' => $this->get_current_date_shamsi()
-            ];
-        $array = [];
+
+       
+        $list = [];
         foreach ($collection as $key => $obj) {
-            $array['namad'] = Cache::get($obj->id);
+            $array=[];
+            $namad = Namad::where('id', $obj->namad_id)->first();
+            $array['namad'] = Cache::get($obj->namad_id);
+            $array['namad']['symbol'] = $namad->symbol;
+            $array['namad']['name'] = $namad->name;
             $array['mothAVG'] = $this->show_with_symbol($obj->month_avg);
             $array['vol'] = $this->show_with_symbol($obj->trade_vol);
             $array['ratio'] = $obj->volume_ratio;
             $array['new'] = $obj->new();
-            $array['publish_date'] = $obj->created_at;
-            $all[] = $array;
+            $array['publish_date'] = substr($obj->created_at,0,10);
+            $list[] = $array;
+        }
+        if ($id !== null) {
+            return response()->json(['data'=>$list], 200);
+
+        }else{
+            $all['data']=$list;
+
+            return response()->json($all, 200);
+
         }
 
-        return response()->json(['data'=>$all], 200);
+
     }
 }

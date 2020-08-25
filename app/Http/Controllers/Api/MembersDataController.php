@@ -113,24 +113,38 @@ class MembersDataController extends Controller
         } else {
             $clarifications_array = clarification::latest()->get();
         }
+        $all = [];
+
 
         if (count($clarifications_array)) {
-            $all = [
-            'saat' => date('H:i'),
-            'tarikh' => $this->get_current_date_shamsi()
-            ];
+            $list = [];
             foreach ($clarifications_array as $key => $clarification_obj) {
                 $array['namad'] = $clarification_obj->namad ? Cache::get($clarification_obj->namad->id) : '';
+                $namad = Namad::where('id', $clarification_obj->namad->id)->first();
+                $array['namad'] = $clarification_obj->namad ?  Cache::get($clarification_obj->namad->id) : '';
+                $array['namad']['symbol'] = $namad->symbol;
+                $array['namad']['name'] = $namad->name;
                 $array['subject'] = $clarification_obj->subject;
                 $array['publish_date'] = $clarification_obj->publish_date;
                 $array['link_to_codal'] = $clarification_obj->link_to_codal;
                 $array['new'] = $clarification_obj->new;
-                $all[] = $array;
+                $list[] = $array;
             }
-            return response()->json(
-                ['data' => $all],
-                200
-            );
+
+
+            if ($namad_id) {
+                return response()->json(
+                    ['data' => $list],
+                    200
+                );
+            } else {
+                $all = [
+                    'time' => $this->get_current_date_shamsi() . '_' . date('H:i'),
+                ];
+                $all['data'] = $list;
+
+                return response()->json($all, 200);
+            }
         } else {
             return response()->json(
                 ['error' => 'هیج اطلاعاتی وجود ندارد'],
@@ -170,15 +184,16 @@ class MembersDataController extends Controller
         } else {
             $capitalincreases_array = CapitalIncrease::latest()->get();
         }
+        $all = [];
 
         if (count($capitalincreases_array)) {
-            $count = 1;
-            $all = [
-            'saat' => date('H:i'),
-            'tarikh' => $this->get_current_date_shamsi()
-            ];
+            $list = [];
             foreach ($capitalincreases_array as $key => $capitalincrease_obj) {
+                $array = [];
+                $namad = Namad::where('id', $capitalincrease_obj->namad->id)->first();
                 $array['namad'] = $capitalincrease_obj->namad ?  Cache::get($capitalincrease_obj->namad->id) : '';
+                $array['namad']['symbol'] = $namad->symbol;
+                $array['namad']['name'] = $namad->name;
                 $array['step'] = $capitalincrease_obj->step;
 
                 $array["from_cash"] = 0;
@@ -194,8 +209,7 @@ class MembersDataController extends Controller
                 $array['description'] = $capitalincrease_obj->description;
                 $array['new'] = $capitalincrease_obj->new();
 
-                $all[] = $array;
-                $count++;
+                $list[] = $array;
             }
         } else {
             return response()->json(
@@ -204,11 +218,19 @@ class MembersDataController extends Controller
             );
         }
 
+        if ($namad_id) {
+            return response()->json(
+                ['data' => $list],
+                200
+            );
+        } else {
+            $all = [
+                'time' => $this->get_current_date_shamsi() . '_' . date('H:i'),
+            ];
+            $all['data'] = $list;
 
-        return response()->json(
-            ['data' => $all],
-            200
-        );
+            return response()->json($all, 200);
+        }
     }
 
     public function getcapitalincreases()
