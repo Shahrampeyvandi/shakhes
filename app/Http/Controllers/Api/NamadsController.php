@@ -45,7 +45,7 @@ class NamadsController extends Controller
                 $information['status'] = 'red' ;
             }
 
-            if(Holding::where('name',$namad->id)->first()){
+            if(Holding::where('namad_id',$namad->id)->first()){
                 $information['holding'] = 1;
             }else{
                 $information['holding'] = 0;

@@ -14,8 +14,15 @@ class MoneyReportsController extends Controller
 
     public function get_holding_data($id = null)
     {
+        $arraym = [
+            'time' => $this->get_current_date_shamsi().'_'.date('H:i'),
+        ];
+
         $holding_obj = Holding::where('namad_id', $id)->first();
         $namad = Namad::where('id', $id)->first();
+        $array['namad']['symbol'] = $namad->symbol ;
+
+        $array['namad']['status'] = 'green' ;
         if (is_null($holding_obj)) {
             return response()->json(
                 [
@@ -26,7 +33,7 @@ class MoneyReportsController extends Controller
             );
         }
 
-        $array['arzeshbazar'] = Cache::get($namad->id)['MarketCash'];
+        $array['marketvalue'] = Cache::get($namad->id)['MarketCash'];
         $getnamadsdata = $holding_obj->showPercentNamads($holding_obj->id, $namad);
         // پرتفوی لحظه ای شرکت
         $portfoy_array = Holding::GetPortfoyAndYesterdayPortfoy($holding_obj);
@@ -35,8 +42,10 @@ class MoneyReportsController extends Controller
         // درصد تغییر پرتفوی
         $array['percent_change_porftoy'] = $portfoy_array[1] == 0 ? 0 : ($portfoy_array[0] - $portfoy_array[1]) / $portfoy_array[1];
         $array['saham'] = $getnamadsdata;
+
+        $arraym['datasingle']=$array;
         return response()->json(
-            $array,
+            $arraym,
             200
         );
     }
@@ -44,8 +53,7 @@ class MoneyReportsController extends Controller
     public function getHoldings()
     {
         $all = [
-            'saat' => date('H:i'),
-            'tarikh' => $this->get_current_date_shamsi()
+            'time' => $this->get_current_date_shamsi().'_'.date('H:i'),
         ];
         
         $collection = Holding::latest()->get();
@@ -53,13 +61,38 @@ class MoneyReportsController extends Controller
             $array = [];
            $cache =  Cache::get($item->namad_id);
             $namad = Namad::where('id', $item->namad_id)->first();
-            $array['name'] = $cache ? $cache['symbol'] : '';
-            $array['arzeshbazar'] = $cache ? $cache['MarketCash'] : '';
+            $array['id'] = $namad->id ;
+        
+            $array['namad']['symbol'] = $namad->symbol ;
+
+            $array['namad']['status'] = 'green' ;
+            $array['marketvalue'] = $cache ? $cache['MarketCash'] : '';
             $portfoy_array = Holding::GetPortfoyAndYesterdayPortfoy($item);
             $array['percent_change_porftoy'] = $portfoy_array[1] == 0 ? 0 : ($portfoy_array[0] - $portfoy_array[1]) / $portfoy_array[1];
-            $array['namads_count'] = count($item->namads);
-            $all['holdings'][] = $array;
+            $array['countnamad'] = count($item->namads);
+            $all['data'][] = $array;
         }
+
+         return response()->json(
+            $all,
+            200
+        );
+    }
+
+    public function getfinancial($id)
+    {
+        $all = [
+            'time' => $this->get_current_date_shamsi().'_'.date('H:i'),
+        ];
+
+        $namad = Namad::where('id', $id)->first();
+        $cache =  Cache::get($namad->id);
+        $cache['symbol']=$namad->symbol;
+        $cache['name']=$namad->name;
+
+        $all['datasingle'] = $cache ;
+        
+        
 
          return response()->json(
             $all,
