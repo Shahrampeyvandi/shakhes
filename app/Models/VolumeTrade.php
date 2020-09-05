@@ -18,7 +18,7 @@ class VolumeTrade extends Model
     }
 
     public static function check($id) {
-       $count = static::where('namad_id',$id)->where('created_at',Carbon::today())->count();
+       $count = static::where('namad_id',$id)->count();
         if($count == 0) {
             return true;
         }else{
