@@ -44,8 +44,8 @@ class RedisController extends Controller
     public function shakhes()
     {
 
-  
-    
+
+
 
 
         // $value = Cache::get('778253364357513');
@@ -68,24 +68,24 @@ class RedisController extends Controller
         // ];
 
         $namads = Namad::all();
-     
-            $array = [];
-         foreach ($namads as $namad) {
-            
-                $this->saveDailyReport($namad);
-           
-         }
+
+        $array = [];
+        foreach ($namads as $namad) {
+
+            $this->saveDailyReport($namad);
+        }
     }
 
     public function saveDailyReport($namad)
     {
 
-        $inscode = $namad->inscode;
-        $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i='.$inscode.'&c=57');
-        $all = \strip_tags($crawler->html());
 
+
+        $inscode = $namad->inscode;
+        $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=' . $inscode . '&c=57');
+        $all = \strip_tags($crawler->html());
+        $array['symbol'] = $namad->symbol;
         $explode_all = explode(';', $all);
-        var_dump($explode_all);
         $main_data = $explode_all[0];
         $buy_sell = $explode_all[4];
         $orders = $explode_all[2];
@@ -94,70 +94,70 @@ class RedisController extends Controller
         $dailyReport->namad_id = $namad->id;
 
 
-        $explode_orders = explode('@', $orders);
-        if ((int) $explode_orders[1] > 1000000 && (int) $explode_orders[1] < 1000000000) {
-            $explode_orders[1] = number_format((int) $explode_orders[1] / 1000000, 2) . "M";
-        } elseif ((int) $explode_orders[1] > 1000000000) {
-            $explode_orders[1] = number_format((int) $explode_orders[1] / 1000000000, 1) . "B";
-        } else {
-            $explode_orders[1] = (int) $explode_orders[1];
-        }
-        $array['lastbuys'][] = array('tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2]);
-        if ((int) $explode_orders[6] > 1000000 && (int) $explode_orders[6] < 1000000000) {
-            $explode_orders[6] = number_format((int) $explode_orders[6] / 1000000, 2) . "M";
-        } elseif ((int) $explode_orders[6] > 1000000000) {
-            $explode_orders[6] = number_format((int) $explode_orders[6] / 1000000000, 1) . "B";
-        } else {
-            $explode_orders[6] = (int) $explode_orders[6];
-        }
-        $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7]);
-        if ((int) $explode_orders[11] > 1000000 && (int) $explode_orders[11] < 1000000000) {
-            $explode_orders[11] = number_format((int) $explode_orders[11] / 1000000, 2) . "M";
-        } elseif ((int) $explode_orders[11] > 1000000000) {
-            $explode_orders[11] = number_format((int) $explode_orders[11] / 1000000000, 1) . "B";
-        } else {
-            $explode_orders[11] = (int) $explode_orders[11];
+        if ($orders) {
+            $explode_orders = explode('@', $orders);
+            if ((int) $explode_orders[1] > 1000000 && (int) $explode_orders[1] < 1000000000) {
+                $explode_orders[1] = number_format((int) $explode_orders[1] / 1000000, 2) . "M";
+            } elseif ((int) $explode_orders[1] > 1000000000) {
+                $explode_orders[1] = number_format((int) $explode_orders[1] / 1000000000, 1) . "B";
+            } else {
+                $explode_orders[1] = (int) $explode_orders[1];
+            }
+            $array['lastbuys'][] = array('tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2]);
+            if ((int) $explode_orders[6] > 1000000 && (int) $explode_orders[6] < 1000000000) {
+                $explode_orders[6] = number_format((int) $explode_orders[6] / 1000000, 2) . "M";
+            } elseif ((int) $explode_orders[6] > 1000000000) {
+                $explode_orders[6] = number_format((int) $explode_orders[6] / 1000000000, 1) . "B";
+            } else {
+                $explode_orders[6] = (int) $explode_orders[6];
+            }
+            $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7]);
+            if ((int) $explode_orders[11] > 1000000 && (int) $explode_orders[11] < 1000000000) {
+                $explode_orders[11] = number_format((int) $explode_orders[11] / 1000000, 2) . "M";
+            } elseif ((int) $explode_orders[11] > 1000000000) {
+                $explode_orders[11] = number_format((int) $explode_orders[11] / 1000000000, 1) . "B";
+            } else {
+                $explode_orders[11] = (int) $explode_orders[11];
+            }
+
+            $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12]);
+
+            $dailyReport->lastbuys = serialize($array['lastbuys']);
+            if ((int) $explode_orders[4] > 1000000 && (int) $explode_orders[4] < 1000000000) {
+                $explode_orders[4] = number_format((int) $explode_orders[4] / 1000000, 2) . "M";
+            } elseif ((int) $explode_orders[4] > 1000000000) {
+                $explode_orders[4] = number_format((int) $explode_orders[4] / 1000000000, 1) . "B";
+            } else {
+                $explode_orders[4] = (int) $explode_orders[4];
+            }
+            $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3]);
+            if ((int) $explode_orders[9] > 1000000 && (int) $explode_orders[9] < 1000000000) {
+                $explode_orders[9] = number_format((int) $explode_orders[9] / 1000000, 2) . "M";
+            } elseif ((int) $explode_orders[9] > 1000000000) {
+                $explode_orders[9] = number_format((int) $explode_orders[9] / 1000000000, 1) . "B";
+            } else {
+                $explode_orders[9] = (int) $explode_orders[9];
+            }
+            $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8]);
+            if ((int) $explode_orders[14] > 1000000 && (int) $explode_orders[14] < 1000000000) {
+                $explode_orders[14] = number_format((int) $explode_orders[14] / 1000000, 2) . "M";
+            } elseif ((int) $explode_orders[14] > 1000000000) {
+                $explode_orders[14] = number_format((int) $explode_orders[14] / 1000000000, 1) . "B";
+            } else {
+                $explode_orders[14] = (int) $explode_orders[14];
+            }
+            $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13]);
         }
 
-        $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12]);
-
-        $dailyReport->lastbuys = serialize($array['lastbuys']);
-        if ((int) $explode_orders[4] > 1000000 && (int) $explode_orders[4] < 1000000000) {
-            $explode_orders[4] = number_format((int) $explode_orders[4] / 1000000, 2) . "M";
-        } elseif ((int) $explode_orders[4] > 1000000000) {
-            $explode_orders[4] = number_format((int) $explode_orders[4] / 1000000000, 1) . "B";
-        } else {
-            $explode_orders[4] = (int) $explode_orders[4];
-        }
-        $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3]);
-        if ((int) $explode_orders[9] > 1000000 && (int) $explode_orders[9] < 1000000000) {
-            $explode_orders[9] = number_format((int) $explode_orders[9] / 1000000, 2) . "M";
-        } elseif ((int) $explode_orders[9] > 1000000000) {
-            $explode_orders[9] = number_format((int) $explode_orders[9] / 1000000000, 1) . "B";
-        } else {
-            $explode_orders[9] = (int) $explode_orders[9];
-        }
-        $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8]);
-        if ((int) $explode_orders[14] > 1000000 && (int) $explode_orders[14] < 1000000000) {
-            $explode_orders[14] = number_format((int) $explode_orders[14] / 1000000, 2) . "M";
-        } elseif ((int) $explode_orders[14] > 1000000000) {
-            $explode_orders[14] = number_format((int) $explode_orders[14] / 1000000000, 1) . "B";
-        } else {
-            $explode_orders[14] = (int) $explode_orders[14];
-        }
-        
-        $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13]);
-        $dailyReport->lastsells = serialize($array['lastsells']);
-        $data['personbuy'] = explode(',', $buy_sell)[0];
-        $data['legalbuy'] = explode(',', $buy_sell)[1];
-        // dd($buy_sell);
-        // dd($data['legalbuy']);
-        $data['personsell'] = explode(',', $buy_sell)[3];
-        $data['legalsell'] = explode(',', $buy_sell)[4];
-        $data['personbuycount'] = explode(',', $buy_sell)[5];
-        $data['legalbuycount'] = explode(',', $buy_sell)[6];
-        $data['personsellcount'] = explode(',', $buy_sell)[8];
-        $data['legalsellcount'] = explode(',', $buy_sell)[9];
+        $dailyReport->lastsells = isset($array['lastsells']) ? serialize($array['lastsells']) : '';
+        $data['personbuy'] = $buy_sell ?  explode(',', $buy_sell)[0] : 0;
+        $data['legalbuy'] = $buy_sell ? explode(',', $buy_sell)[1] : 0;
+        $data['personsell'] = $buy_sell ? explode(',', $buy_sell)[3] : 0;
+        $data['legalsell'] = $buy_sell ? explode(',', $buy_sell)[4] : 0;
+        $data['personbuycount'] = $buy_sell ? explode(',', $buy_sell)[5] : 0;
+        $data['legalbuycount'] = $buy_sell ? explode(',', $buy_sell)[6] : 0;
+        $data['personsellcount'] = $buy_sell ? explode(',', $buy_sell)[8] : 0;
+        $data['legalsellcount'] = $buy_sell ? explode(',', $buy_sell)[9] : 0;
 
         foreach ($data as $key => $item) {
             if ((int)$item > 1000000 && (int)$item < 1000000000) {
@@ -177,8 +177,8 @@ class RedisController extends Controller
             $array['person_sell_power'] = 0;
         }
 
-        $totalbuy =  explode(',', $buy_sell)[0] + explode(',', $buy_sell)[1];
-        $totalsell =  explode(',', $buy_sell)[3] + explode(',', $buy_sell)[4];
+        $totalbuy = $buy_sell ? explode(',', $buy_sell)[0] + explode(',', $buy_sell)[1] : 0;
+        $totalsell = $buy_sell ? explode(',', $buy_sell)[3] + explode(',', $buy_sell)[4] : 0;
 
         if ($totalbuy && $buy_sell) {
             $array['percent_person_buy'] = number_format((float)((explode(',', $buy_sell)[0] * 100) / $totalbuy), 0, '.', '');
@@ -254,7 +254,7 @@ class RedisController extends Controller
 
         $dailyReport->tradevol = $array['tradevol'];
         $dailyReport->tradecash = $array['tradecash'];
-        
+
 
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=' . $inscode . '');
         $all = \strip_tags($crawler->html());
@@ -345,42 +345,95 @@ class RedisController extends Controller
             $array['last_price_status'] = '0';
         }
 
-        $dailyReport->pmax = $array['pmax'];
-        $dailyReport->pmin = $array['pmin'];
-        $dailyReport->BaseVol = $array['BaseVol'];
-        $dailyReport->EPS = $array['EPS'];
-        $dailyReport->minweek = $array['minweek'];
-        $dailyReport->maxweek = $array['maxweek'];
-        $dailyReport->monthAVG = $array['monthAVG'];
-        $dailyReport->groupPE = $array['groupPE'];
-        $dailyReport->sahamShenavar = $array['sahamShenavar'];
+        $dailyReport->pmax = isset($array['pmax']) ? $array['pmax'] : '';
+        $dailyReport->pmin = isset($array['pmin']) ? $array['pmin'] : '';
+        $dailyReport->BaseVol = isset($array['BaseVol']) ? $array['BaseVol'] : '';
+        $dailyReport->EPS = isset($array['EPS']) ? $array['EPS'] : '';
+        $dailyReport->minweek = isset($array['minweek']) ? $array['minweek'] : '';
+        $dailyReport->maxweek = isset($array['maxweek']) ? $array['maxweek'] : '';
+        $dailyReport->monthAVG = isset($array['monthAVG']) ? $array['monthAVG'] : '';
+        $dailyReport->groupPE = isset($array['groupPE']) ? $array['groupPE'] : '';
+        $dailyReport->sahamShenavar = isset($array['sahamShenavar']) ? $array['sahamShenavar'] : '';
 
-       
-        $start = Carbon::parse('09:00')->timestamp;
-        $end = Carbon::parse('18:30')->timestamp;
-        //$time = Carbon::parse($array['time'])->timestamp;
-        $time = Carbon::now()->timestamp;
+        // $start = Carbon::parse('09:00')->timestamp;
+        // $end = Carbon::parse('12:30')->timestamp;
+        // //$time = Carbon::parse($array['time'])->timestamp;
+        // $time = Carbon::now()->timestamp;
 
         //dd([Carbon::now()->timestamp,$start,$end,$time]);
 
 
-        if ( ((int)$array['N_tradeVol'] > (int)$array['N_monthAVG'])) {
+        // if (($time > $start) && ($time < $end) &&  ((int)$array['N_tradeVol'] > (int)$array['N_monthAVG'])) {
+        //     $zarib =   number_format((float)((int)$array['N_tradeVol'] / (int)$array['N_monthAVG']), 1, '.', '');
+        //     if ($zarib > 4 && VolumeTrade::check($namad->id)) {
+        //         // dd($namad->id);
 
-            $zarib =   (int)$array['N_tradeVol'] / (int)$array['N_monthAVG'];
-            if ($zarib > 4 && VolumeTrade::check($namad->id)) {
-               // dd($namad->id);
+        //         VolumeTrade::create(['namad_id' => $namad->id, 'trade_vol' => $array['N_tradeVol'], 'month_avg' => $array['N_monthAVG'], 'volume_ratio' => $zarib]);
+        //     } else {
+        //         VolumeTrade::where('namad_id', $namad->id)->update([
+        //             'trade_vol' => $array['N_tradeVol'],
+        //             'month_avg' => $array['N_monthAVG'],
+        //             'volume_ratio' => $zarib
+        //         ]);
+        //     }
+        // }
+        // echo $array['pl'] . '<br/>';
+        // echo ($array['pl'] - ($array['pl'] * 5) / 100) . ' ';
+        // $days = 100;
 
-                VolumeTrade::create(['namad_id' => $namad->id, 'trade_vol' => $array['N_tradeVol'], 'month_avg' => $array['N_monthAVG'], 'volume_ratio' => $zarib]);
-            }
+        // $url = 'http://www.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=' . $inscode . '&Top=' . $days . '&A=1';
+        // $crawler = Goutte::request('GET', $url);
+        // $history = \strip_tags($crawler->html());
+        // $explode_history = explode(';', $history);
+        // foreach ($explode_history as $key => $row) {
+        //     (int)$last_price_day = isset(explode('@', $row)[4]) ? explode('@', $row)[4] : '';
+        //     $array[] = (int)$last_price_day;
+        // }
+        // $count =  count($array);
+        // $sum = array_sum($array);
+
+        //  $avg = number_format((float)($sum / $count), 2, '.', '');
+
+        // $five_percent = ($array['pl'] * 5) / 100;
+        // $min_check = $array['pl'] - $five_percent;
+        // $max_check = $array['pl'] + $five_percent;
+
+        // if ($avg > $min_check && $avg < $max_check) {
+        //     $oneDayAgo = $array[0];
+        //     $twoDayAgo = $array[1];
+        //     $threeDayAgo = $array[2];
+        //     if($avg > $oneDayAgo && $avg > $twoDayAgo && $avg >  $threeDayAgo ){
+        //         MovingAverage::create([
+        //             'namad_id' => $namad->id,
+        //             'symbol' => $namad->symbol,
+        //             'avg' => $avg ,
+        //             'status' => 'moghavemat',
+        //             'days' => $days
+        //         ]);
+        //     }
+        //      if($avg < $oneDayAgo && $avg < $twoDayAgo && $avg <  $threeDayAgo ){
+        //         MovingAverage::create([
+        //             'namad_id' => $namad->id,
+        //             'symbol' => $namad->symbol,
+        //             'avg' => $avg ,
+        //             'status' => 'hemayat',
+        //             'days' => $days
+        //         ]);
+        //     }
+        // }
+
+        if ($buy_sell) {
+            $array['filter']['person_most_buy_sell'] = $data['personbuycount'] > 0 && $data['personsellcount'] ? (float)($data['personbuy'] / $data['personbuycount']) / (float)($data['personsell'] / $data['personsellcount']) : 0;
+            $array['filter']['person_most_sell_buy'] = $data['personsellcount'] > 0 && $data['personbuycount'] > 0 ?  (float)($data['personsell'] / $data['personsellcount']) / (float)($data['personbuy'] / $data['personbuycount']) : 0;
+            $array['filter']['person_buy_avg'] = $data['personbuycount'] > 0  && $data['legalbuycount'] > 0 ?   $data['personbuy'] /   (float)($data['personbuycount'] +  $data['legalbuycount']) : 0;
+            $array['filter']['person_sell_avg'] = $data['personsellcount'] > 0  && $data['legalsellcount'] > 0 ? $data['personsell'] /   (float)($data['personsellcount'] +  $data['legalsellcount']) : 0;
+            $array['filter']['legal_most_buy_sell'] = $data['legalsellcount'] > 0 && $data['legalbuycount'] > 0 ?  (float)($data['legalbuy'] / $data['legalbuycount']) / (float)($data['legalsell'] / $data['legalsellcount']) : 0;
+            $array['filter']['legal_most_sell_buy'] = $data['legalsellcount'] > 0 &&  $data['legalbuycount'] > 0 ? (float)($data['legalsell'] / $data['legalsellcount']) / (float)($data['legalbuy'] / $data['legalbuycount']) : 0;
+            $array['filter']['power_person_buy'] = ($data['legalbuycount'] + $data['personbuycount']) > 0 ? $data['personbuycount'] / ($data['legalbuycount'] + $data['personbuycount']) : 0;
+            $array['filter']['power_person_sell'] = ($data['personsellcount'] + $data['legalsellcount']) > 0 ? $data['personsellcount'] / ($data['personsellcount'] + $data['legalsellcount']) : 0;
         }
 
+        dump($array);
         
-
-        Cache::store()->put($namad->id, $array, 10000000); // 10 Minutes
-
-        echo 'pomad = ' . $namad->symbol . PHP_EOL;
-
-        //$dailyReport->save();
-
     }
 }
