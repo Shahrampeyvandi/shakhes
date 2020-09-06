@@ -37,7 +37,7 @@ class ApiScheduler
         $inscode = $namad->inscode;
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=' . $inscode . '&c=57');
         $all = \strip_tags($crawler->html());
-        $array=[];
+        $array = [];
         $array['symbol'] = $namad->symbol;
         $array['name'] = $namad->name;
         $explode_all = explode(';', $all);
@@ -113,6 +113,8 @@ class ApiScheduler
         $data['personsellcount'] = $buy_sell ? explode(',', $buy_sell)[8] : 0;
         $data['legalsellcount'] = $buy_sell ? explode(',', $buy_sell)[9] : 0;
 
+        $array['N_personbuy'] = $data['personbuy'];
+        
         foreach ($data as $key => $item) {
             if ((int)$item > 1000000 && (int)$item < 1000000000) {
                 $array[$key] = number_format((int)$item / 1000000, 1) . "M";
@@ -186,10 +188,10 @@ class ApiScheduler
         }
 
         $tradeCASH = explode(',', $main_data)[10];
+        $array['N_tradecash'] = $tradeCASH;
         if ((int)$tradeCASH > 1000000 && (int)$tradeCASH < 1000000000) {
             $array['tradecash'] =  number_format((int)$tradeCASH / 1000000, 1) . "M";
         } elseif ((int)$tradeCASH > 1000000000) {
-
             $array['tradecash'] =  number_format((int)$tradeCASH / 1000000000, 1) . "B";
         } else {
             $array['tradecash'] =  (int)$tradeCASH;
@@ -231,15 +233,12 @@ class ApiScheduler
 
 
 
-
-
-
         if ($array['TedadShaham'] && $array['TedadShaham'] !== '' && $array['pl']) {
             $array['MarketCash'] = $array['TedadShaham'] * $array['pl'];
+            $array['N_MarketCash'] = $array['MarketCash'];
             if ((int)$array['MarketCash'] > 1000000 && (int)$array['MarketCash'] < 1000000000) {
                 $array['MarketCash'] =  number_format((int)$array['MarketCash'] / 1000000, 1) . "M";
             } elseif ((int)$array['MarketCash'] > 1000000000) {
-
                 $array['MarketCash'] =  number_format((int)$array['MarketCash'] / 1000000000, 1) . "B";
             } else {
                 $array['MarketCash'] =  (int)$array['MarketCash'];

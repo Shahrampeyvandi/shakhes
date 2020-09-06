@@ -57,6 +57,18 @@ class Controller extends BaseController
         }
     }
 
+    public function format($number)
+    {
+
+         if ( $number > 1000000 &&  $number < 1000000000) {
+               return $number = number_format( $number / 1000000, 1) . "M";
+            } elseif ( $number > 1000000000) {
+              return  $number = number_format( $number / 1000000000, 1) . "B";
+            } else {
+              return  $number =  number_format($number,1);
+            }
+    }
+
     public function get_current_date_shamsi()
     {
         return Jalalian::forge('now')->format('%Y/%m/%d');
