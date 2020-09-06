@@ -396,7 +396,9 @@ class MarketController extends Controller
 
         $information = Cache::get($idd);
         if ($information) {
-            return response()->json(['data' => $information], 200);
+           // $collect=collect($information);
+           // $result=$collect->paginate(20);
+            return response()->json(['data'=>$information], 200);
         }
 
 
@@ -478,7 +480,9 @@ class MarketController extends Controller
     {
         $information = Cache::get($idd);
         if ($information) {
-            return response()->json(['data' => $information], 200);
+           // $collect=collect($information);
+            //$result=$collect->paginate(20);
+            return response()->json(['data'=>$information], 200);
         }
 
         $crawler = Goutte::request('GET', $url);

@@ -47,6 +47,9 @@ class MembersDataController extends Controller
     {
         $member = $this->token($request->header('Authorization'));
         // $member=Member::find(2);
+        $all = [
+            'time' => $this->get_current_date_shamsi().'_'.date('H:i'),
+            ];
 
         $namads_array = $member->namads;
 
@@ -78,11 +81,13 @@ class MembersDataController extends Controller
                 $data['status'] = 'red';
             }
 
-            $all[] = $data;
+            $array[] = $data;
         }
 
+        $all['data']=$array;
+
         return response()->json(
-            ['data' => $all],
+            $all,
             200
         );
     }
@@ -109,9 +114,9 @@ class MembersDataController extends Controller
     {
 
         if ($namad_id) {
-            $clarifications_array = clarification::where('namad_id', $namad_id)->latest()->get();
+            $clarifications_array = clarification::where('namad_id', $namad_id)->latest()->paginate(20);
         } else {
-            $clarifications_array = clarification::latest()->get();
+            $clarifications_array = clarification::latest()->paginate(20);
         }
         $all = [];
 
@@ -180,9 +185,9 @@ class MembersDataController extends Controller
     {
         if ($namad_id) {
             $namad = Namad::where('id', $namad_id)->first();
-            $capitalincreases_array = $namad->capital_increases;
+            $capitalincreases_array = $namad->capital_increases()->paginate(20);
         } else {
-            $capitalincreases_array = CapitalIncrease::latest()->get();
+            $capitalincreases_array = CapitalIncrease::latest()->paginate(20);
         }
         $all = [];
 
@@ -290,7 +295,7 @@ class MembersDataController extends Controller
         // $member = $this->token(request()->header('Authorization'));
         $namad = Namad::where('id', $namad_id)->first();
         if ($namad) {
-            if (count($disclosures = $namad->disclosures()->latest()->get())) {
+            if (count($disclosures = $namad->disclosures()->latest()->paginate(20))) {
                 $count = 1;
                 $all = [];
                 foreach ($disclosures as $key => $disclosure) {

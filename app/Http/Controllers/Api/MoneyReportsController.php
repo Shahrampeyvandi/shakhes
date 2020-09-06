@@ -56,7 +56,7 @@ class MoneyReportsController extends Controller
             'time' => $this->get_current_date_shamsi().'_'.date('H:i'),
         ];
         
-        $collection = Holding::latest()->get();
+        $collection = Holding::latest()->paginate(20);
         foreach ($collection as $key => $item) {
             $array = [];
            $cache =  Cache::get($item->namad_id);

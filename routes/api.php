@@ -28,8 +28,8 @@ Route::get('/getnotifications', 'Api\NamadsController@GetAllNotifications');
 
 
 
-Route::get('/member/clarifications', 'Api\MembersDataController@getclarifications'); // دریافت شفاف سازی سهام من
-Route::get('/member/capitalincreases', 'Api\MembersDataController@getcapitalincreases'); // دریافت افزایش سرمایه سهام من
+//Route::get('/member/clarifications', 'Api\MembersDataController@getclarifications'); // دریافت شفاف سازی سهام من
+//Route::get('/member/capitalincreases', 'Api\MembersDataController@getcapitalincreases'); // دریافت افزایش سرمایه سهام من
 
 //Route::get('/clarifications', 'Api\ClarificationController@getall'); // get all clarifications
 //Route::get('/capitalincreases', 'Api\CapitalIncreasesController@getall'); // get all capitalincreases
@@ -77,6 +77,9 @@ Route::get('disclosures/{id}', 'Api\MembersDataController@namadDisclosures'); //
 Route::get('capitalincreases/{id?}', 'Api\MembersDataController@namadcapitalincreases'); // دریافت افزایش سرمایه های یک نماد از سهام من
 Route::get('clarifications/{id?}', 'Api\MembersDataController@namadclarifications'); // دریافت شفاف سازی های یک نماد از سهام من
 Route::get('getfinancial/{id}', 'Api\MoneyReportsController@getfinancial');
+Route::get('/getvolumetrades/{id?}', 'Api\VolumeTradesController@get'); 
+Route::get('/getholdingdata/{id}', 'Api\MoneyReportsController@get_holding_data');
+Route::get('/getholdings', 'Api\MoneyReportsController@getHoldings');
 //------------------------
 
 

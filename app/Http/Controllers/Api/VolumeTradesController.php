@@ -14,9 +14,9 @@ class VolumeTradesController extends Controller
     public function get($id = null)
     {
         if ($id) {
-            $volume_trades = VolumeTrade::whereNamad_id($id)->get();
+            $volume_trades = VolumeTrade::whereNamad_id($id)->paginate(20);
         } else {
-            $volume_trades = VolumeTrade::latest()->get();
+            $volume_trades = VolumeTrade::latest()->paginate(20);
         }
         $all = [];
         foreach ($volume_trades as $key => $volume) {
@@ -40,10 +40,10 @@ class VolumeTradesController extends Controller
     {
         if ($id !== null) {
             $namad = Namad::where('id', $id)->first();
-            $collection = VolumeTrade::where('namad_id', $namad->id)->get();
+            $collection = VolumeTrade::where('namad_id', $namad->id)->paginate(20);
 
         } else {
-            $collection = VolumeTrade::latest()->get();
+            $collection = VolumeTrade::latest()->paginate(20);
             $all = [
                 'time' => $this->get_current_date_shamsi().'_'.date('H:i'),
                 ];
