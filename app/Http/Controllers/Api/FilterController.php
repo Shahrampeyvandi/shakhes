@@ -12,14 +12,7 @@ class FilterController extends Controller
 {
     public function get($key)
     {
-        if ($key == 'power_person_buy') {
-           $tedad =  'personbuycount';
-        }
 
-        if ($key == 'person_most_buy_sell') {
-           $tedad =  'personbuy';
-        }
-        
 
         $namads = Namad::all();
 
@@ -29,16 +22,17 @@ class FilterController extends Controller
         }
         asort($array);
         $symbols_array = array_slice(array_keys(array_reverse($array)), 0, 50);
-        foreach ($symbols_array as $key => $symbol) {
-            $namad = Namad::whereSymbol($symbol)->first();
-        
-            $item['name'] = $namad->name;
-            $item['symbol'] = $namad->symbol;
-            $item['tedad'] = Cache::get($namad->id)[$tedad];
-            $item['pl'] = Cache::get($namad->id)['final_price_value'];
-            $item['final_price_percent'] = Cache::get($namad->id)['final_price_percent'];
-            $item['tradeVol'] = Cache::get($namad->id)['tradevol'];
-            $data[] = $item;
+        if ($key == 'person_most_buy_sell') {
+            foreach ($symbols_array as $key => $symbol) {
+                $namad = Namad::whereSymbol($symbol)->first();
+                $item['name'] = $namad->name;
+                $item['symbol'] = $namad->symbol;
+                $item['tedad'] = Cache::get($namad->id)['person_most_buy_sell'];
+                $item['pl'] = Cache::get($namad->id)['final_price_value'];
+                $item['final_price_percent'] = Cache::get($namad->id)['final_price_percent'];
+                $item['tradeVol'] = Cache::get($namad->id)['tradevol'];
+                $data[] = $item;
+            }
         }
 
         return $data;
