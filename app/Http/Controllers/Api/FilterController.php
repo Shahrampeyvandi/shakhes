@@ -6,6 +6,7 @@ use App\Models\Namad\Namad;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\FilterResource;
+use Exception;
 use Illuminate\Support\Facades\Cache;
 
 class FilterController extends Controller
@@ -33,12 +34,14 @@ class FilterController extends Controller
                 // return Cache::get($namad->id);
                 $item['name'] = $namad->name;
                 $item['symbol'] = $namad->symbol;
-                $item['buy_avg'] = $this->format((float)((float)Cache::get($namad->id)['personbuy'] / (float)Cache::get($namad->id)['personbuycount']));
-                $item['sell_avg'] = $this->format((float)((float)Cache::get($namad->id)['personsell'] / (float)Cache::get($namad->id)['personsellcount']));
-                $item['nesbat'] = number_format((float)Cache::get($namad->id)['filter']['person_most_buy_sell'], 0);
+                $item['second'] = $this->format((float)((float)Cache::get($namad->id)['personbuy'] / (float)Cache::get($namad->id)['personbuycount']));
+                $item['first'] = $this->format((float)((float)Cache::get($namad->id)['personsell'] / (float)Cache::get($namad->id)['personsellcount']));
+                $item['third'] = number_format((float)Cache::get($namad->id)['filter']['person_most_buy_sell'], 0);
                 $data['data'][] = $item;
             }
-            return $data;
+           
+            return response()->json($data,200);
+
         }
         if ($key == 'most_cash_trade') {
             foreach ($namads as $namad) {
@@ -52,14 +55,16 @@ class FilterController extends Controller
                 // return Cache::get($namad->id);
                 $item['name'] = $namad->name;
                 $item['symbol'] = $namad->symbol;
-                $item['tradevol'] = isset(Cache::get($namad->id)['tradevol']) ? Cache::get($namad->id)['tradevol'] : '';
-                $item['pl'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
-                $item['final_price_percent'] = isset(Cache::get($namad->id)['final_price_percent']) ? Cache::get($namad->id)['final_price_percent'] : '';
-                $item['tradecash'] = isset(Cache::get($namad->id)['tradecash']) ? Cache::get($namad->id)['tradecash'] : '';
+                $item['first'] = isset(Cache::get($namad->id)['tradevol']) ? Cache::get($namad->id)['tradevol'] : '';
+                $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
+                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? Cache::get($namad->id)['final_price_percent'] : '';
+                $item['third'] = isset(Cache::get($namad->id)['tradecash']) ? Cache::get($namad->id)['tradecash'] : '';
                 $data['data'][] = $item;
             }
 
-            return $data;
+            return response()->json($data,200);
+
+
         }
 
         if ($key == 'most_volume_trade') {
@@ -71,17 +76,17 @@ class FilterController extends Controller
 
             foreach ($symbols_array as $key => $symbol) {
                 $namad = Namad::whereSymbol($symbol)->first();
-                return Cache::get($namad->id);
                 $item['name'] = $namad->name;
                 $item['symbol'] = $namad->symbol;
-                $item['tradecount'] = isset(Cache::get($namad->id)['tradecount']) ? Cache::get($namad->id)['tradecount'] : '';
-                $item['pl'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
-                $item['final_price_percent'] = isset(Cache::get($namad->id)['final_price_percent']) ? Cache::get($namad->id)['final_price_percent'] : '';
-                $item['tradevol'] = isset(Cache::get($namad->id)['tradevol']) ? Cache::get($namad->id)['tradevol'] : '';
+                $item['first'] = isset(Cache::get($namad->id)['tradecount']) ? Cache::get($namad->id)['tradecount'] : '';
+                $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
+                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? Cache::get($namad->id)['final_price_percent'] : '';
+                $item['third'] = isset(Cache::get($namad->id)['tradevol']) ? Cache::get($namad->id)['tradevol'] : '';
                 $data['data'][] = $item;
             }
 
-            return $data;
+            return response()->json($data,200);
+
         }
         if ($key == 'most_person_buy') {
             foreach ($namads as $namad) {
@@ -96,13 +101,15 @@ class FilterController extends Controller
                 // return Cache::get($namad->id);
                 $item['name'] = $namad->name;
                 $item['symbol'] = $namad->symbol;
-                $item['personbuycount'] = isset(Cache::get($namad->id)['personbuycount']) ? Cache::get($namad->id)['personbuycount'] : '';
-                $item['pl'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
-                $item['personbuy'] = isset(Cache::get($namad->id)['personbuy']) ? Cache::get($namad->id)['personbuy'] : '';
+                $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? Cache::get($namad->id)['personbuycount'] : '';
+                $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
+                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? Cache::get($namad->id)['final_price_percent'] : '';
+                $item['third'] = isset(Cache::get($namad->id)['personbuy']) ? Cache::get($namad->id)['personbuy'] : '';
                 $data['data'][] = $item;
             }
 
-            return $data;
+            return response()->json($data,200);
+
         }
 
         if ($key == 'power_person_buy') {
@@ -118,22 +125,26 @@ class FilterController extends Controller
                 // return Cache::get($namad->id);
                 $item['name'] = $namad->name;
                 $item['symbol'] = $namad->symbol;
-                $item['personbuycount'] = isset(Cache::get($namad->id)['personbuycount']) ? Cache::get($namad->id)['personbuycount'] : '';
+                $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? Cache::get($namad->id)['personbuycount'] : '';
                 $item['pl'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
-                $item['buy_avg'] =  isset(Cache::get($namad->id)['N_personbuy']) && Cache::get($namad->id)['N_personbuy'] > 0 ? $this->format((int)Cache::get($namad->id)['N_personbuy'] / Cache::get($namad->id)['personbuycount']) : 0;
+                $item['secondsecond'] =  isset(Cache::get($namad->id)['N_personbuy']) && Cache::get($namad->id)['N_personbuy'] > 0 ? $this->format((int)Cache::get($namad->id)['N_personbuy'] / Cache::get($namad->id)['personbuycount']) : 0;
+                $item['third'] = 'میانگین خرید';
                 $data['data'][] = $item;
             }
+            return response()->json($data,200);
 
-            return $data;
         }
     }
     public function get_from_cache($id, $key)
     {
-        if (array_key_exists('filter', Cache::get($id))) {
+        try{
+            if (array_key_exists('filter', Cache::get($id))) {
 
-            return Cache::get($id)['filter'][$key];
-        } else {
-            return 0;
-        }
+                return Cache::get($id)['filter'][$key];
+            } else {
+                return 0;
+            }
+        }catch(Exception $e){}
+        
     }
 }

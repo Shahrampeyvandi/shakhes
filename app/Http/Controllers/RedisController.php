@@ -17,6 +17,49 @@ class RedisController extends Controller
 {
     public function getmain()
     {
+
+        $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=15');
+
+        $all=[];
+        $crawler->filter('table')->each(function ($node) use (&$all) {
+
+            $all[]='2;';
+            $status=$node->filter('tr:nth-of-type(1)')->text();
+            echo $status.'</br>';
+            if(preg_match('/بسته/',$status)){
+
+
+
+
+            }
+
+            
+
+        });
+
+
+        $all = \strip_tags($crawler->html());
+       
+        $explode_all = explode(';', $all);
+
+
+        dd($explode_all);
+
+        for($x=0;$x<100;$x++){
+            echo $x;
+            $ch = curl_init('http://shakhesapp.com/api/filter/person_most_buy_sell');
+        //$ch = curl_init('https://sandbox.zarinpal.com/pg/rest/WebGate/PaymentRequest.json');
+        curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      
+        $result = curl_exec($ch);
+        $err = curl_error($ch);
+        $result = json_decode($result, true);
+        curl_close($ch);
+        }
+        
+
+        dd($result);
         //$redis = Redis::connection();
         $values = Redis::command('keys', ['*']);
         // dd($values);
@@ -434,6 +477,5 @@ class RedisController extends Controller
         }
 
         dump($array);
-        
     }
 }
