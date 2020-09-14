@@ -40,7 +40,7 @@ class MoneyReportsController extends Controller
         // $array['portfoy'] = $portfoy_array[0];
         // $array['yesterday_portfoy'] = $portfoy_array[1];
         // درصد تغییر پرتفوی
-        $array['percent_change_porftoy'] = $portfoy_array[1] == 0 ? 0 : ($portfoy_array[0] - $portfoy_array[1]) / $portfoy_array[1];
+        $array['percent_change_porftoy'] = $portfoy_array[1] == 0 ? 0 : number_format(($portfoy_array[0] - $portfoy_array[1]) / $portfoy_array[1],1,'.');
         $array['saham'] = $getnamadsdata;
 
         $arraym['datasingle']=$array;
@@ -68,7 +68,7 @@ class MoneyReportsController extends Controller
             $array['namad']['status'] = 'green' ;
             $array['marketvalue'] = $cache ? $cache['MarketCash'] : '';
             $portfoy_array = Holding::GetPortfoyAndYesterdayPortfoy($item);
-            $array['percent_change_porftoy'] = $portfoy_array[1] == 0 ? 0 : ($portfoy_array[0] - $portfoy_array[1]) / $portfoy_array[1];
+            $array['percent_change_porftoy'] = $portfoy_array[1] == 0 ? 0 : number_format(($portfoy_array[0] - $portfoy_array[1]) / $portfoy_array[1],1,'.');
             $array['countnamad'] = count($item->namads);
             $all['data'][] = $array;
         }
@@ -130,7 +130,7 @@ class MoneyReportsController extends Controller
             $portfoy_array = Holding::GetPortfoyAndYesterdayPortfoy($holding_obj);
             $array['portfoy'] = $portfoy_array[0];
             // درصد تغییر پرتفوی
-            $array['percent_change_porftoy'] = $portfoy_array[1] == 0 ? 0 : ($portfoy_array[0] - $portfoy_array[1]) / $portfoy_array[1];
+            $array['percent_change_porftoy'] = $portfoy_array[1] == 0 ? 0 : number_format(($portfoy_array[0] - $portfoy_array[1]) / $portfoy_array[1],1,'.');
             $array['saham'] = $getnamadsdata;
             return $array;
         } else {
