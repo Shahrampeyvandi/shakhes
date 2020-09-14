@@ -84,11 +84,14 @@ class RedisController extends Controller
         $inscode = $namad->inscode;
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=' . $inscode . '&c=57');
         $all = \strip_tags($crawler->html());
+       
         $array['symbol'] = $namad->symbol;
         $explode_all = explode(';', $all);
         $main_data = $explode_all[0];
         $buy_sell = $explode_all[4];
         $orders = $explode_all[2];
+        
+        
 
         $dailyReport = new NamadsDailyReport;
         $dailyReport->namad_id = $namad->id;

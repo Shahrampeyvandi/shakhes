@@ -19,8 +19,9 @@ class FilterController extends Controller
         $data = [
             'time' => $this->get_current_date_shamsi() . '_' . date('H:i'),
         ];
+ 
 
-        if ($key == 'person_most_buy_sell') {
+        if ($key == 'person_most_buy_sell' || $key == 'person_most_sell_buy' || $key == 'legal_most_buy_sell' || $key == 'legal_most_sell_buy') {
             foreach ($namads as $namad) {
                 $array[$namad->symbol] =  $this->get_from_cache($namad->id, $key);
             }

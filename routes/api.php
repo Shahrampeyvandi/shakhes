@@ -94,6 +94,9 @@ Route::get('/filter/{key}', 'Api\FilterController@get');
 /** keys : 
  * 
  person_most_buy_sell
+ person_most_sell_buy
+ legal_most_buy_sell
+legal_most_sell_buy
  most_cash_trade
  most_volume_trade
  most_person_buy

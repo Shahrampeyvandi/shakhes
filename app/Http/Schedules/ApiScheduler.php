@@ -48,6 +48,7 @@ class ApiScheduler
         $dailyReport = new NamadsDailyReport;
         $dailyReport->namad_id = $namad->id;
 
+        $array['namad_status'] = trim(explode(',', $main_data)[1]);
 
         if ($orders) {
             $explode_orders = explode('@', $orders);
@@ -114,7 +115,7 @@ class ApiScheduler
         $data['legalsellcount'] = $buy_sell ? explode(',', $buy_sell)[9] : 0;
 
         $array['N_personbuy'] = $data['personbuy'];
-        
+
         foreach ($data as $key => $item) {
             if ((int)$item > 1000000 && (int)$item < 1000000000) {
                 $array[$key] = number_format((int)$item / 1000000, 1) . "M";
@@ -380,7 +381,12 @@ class ApiScheduler
         // filter calculate
 
         if ($buy_sell) {
+            
             $array['filter']['person_most_buy_sell'] = $data['personbuycount'] > 0 && $data['personsellcount'] ? (float)($data['personbuy'] / $data['personbuycount']) / (float)($data['personsell'] / $data['personsellcount']) : 0;
+            $array['filter']['person_most_sell_buy'] = $data['personbuycount'] > 0 && $data['personsellcount'] ? (float)($data['personsell'] / $data['personsellcount']) / (float)($data['personbuy'] / $data['personbuycount']) : 0;
+            $array['filter']['legal_most_buy_sell'] = $data['legalbuycount'] > 0 && $data['legalsellcount'] ? (float)($data['legalbuy'] / $data['legalbuycount']) / (float)($data['legalsell'] / $data['personsellcount']) : 0;
+            $array['filter']['legal_most_sell_buy'] = $data['legalbuycount'] > 0 && $data['legalsellcount'] ? (float)($data['legalsell'] / $data['legalsellcount']) / (float)($data['legalbuy'] / $data['legalbuycount']) : 0;
+
             $array['filter']['person_most_sell_buy'] = $data['personsellcount'] > 0 && $data['personbuycount'] > 0 ?  (float)($data['personsell'] / $data['personsellcount']) / (float)($data['personbuy'] / $data['personbuycount']) : 0;
             $array['filter']['person_buy_avg'] = $data['personbuycount'] > 0  && $data['legalbuycount'] > 0 ?   $data['personbuy'] /   (float)($data['personbuycount'] +  $data['legalbuycount']) : 0;
             $array['filter']['person_sell_avg'] = $data['personsellcount'] > 0  && $data['legalsellcount'] > 0 ? $data['personsell'] /   (float)($data['personsellcount'] +  $data['legalsellcount']) : 0;
