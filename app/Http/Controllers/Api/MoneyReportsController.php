@@ -21,7 +21,12 @@ class MoneyReportsController extends Controller
         $holding_obj = Holding::where('namad_id', $id)->first();
         $namad = Namad::where('id', $id)->first();
         $array['namad']['symbol'] = $namad->symbol ;
-
+        $information = Cache::get($namad->id);
+        if (isset($information['namad_status'])) {
+            $array['namad']['namad_status'] =$information['namad_status'];
+        } else {
+            $array['namad']['namad_status'] = 'A';
+        }
         $array['namad']['status'] = 'green' ;
         if (is_null($holding_obj)) {
             return response()->json(

@@ -98,6 +98,11 @@ class MarketController extends Controller
                 $information['last_price_change'] = '';
                 $information['last_price_status'] = '';
             }
+            if (isset($information['namad_status'])) {
+                $information['namad_status'] = $information['namad_status'];
+            } else {
+                $information['namad_status'] = 'A';
+            }
 
 
 
