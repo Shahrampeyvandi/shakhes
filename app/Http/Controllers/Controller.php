@@ -63,7 +63,7 @@ class Controller extends BaseController
          if ( $number > 1000000 &&  $number < 1000000000) {
                return $number = number_format( $number / 1000000, 1) . "M";
             } elseif ( $number > 1000000000) {
-              return  $number = number_format( $number / 1000000000, 1) . "B";
+              return  $number = number_format( $number / 1000000000, 2) . "B";
             } else {
               return  $number =  number_format($number,1);
             }

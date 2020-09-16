@@ -148,6 +148,7 @@ class MoneyReportsController extends Controller
     {
 
         $namad = Namad::find($request->id);
+     
         $monthly_reports_years = $namad->monthlyReports->pluck('year')->toArray();
 
         $array = [];
