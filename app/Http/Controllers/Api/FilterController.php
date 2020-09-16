@@ -44,8 +44,8 @@ class FilterController extends Controller
 
                     $item['name'] = $namad->name;
                     $item['symbol'] = $namad->symbol;
-                    $item['second'] = $this->format((float)((float)Cache::get($namad->id)['personbuy'] / (float)Cache::get($namad->id)['personbuycount']));
-                    $item['first'] = $this->format((float)((float)Cache::get($namad->id)['personsell'] / (float)Cache::get($namad->id)['personsellcount']));
+                    $item['first'] = $this->format((float)((float)Cache::get($namad->id)['personbuy'] / (float)Cache::get($namad->id)['personbuycount']));
+                    $item['second'] = $this->format((float)((float)Cache::get($namad->id)['personsell'] / (float)Cache::get($namad->id)['personsellcount']));
                     $item['third'] = isset(Cache::get($namad->id)['filter']['person_most_buy_sell']) ?  number_format((float)Cache::get($namad->id)['filter']['person_most_buy_sell'], 0) : 0;
                     $data['data'][] = $item;
                 }
@@ -140,6 +140,7 @@ class FilterController extends Controller
                 $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
                 $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? Cache::get($namad->id)['final_price_percent'] : '';
                 $item['third'] = isset(Cache::get($namad->id)['personbuy']) ? Cache::get($namad->id)['personbuy'] : '';
+                $item['status'] = Cache::get($namad->id)['status'];
                 $data['data'][] = $item;
             }
 
@@ -160,7 +161,7 @@ class FilterController extends Controller
                 $item['name'] = $namad->name;
                 $item['symbol'] = $namad->symbol;
                 $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? Cache::get($namad->id)['personbuycount'] : '';
-                $item['pl'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
+               // $item['secondsecond'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
                 // $item['secondsecond'] =  $this->format((int)Cache::get($namad->id)['N_personbuy']);
                 $item['third'] = $this->format((int)Cache::get($namad->id)['N_personbuy']);
                 $item['status'] = Cache::get($namad->id)['status'];

@@ -73,12 +73,18 @@ class MembersDataController extends Controller
                 } else {
                     $data['status'] = 'red';
                 }
+                if (isset($information['namad_status'])) {
+                    $data['namad_status'] = $information['namad_status'];
+                } else {
+                    $data['namad_status'] = 'A';
+                }
             } else {
                 $data['final_price_value'] = '0';
                 $data['final_price_percent'] = '0';
                 $data['last_price_change'] = '0';
                 $data['last_price_status'] = '0';
                 $data['status'] = 'red';
+                $data['namad_status'] = 'A';
             }
 
             $array[] = $data;
