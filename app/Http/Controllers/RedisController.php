@@ -18,69 +18,11 @@ class RedisController extends Controller
     public function getmain()
     {
 
-        $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=15');
-
-        $all=[];
-        $crawler->filter('table')->each(function ($node) use (&$all) {
-
-            $all[]='2;';
-            $status=$node->filter('tr:nth-of-type(1)')->text();
-            echo $status.'</br>';
-            if(preg_match('/بسته/',$status)){
-
-
-
-
-            }
-
-            
-
-        });
-
-
-        $all = \strip_tags($crawler->html());
-       
-        $explode_all = explode(';', $all);
-
-
-        dd($explode_all);
-
-        for($x=0;$x<100;$x++){
-            echo $x;
-            $ch = curl_init('http://shakhesapp.com/api/filter/person_most_buy_sell');
-        //$ch = curl_init('https://sandbox.zarinpal.com/pg/rest/WebGate/PaymentRequest.json');
-        curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      
-        $result = curl_exec($ch);
-        $err = curl_error($ch);
-        $result = json_decode($result, true);
-        curl_close($ch);
-        }
+       $client = new \GuzzleHttp\Client();
+    //    echo file_get_content('https://www.codal.ir/ReportList.aspx?search&Symbol=%D8%A2%D8%B3%DB%8C%D8%A7&LetterType=-1&Isic=660315&AuditorRef=-1&PageNumber=1&Audited&NotAudited&IsNotAudited=false&Childs&Mains&Publisher=false&CompanyState=0&Category=7&CompanyType=1&Consolidatable&NotConsolidatable');
+$response = $client->request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=15');
+        return $response->getBody();
         
-
-        dd($result);
-        //$redis = Redis::connection();
-        $values = Redis::command('keys', ['*']);
-        // dd($values);
-
-        // foreach($values as $vla){
-        //     $data = Redis::hgetall($vla);
-        //     $data = json_decode(end($data), true);
-
-        //     //dd($data);
-        //     echo $data['l30'];
-        //     echo '</br>';
-
-        // }
-        $allmarket = Redis::hgetall('IRB3TB630091')['13:42'];
-        //$user = json_decode(end($user), true);
-        return $allmarket;
-        $all = [];
-        foreach ($allmarket as $key => $item) {
-            $item = [];
-        }
-        // echo $user;
 
     }
 
@@ -127,14 +69,14 @@ class RedisController extends Controller
         $inscode = $namad->inscode;
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=' . $inscode . '&c=57');
         $all = \strip_tags($crawler->html());
-       
+
         $array['symbol'] = $namad->symbol;
         $explode_all = explode(';', $all);
         $main_data = $explode_all[0];
         $buy_sell = $explode_all[4];
         $orders = $explode_all[2];
-        
-        
+
+
 
         $dailyReport = new NamadsDailyReport;
         $dailyReport->namad_id = $namad->id;
