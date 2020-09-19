@@ -98,6 +98,11 @@ class MarketController extends Controller
                 $information['last_price_change'] = '';
                 $information['last_price_status'] = '';
             }
+            if (isset($information['namad_status'])) {
+                $information['namad_status'] = $information['namad_status'];
+            } else {
+                $information['namad_status'] = 'A';
+            }
 
 
 
@@ -396,9 +401,9 @@ class MarketController extends Controller
 
         $information = Cache::get($idd);
         if ($information) {
-           // $collect=collect($information);
-           // $result=$collect->paginate(20);
-            return response()->json(['data'=>$information], 200);
+            $collect=collect($information);
+           $result=$collect->paginate(20);
+            return response()->json($result, 200);
         }
 
 
@@ -464,6 +469,11 @@ class MarketController extends Controller
                             $dd['last_price_change'] = '';
                             $dd['last_price_status'] = '';
                         }
+                        if (isset($information['namad_status'])) {
+                            $dd['namad_status'] = $information['namad_status'];
+                        } else {
+                            $dd['namad_status'] = 'A';
+                        }
                         $dd['effect'] = $value;
 
                         $ff[] = $dd;
@@ -480,9 +490,9 @@ class MarketController extends Controller
     {
         $information = Cache::get($idd);
         if ($information) {
-           // $collect=collect($information);
-            //$result=$collect->paginate(20);
-            return response()->json(['data'=>$information], 200);
+            $collect=collect($information);
+            $result=$collect->paginate(20);
+            return response()->json($result, 200);
         }
 
         $crawler = Goutte::request('GET', $url);
@@ -533,6 +543,11 @@ class MarketController extends Controller
                             $data['final_price_percent'] = '';
                             $data['last_price_change'] = '';
                             $data['last_price_status'] = '';
+                        }
+                        if (isset($information['namad_status'])) {
+                            $data['namad_status'] = $information['namad_status'];
+                        } else {
+                            $data['namad_status'] = 'A';
                         }
 
                         $all[] = $data;

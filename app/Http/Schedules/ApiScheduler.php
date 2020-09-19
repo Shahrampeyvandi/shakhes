@@ -102,7 +102,7 @@ class ApiScheduler extends Controller
             if ((int)$item > 1000000 && (int)$item < 1000000000) {
                 $array[$key] = number_format((int)$item / 1000000, 1) . "M";
             } elseif ((int)$item > 1000000000) {
-                $array[$key] = number_format((int)$item / 1000000000, 1) . "B";
+                $array[$key] = number_format((int)$item / 1000000000, 2) . "B";
             } else {
                 $array[$key] = (int)$item;
             }
@@ -184,7 +184,7 @@ class ApiScheduler extends Controller
         if ((int)$tradeVOL > 1000000 && (int)$tradeVOL < 1000000000) {
             $array['tradevol'] = number_format((int)$tradeVOL / 1000000, 1) . "M";
         } elseif ((int)$tradeVOL > 1000000000) {
-            $array['tradevol'] = number_format((int)explode(',', $main_data)[10] / 1000000000, 1) . "B";
+            $array['tradevol'] = number_format((int)explode(',', $main_data)[10] / 1000000000, 2) . "B";
         } else {
             $array['tradevol'] = (int)$tradeVOL;
         }
@@ -194,7 +194,7 @@ class ApiScheduler extends Controller
         if ((int)$tradeCASH > 1000000 && (int)$tradeCASH < 1000000000) {
             $array['tradecash'] =  number_format((int)$tradeCASH / 1000000, 1) . "M";
         } elseif ((int)$tradeCASH > 1000000000) {
-            $array['tradecash'] =  number_format((int)$tradeCASH / 1000000000, 1) . "B";
+            $array['tradecash'] =  number_format((int)$tradeCASH / 1000000000, 2) . "B";
         } else {
             $array['tradecash'] =  (int)$tradeCASH;
         }
@@ -241,7 +241,7 @@ class ApiScheduler extends Controller
             if ((int)$array['MarketCash'] > 1000000 && (int)$array['MarketCash'] < 1000000000) {
                 $array['MarketCash'] =  number_format((int)$array['MarketCash'] / 1000000, 1) . "M";
             } elseif ((int)$array['MarketCash'] > 1000000000) {
-                $array['MarketCash'] =  number_format((int)$array['MarketCash'] / 1000000000, 1) . "B";
+                $array['MarketCash'] =  number_format((int)$array['MarketCash'] / 1000000000, 2) . "B";
             } else {
                 $array['MarketCash'] =  (int)$array['MarketCash'];
             }
@@ -254,7 +254,7 @@ class ApiScheduler extends Controller
                 $array['TedadShaham'] =  number_format((int)$array['TedadShaham'] / 1000000, 1) . "M";
             } elseif ((int)$array['TedadShaham'] > 1000000000) {
 
-                $array['TedadShaham'] =  number_format((int)$array['TedadShaham'] / 1000000000, 1) . "B";
+                $array['TedadShaham'] =  number_format((int)$array['TedadShaham'] / 1000000000, 2) . "B";
             } else {
                 $array['TedadShaham'] =  (int)$array['TedadShaham'];
             }
@@ -277,7 +277,7 @@ class ApiScheduler extends Controller
                 $array['monthAVG'] =  number_format((int)$array['N_monthAVG'] / 1000000, 1) . "M";
             } elseif ((int)$array['N_monthAVG'] > 1000000000) {
 
-                $array['monthAVG'] =  number_format((int)$array['N_monthAVG'] / 1000000000, 1) . "B";
+                $array['monthAVG'] =  number_format((int)$array['N_monthAVG'] / 1000000000, 2) . "B";
             } else {
                 $array['monthAVG'] =  (int)$array['N_monthAVG'];
             }
@@ -393,7 +393,7 @@ class ApiScheduler extends Controller
             $array['filter']['person_sell_avg'] = $data['personsellcount'] > 0  && $data['legalsellcount'] > 0 ? $data['personsell'] /   (float)($data['personsellcount'] +  $data['legalsellcount']) : 0;
             $array['filter']['legal_most_buy_sell'] = $data['legalsellcount'] > 0 && $data['legalbuycount'] > 0 ?  (float)($data['legalbuy'] / $data['legalbuycount']) / (float)($data['legalsell'] / $data['legalsellcount']) : 0;
             $array['filter']['legal_most_sell_buy'] = $data['legalsellcount'] > 0 &&  $data['legalbuycount'] > 0 ? (float)($data['legalsell'] / $data['legalsellcount']) / (float)($data['legalbuy'] / $data['legalbuycount']) : 0;
-            $array['filter']['power_person_buy'] = ($data['legalbuycount'] + $data['personbuycount']) > 0 ? $data['personbuycount'] / ($data['legalbuycount'] + $data['personbuycount']) : 0;
+            // $array['filter']['power_person_buy'] = ($data['legalbuycount'] + $data['personbuycount']) > 0 ? $data['personbuycount'] / ($data['legalbuycount'] + $data['personbuycount']) : 0;
             $array['filter']['power_person_sell'] = ($data['personsellcount'] + $data['legalsellcount']) > 0 ? $data['personsellcount'] / ($data['personsellcount'] + $data['legalsellcount']) : 0;
         }
         Cache::store()->put($namad->id, $array, 10000000); // 10 Minutes
