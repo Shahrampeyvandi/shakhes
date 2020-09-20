@@ -38,14 +38,12 @@ class MoneyReportsController extends Controller
             );
         }
 
-        $array['marketvalue'] = Cache::get($namad->id)['MarketCash'];
+        $array['marketvalue'] = $holding_obj->getMarketValue();
         $getnamadsdata = $holding_obj->showPercentNamads($holding_obj->id, $namad);
-        // پرتفوی لحظه ای شرکت
-        $portfoy_array = Holding::GetPortfoyAndYesterdayPortfoy($holding_obj);
-        // $array['portfoy'] = $portfoy_array[0];
-        // $array['yesterday_portfoy'] = $portfoy_array[1];
-        // درصد تغییر پرتفوی
-        $array['percent_change_porftoy'] = $portfoy_array[1] == 0 ? 0 : number_format(($portfoy_array[0] - $portfoy_array[1]) / $portfoy_array[1],1,'.');
+       
+        $yesterday_portfoy = $holding_obj->portfoy;
+    
+        $array['percent_change_porftoy'] = $yesterday_portfoy == 0 ? 0 : number_format(($array['marketvalue'] - $yesterday_portfoy) / $yesterday_portfoy,1,'.');
         $array['saham'] = $getnamadsdata;
 
         $arraym['datasingle']=$array;

@@ -39,7 +39,6 @@ class FilterController extends Controller
 
             foreach ($symbols_array as $key => $symbol) {
                 $namad = Namad::whereSymbol($symbol)->first();
-                // return $this->format((float)((float)Cache::get($namad->id)['personsell'] / (float)Cache::get($namad->id)['personsellcount']));
                 if (isset(Cache::get($namad->id)['filter'])) {
 
                     $item['name'] = $namad->name;

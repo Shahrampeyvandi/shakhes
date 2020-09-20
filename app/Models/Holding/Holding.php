@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Holding extends Model
 {
+    protected $with = 'namads';
     public function namads()
     {
         return $this->belongsToMany(Namad::class, 'holdings_namads')->withPivot(['amount_percent', 'amount_value', 'change']);
@@ -73,5 +74,23 @@ class Holding extends Model
         }
 
         return $all;
+    }
+
+    public function getMarketValue()
+    {
+        $namads = $this->namads;
+        $sum_market_value = 0;
+        foreach ($namads as $key => $namad) {
+         $sum_market_value += Cache::get($namad->id) ? Cache::get($namad->id)['N_MarketCash'] : 0;   
+        }
+        return $sum_market_value;
+    }
+
+    public function save_portfoy()
+    {
+        $portfoy = $this->getMarketValue();
+        static::whereId($this->id)->update([
+            'portfoy' => $portfoy
+        ]);
     }
 }

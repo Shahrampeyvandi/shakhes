@@ -23,7 +23,7 @@ class Controller extends BaseController
         return $member;
     }
 
-    
+
     public function convertDate($date)
     {
 
@@ -45,7 +45,7 @@ class Controller extends BaseController
         return $carbon;
     }
 
-    public function show_with_symbol($value , $seprator = 1)
+    public function show_with_symbol($value, $seprator = 1)
     {
         if ((int)$value > 1000000 && (int)$value < 1000000000) {
             return number_format((int)$value / 1000000, $seprator) . "M";

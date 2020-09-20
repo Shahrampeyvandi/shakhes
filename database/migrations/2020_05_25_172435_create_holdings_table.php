@@ -16,6 +16,7 @@ class CreateHoldingsTable extends Migration
         Schema::create('holdings', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('namad_id');
+            $table->string('portfoy');
             $table->timestamps();
         });
     }

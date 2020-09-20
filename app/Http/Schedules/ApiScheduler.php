@@ -2,6 +2,8 @@
 
 namespace App\Http\Schedules;
 
+use App\Http\Controllers\Controller;
+use App\Models\Holding\Holding;
 use Goutte;
 use Exception;
 use Carbon\Carbon;
@@ -13,7 +15,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use App\Models\Namad\NamadsDailyReport;
 
-class ApiScheduler
+class ApiScheduler extends Controller
 {
 
 
@@ -21,15 +23,15 @@ class ApiScheduler
     {
 
         if (Cache::has('bazarstatus')) {
-            echo 'has cache = '. PHP_EOL;
+            echo 'has cache = ' . PHP_EOL;
             $status = Cache::get('bazarstatus');
-            echo 'has cache = '.$status. PHP_EOL;
+            echo 'has cache = ' . $status . PHP_EOL;
             if ($status == 'close') {
-                echo ' cache is close= '. PHP_EOL;
+                echo ' cache is close= ' . PHP_EOL;
                 die;
             }
         } else {
-            echo 'else cache = '. PHP_EOL;
+            echo 'else cache = ' . PHP_EOL;
 
 
             $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=15');
@@ -37,7 +39,7 @@ class ApiScheduler
             $crawler->filter('table')->each(function ($node) use (&$all) {
                 $status = $node->filter('tr:nth-of-type(1)')->text();
                 if (preg_match('/بسته/', $status)) {
-                    echo 'store cache = '. PHP_EOL;
+                    echo 'store cache = ' . PHP_EOL;
                     Cache::store()->put('bazarstatus', 'close', 1800); // 10 Minutes
                     die;
                 }
@@ -83,60 +85,8 @@ class ApiScheduler
 
         $array['namad_status'] = trim(explode(',', $main_data)[1]);
 
-        if ($orders) {
-            $explode_orders = explode('@', $orders);
-            if ((int) $explode_orders[1] > 1000000 && (int) $explode_orders[1] < 1000000000) {
-                $explode_orders[1] = number_format((int) $explode_orders[1] / 1000000, 2) . "M";
-            } elseif ((int) $explode_orders[1] > 1000000000) {
-                $explode_orders[1] = number_format((int) $explode_orders[1] / 1000000000, 2) . "B";
-            } else {
-                $explode_orders[1] = (int) $explode_orders[1];
-            }
-            $array['lastbuys'][] = array('tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2]);
-            if ((int) $explode_orders[6] > 1000000 && (int) $explode_orders[6] < 1000000000) {
-                $explode_orders[6] = number_format((int) $explode_orders[6] / 1000000, 2) . "M";
-            } elseif ((int) $explode_orders[6] > 1000000000) {
-                $explode_orders[6] = number_format((int) $explode_orders[6] / 1000000000, 2) . "B";
-            } else {
-                $explode_orders[6] = (int) $explode_orders[6];
-            }
-            $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7]);
-            if ((int) $explode_orders[11] > 1000000 && (int) $explode_orders[11] < 1000000000) {
-                $explode_orders[11] = number_format((int) $explode_orders[11] / 1000000, 2) . "M";
-            } elseif ((int) $explode_orders[11] > 1000000000) {
-                $explode_orders[11] = number_format((int) $explode_orders[11] / 1000000000, 2) . "B";
-            } else {
-                $explode_orders[11] = (int) $explode_orders[11];
-            }
+      
 
-            $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12]);
-
-            $dailyReport->lastbuys = serialize($array['lastbuys']);
-            if ((int) $explode_orders[4] > 1000000 && (int) $explode_orders[4] < 1000000000) {
-                $explode_orders[4] = number_format((int) $explode_orders[4] / 1000000, 2) . "M";
-            } elseif ((int) $explode_orders[4] > 1000000000) {
-                $explode_orders[4] = number_format((int) $explode_orders[4] / 1000000000, 2) . "B";
-            } else {
-                $explode_orders[4] = (int) $explode_orders[4];
-            }
-            $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3]);
-            if ((int) $explode_orders[9] > 1000000 && (int) $explode_orders[9] < 1000000000) {
-                $explode_orders[9] = number_format((int) $explode_orders[9] / 1000000, 2) . "M";
-            } elseif ((int) $explode_orders[9] > 1000000000) {
-                $explode_orders[9] = number_format((int) $explode_orders[9] / 1000000000, 2) . "B";
-            } else {
-                $explode_orders[9] = (int) $explode_orders[9];
-            }
-            $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8]);
-            if ((int) $explode_orders[14] > 1000000 && (int) $explode_orders[14] < 1000000000) {
-                $explode_orders[14] = number_format((int) $explode_orders[14] / 1000000, 2) . "M";
-            } elseif ((int) $explode_orders[14] > 1000000000) {
-                $explode_orders[14] = number_format((int) $explode_orders[14] / 1000000000, 2) . "B";
-            } else {
-                $explode_orders[14] = (int) $explode_orders[14];
-            }
-            $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13]);
-        }
         $dailyReport->lastsells = isset($array['lastsells']) ? serialize($array['lastsells']) : '';
         $data['personbuy'] = $buy_sell ?  explode(',', $buy_sell)[0] : 0;
         $data['legalbuy'] = $buy_sell ? explode(',', $buy_sell)[1] : 0;
@@ -213,6 +163,25 @@ class ApiScheduler
         $array['tradecount'] = explode(',', $main_data)[8];
         $array['N_tradeVol'] =  explode(',', $main_data)[9];
         $tradeVOL = explode(',', $main_data)[9];
+
+          if ($orders) {
+            $explode_orders = explode('@', $orders);
+            $explode_orders[1] = $this->format((int) $explode_orders[1]);
+            $array['lastbuys'][] = array('tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2],'color' => $explode_orders[2] < $array['pmin'] ? 'gray' : 'black');
+            $explode_orders[6] = $this->format((int) $explode_orders[6]);
+            $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7],'color' => $explode_orders[7] < $array['pmin'] ? 'gray' : 'black');
+            $explode_orders[11] = $this->format((int) $explode_orders[11]);
+            $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12],'color' => $explode_orders[12] < $array['pmin'] ? 'gray' : 'black');
+            $dailyReport->lastbuys = serialize($array['lastbuys']);
+            $explode_orders[4] = $this->format((int) $explode_orders[4]);
+            $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3],'color' => $explode_orders[3] > $array['pmax'] ? 'gray' : 'black');
+            $explode_orders[9] = $this->format((int) $explode_orders[9]);
+            $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8],'color' => $explode_orders[8] > $array['pmax'] ? 'gray' : 'black');
+            $explode_orders[14] = $this->format((int) $explode_orders[14]);
+            $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13],'color' => $explode_orders[13] > $array['pmax'] ? 'gray' : 'black');
+        }
+
+
         if ((int)$tradeVOL > 1000000 && (int)$tradeVOL < 1000000000) {
             $array['tradevol'] = number_format((int)$tradeVOL / 1000000, 1) . "M";
         } elseif ((int)$tradeVOL > 1000000000) {
@@ -351,6 +320,15 @@ class ApiScheduler
         //dd([Carbon::now()->timestamp,$start,$end,$time]);
 
 
+        
+        if(Carbon::parse('12:28:55')->timestamp < $time && $time < Carbon::parse('12:29')->timestamp) {
+            foreach (Holding::all() as $key => $holding) {
+                // echo 'ok';
+                $holding->save_portfoy();
+            }
+        }
+
+
         if (($time > $start) && ($time < $end) &&  ((int)$array['N_tradeVol'] > (int)$array['N_monthAVG'])) {
             $zarib =   number_format((float)((int)$array['N_tradeVol'] / (int)$array['N_monthAVG']), 1, '.', '');
             if ($zarib > 4 && VolumeTrade::check($namad->id)) {
@@ -414,7 +392,7 @@ class ApiScheduler
         // filter calculate
 
         if ($buy_sell) {
-            
+
             $array['filter']['person_most_buy_sell'] = $data['personbuycount'] > 0 && $data['personsellcount'] ? (float)($data['personbuy'] / $data['personbuycount']) / (float)($data['personsell'] / $data['personsellcount']) : 0;
             $array['filter']['person_most_sell_buy'] = $data['personbuycount'] > 0 && $data['personsellcount'] ? (float)($data['personsell'] / $data['personsellcount']) / (float)($data['personbuy'] / $data['personbuycount']) : 0;
             $array['filter']['legal_most_buy_sell'] = $data['legalbuycount'] > 0 && $data['legalsellcount'] ? (float)($data['legalbuy'] / $data['legalbuycount']) / (float)($data['legalsell'] / $data['personsellcount']) : 0;

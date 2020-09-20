@@ -17,7 +17,8 @@
         "tymon/jwt-auth": "1.0.*",
         "weidner/goutte": "^1.5",
         "sunra/php-simple-html-dom-parser": "1.5.2",
-        "guzzlehttp/guzzle": "~6.0"
+        "guzzlehttp/guzzle": "~6.0",
+        "cucxabeng/simple-html-dom": "dev-master"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",
