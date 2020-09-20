@@ -3,6 +3,7 @@
 namespace App\Http\Schedules;
 
 use App\Http\Controllers\Controller;
+use App\Models\Holding\Holding;
 use Goutte;
 use Exception;
 use Carbon\Carbon;
@@ -317,6 +318,12 @@ class ApiScheduler extends Controller
         $time = Carbon::now()->timestamp;
 
         //dd([Carbon::now()->timestamp,$start,$end,$time]);
+
+        if($time == Carbon::parse('12:28')->timestamp) {
+            foreach (Holding::all() as $key => $holding) {
+                $holding->save_portfoy();
+            }
+        }
 
 
         if (($time > $start) && ($time < $end) &&  ((int)$array['N_tradeVol'] > (int)$array['N_monthAVG'])) {
