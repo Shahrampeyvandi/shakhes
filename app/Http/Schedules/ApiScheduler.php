@@ -319,8 +319,11 @@ class ApiScheduler extends Controller
 
         //dd([Carbon::now()->timestamp,$start,$end,$time]);
 
-        if($time == Carbon::parse('12:28')->timestamp) {
+
+        
+        if(Carbon::parse('12:28:55')->timestamp < $time && $time < Carbon::parse('12:29')->timestamp) {
             foreach (Holding::all() as $key => $holding) {
+                // echo 'ok';
                 $holding->save_portfoy();
             }
         }

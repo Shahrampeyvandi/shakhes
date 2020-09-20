@@ -18,10 +18,13 @@ class RedisController extends Controller
     public function getmain()
     {
 
-       $client = new \GuzzleHttp\Client();
-    //    echo file_get_content('https://www.codal.ir/ReportList.aspx?search&Symbol=%D8%A2%D8%B3%DB%8C%D8%A7&LetterType=-1&Isic=660315&AuditorRef=-1&PageNumber=1&Audited&NotAudited&IsNotAudited=false&Childs&Mains&Publisher=false&CompanyState=0&Category=7&CompanyType=1&Consolidatable&NotConsolidatable');
-$response = $client->request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=15');
-        return $response->getBody();
+          
+
+
+//        $client = new \GuzzleHttp\Client();
+//     //    echo file_get_content('https://www.codal.ir/ReportList.aspx?search&Symbol=%D8%A2%D8%B3%DB%8C%D8%A7&LetterType=-1&Isic=660315&AuditorRef=-1&PageNumber=1&Audited&NotAudited&IsNotAudited=false&Childs&Mains&Publisher=false&CompanyState=0&Category=7&CompanyType=1&Consolidatable&NotConsolidatable');
+// $response = $client->request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=15');
+//         return $response->getBody();
         
 
     }
