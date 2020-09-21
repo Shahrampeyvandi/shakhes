@@ -162,7 +162,7 @@ class FilterController extends Controller
                 $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? Cache::get($namad->id)['personbuycount'] : '';
                // $item['secondsecond'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
                 // $item['secondsecond'] =  $this->format((int)Cache::get($namad->id)['N_personbuy']);
-                $item['third'] = $this->format((int)Cache::get($namad->id)['N_personbuy']);
+                $item['second'] = $this->format((int)Cache::get($namad->id)['N_personbuy']);
                 $item['status'] = Cache::get($namad->id)['status'];
                 $data['data'][] = $item;
             }
