@@ -38,15 +38,16 @@ class MoneyReportsController extends Controller
             );
         }
 
-        $array['marketvalue'] = $holding_obj->getMarketValue();
         $getnamadsdata = $holding_obj->showPercentNamads($holding_obj->id, $namad);
-       
+        
+        
         $yesterday_portfoy = $holding_obj->portfoy;
-    
-        $array['percent_change_porftoy'] = $yesterday_portfoy == 0 ? 0 : number_format(($array['marketvalue'] - $yesterday_portfoy) / $yesterday_portfoy,1,'.');
+        $array['marketvalue'] = $this->format($holding_obj->getMarketValue());
+        $array['percent_change_porftoy'] = $yesterday_portfoy == 0 ? 0 : $this->format(((int)$array['marketvalue'] - $yesterday_portfoy) / $yesterday_portfoy);
         $array['saham'] = $getnamadsdata;
 
         $arraym['datasingle']=$array;
+     
         return response()->json(
             $arraym,
             200

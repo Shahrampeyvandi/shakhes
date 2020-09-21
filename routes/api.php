@@ -71,7 +71,7 @@ Route::get('/getnamadmonthlyreports', 'Api\MoneyReportsController@getnamadmonthl
 Route::get('/getnamadseasonalreports', 'Api\MoneyReportsController@getnamadseasonalreports');
 Route::get('/getnamadyearlyreports', 'Api\MoneyReportsController@getnamadyearlyreports');
 //--------- دیگر بخش هاش
-Route::get('/getholdingdata', 'Api\MoneyReportsController@get_holding_data');
+// Route::get('/getholdingdata', 'Api\MoneyReportsController@get_holding_data');
 Route::get('/volumetradeincrease/{id?}', 'Api\VolumeTradesController@VolumeTradeIncease'); 
 Route::get('disclosures/{id}', 'Api\MembersDataController@namadDisclosures'); // افشای اطلاعات با اهمیت سهم
 Route::get('capitalincreases/{id?}', 'Api\MembersDataController@namadcapitalincreases'); // دریافت افزایش سرمایه های یک نماد از سهام من
