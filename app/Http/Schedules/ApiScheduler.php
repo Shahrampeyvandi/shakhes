@@ -23,15 +23,14 @@ class ApiScheduler extends Controller
     {
 
         if (Cache::has('bazarstatus')) {
-            echo 'has cache = ' . PHP_EOL;
+            echo 'cache has bazar status = ' . PHP_EOL;
             $status = Cache::get('bazarstatus');
-            echo 'has cache = ' . $status . PHP_EOL;
             if ($status == 'close') {
-                echo ' cache is close= ' . PHP_EOL;
+                echo ' cache show bazar is close= ' . PHP_EOL;
                 die;
             }
         } else {
-            echo 'else cache = ' . PHP_EOL;
+            echo 'cache is empty = ' . PHP_EOL;
 
 
             $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=15');
@@ -39,11 +38,12 @@ class ApiScheduler extends Controller
             $crawler->filter('table')->each(function ($node) use (&$all) {
                 $status = $node->filter('tr:nth-of-type(1)')->text();
                 if (preg_match('/بسته/', $status)) {
-                    echo 'store cache = ' . PHP_EOL;
+                    echo 'bazar baste ast = ' . PHP_EOL;
                     Cache::store()->put('bazarstatus', 'close', 1800); // 10 Minutes
                     die;
                 }
             });
+            die;
         }
 
         $namads = [];
