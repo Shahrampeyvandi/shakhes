@@ -101,5 +101,10 @@ legal_most_sell_buy
  most_volume_trade
  most_person_buy
 power_person_buy
+
+most_person_buy
+most_person_sell
+most_legall_buy
+most_legall_sell
  
  */
