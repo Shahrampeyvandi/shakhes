@@ -6,6 +6,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Http\Schedules\ApiScheduler;
 use App\Http\Schedules\DailyReportScheduler;
+use App\Http\Schedules\InformationScheduler;
 
 class Kernel extends ConsoleKernel
 {
@@ -27,12 +28,17 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 
+        $schedule->call(new InformationScheduler)->dailyAt('20:56');
+        //$schedule->call(new InformationScheduler)->everyMinute();
+
 
         $schedule->call(new DailyReportScheduler)->daily();
         //$schedule->call(new DailyReportScheduler)->everyMinute();
         //$schedule->call(new DailyReportScheduler)->dailyAt('11:55');
 
         $schedule->call(new ApiScheduler)->everyMinute();
+
+
 
 
         // $schedule->command('inspire')
