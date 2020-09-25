@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Setting;
+use Carbon\Carbon;
 use App\Models\Namad\Namad;
 use App\Models\VolumeTrade;
 use Illuminate\Http\Request;
@@ -16,8 +17,9 @@ class VolumeTradesController extends Controller
         if ($id) {
             $volume_trades = VolumeTrade::whereNamad_id($id)->paginate(20);
         } else {
-            $volume_trades = VolumeTrade::latest()->paginate(20);
+            $volume_trades = VolumeTrade::whereDate('created_at', Carbon::today())->paginate(20);
         }
+
         $all = [];
         foreach ($volume_trades as $key => $volume) {
             $array['symbol'] = $volume->namad->symbol;
@@ -30,6 +32,7 @@ class VolumeTradesController extends Controller
             $all[] = $array;
         }
 
+        
         return response()->json(
            ['data'=> $all],
             200

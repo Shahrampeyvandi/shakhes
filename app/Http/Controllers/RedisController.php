@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Namad\Namad;
-use App\Models\Namad\NamadsDailyReport;
 use Goutte;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Redis;
-use App\Models\VolumeTrade;
-use Carbon\Carbon;
 use Exception;
+use Carbon\Carbon;
+use App\Models\Namad\Namad;
+use App\Models\VolumeTrade;
+use Illuminate\Http\Request;
+use App\Models\Holding\Holding;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
+use App\Models\Namad\NamadsDailyReport;
 
 class RedisController extends Controller
 {
@@ -54,7 +55,13 @@ class RedisController extends Controller
     public function shakhes()
     {
 
-
+        $holding = Holding::whereId(7)->first();
+        $sum_market_value = 0;
+        foreach ($holding->namads as $key => $namad) {
+         $sum_market_value += $namad->pivot->amount_value * Cache::get($namad->id)['pl'];   
+        }
+        dd($sum_market_value);
+        // dd($holding->namads->first()->pivot->amount_value);
 
 
 
@@ -97,6 +104,7 @@ class RedisController extends Controller
 
         $array['symbol'] = $namad->symbol;
         $explode_all = explode(';', $all);
+        // dump($explode_all);
         $main_data = $explode_all[0];
         $buy_sell = $explode_all[4];
         $orders = $explode_all[2];
@@ -319,6 +327,7 @@ class RedisController extends Controller
         }
 
 
+        // dump($explode);
         preg_match('/\'?(\d+)/', $explode[27], $matches);
         $array['EPS'] = count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/', $explode[38], $matches);

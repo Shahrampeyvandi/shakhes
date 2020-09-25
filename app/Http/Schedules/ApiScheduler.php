@@ -27,6 +27,13 @@ class ApiScheduler extends Controller
             $status = Cache::get('bazarstatus');
             echo 'has cache = ' . $status . PHP_EOL;
             if ($status == 'close') {
+                $time = Carbon::now()->timestamp;
+                if (Carbon::parse('08:58:55')->timestamp < $time && $time < Carbon::parse('08:59')->timestamp) {
+                    foreach (Holding::all() as $key => $holding) {
+                        // echo 'ok';
+                        $holding->save_portfoy();
+                    }
+                }
                 echo ' cache is close= ' . PHP_EOL;
                 die;
             }
@@ -85,7 +92,7 @@ class ApiScheduler extends Controller
 
         $array['namad_status'] = trim(explode(',', $main_data)[1]);
 
-      
+
 
         $dailyReport->lastsells = isset($array['lastsells']) ? serialize($array['lastsells']) : '';
         $data['personbuy'] = $buy_sell ?  explode(',', $buy_sell)[0] : 0;
@@ -164,21 +171,21 @@ class ApiScheduler extends Controller
         $array['N_tradeVol'] =  explode(',', $main_data)[9];
         $tradeVOL = explode(',', $main_data)[9];
 
-          if ($orders) {
+        if ($orders) {
             $explode_orders = explode('@', $orders);
             $explode_orders[1] = $this->format((int) $explode_orders[1]);
-            $array['lastbuys'][] = array('tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2],'color' => $explode_orders[2] < $array['pmin'] ? 'gray' : 'black');
+            $array['lastbuys'][] = array('tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2], 'color' => $explode_orders[2] < $array['pmin'] ? 'gray' : 'black');
             $explode_orders[6] = $this->format((int) $explode_orders[6]);
-            $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7],'color' => $explode_orders[7] < $array['pmin'] ? 'gray' : 'black');
+            $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7], 'color' => $explode_orders[7] < $array['pmin'] ? 'gray' : 'black');
             $explode_orders[11] = $this->format((int) $explode_orders[11]);
-            $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12],'color' => $explode_orders[12] < $array['pmin'] ? 'gray' : 'black');
+            $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12], 'color' => $explode_orders[12] < $array['pmin'] ? 'gray' : 'black');
             $dailyReport->lastbuys = serialize($array['lastbuys']);
             $explode_orders[4] = $this->format((int) $explode_orders[4]);
-            $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3],'color' => $explode_orders[3] > $array['pmax'] ? 'gray' : 'black');
+            $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3], 'color' => $explode_orders[3] > $array['pmax'] ? 'gray' : 'black');
             $explode_orders[9] = $this->format((int) $explode_orders[9]);
-            $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8],'color' => $explode_orders[8] > $array['pmax'] ? 'gray' : 'black');
+            $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8], 'color' => $explode_orders[8] > $array['pmax'] ? 'gray' : 'black');
             $explode_orders[14] = $this->format((int) $explode_orders[14]);
-            $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13],'color' => $explode_orders[13] > $array['pmax'] ? 'gray' : 'black');
+            $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13], 'color' => $explode_orders[13] > $array['pmax'] ? 'gray' : 'black');
         }
 
 
@@ -320,13 +327,8 @@ class ApiScheduler extends Controller
         //dd([Carbon::now()->timestamp,$start,$end,$time]);
 
 
-        
-        if(Carbon::parse('12:28:55')->timestamp < $time && $time < Carbon::parse('12:29')->timestamp) {
-            foreach (Holding::all() as $key => $holding) {
-                // echo 'ok';
-                $holding->save_portfoy();
-            }
-        }
+
+
 
 
         if (($time > $start) && ($time < $end) &&  ((int)$array['N_tradeVol'] > (int)$array['N_monthAVG'])) {
