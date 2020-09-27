@@ -14,6 +14,8 @@ class MoneyReportsController extends Controller
 
     public function get_holding_data($id = null)
     {
+
+
         $arraym = [
             'time' => $this->get_current_date_shamsi() . '_' . date('H:i'),
         ];
@@ -42,9 +44,12 @@ class MoneyReportsController extends Controller
 
 
         $yesterday_portfoy = $holding_obj->portfoy;
+        $array['yesterday_portfoy'] = (int)$yesterday_portfoy;
+        $array['portfoy'] = (int)$holding_obj->getMarketValue();
         $array['marketvalue'] = $this->format($holding_obj->getMarketValue());
         $array['percent_change_porftoy'] = (int)$yesterday_portfoy !== 0 ?  number_format((((int)$holding_obj->getMarketValue() - (int)$yesterday_portfoy) / (int)$yesterday_portfoy) * 100, 2) : 0;
         $array['saham'] = $getnamadsdata;
+        $array['color_status']  =  $array['percent_change_porftoy'] > 0 ? 'green' : 'red';
 
         $arraym['datasingle'] = $array;
 
@@ -73,8 +78,11 @@ class MoneyReportsController extends Controller
 
             $array['namad']['status'] = 'green';
             $yesterday_portfoy = $item->portfoy;
+            $array['yesterday_portfoy'] = (int)$yesterday_portfoy;
+            $array['portfoy'] = (int)$item->getMarketValue();
             $array['marketvalue'] = $this->format($item->getMarketValue());
             $array['percent_change_porftoy'] = (int)$yesterday_portfoy !== 0 ?  number_format((((int)$item->getMarketValue() - (int)$yesterday_portfoy) / (int)$yesterday_portfoy) * 100, 2) : 0;
+            $array['color_status']  =  $array['percent_change_porftoy'] > 0 ? 'green' : 'red';
             $array['countnamad'] = count($item->namads);
             $all['data'][] = $array;
         }

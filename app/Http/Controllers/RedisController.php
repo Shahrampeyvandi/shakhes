@@ -56,16 +56,28 @@ class RedisController extends Controller
         
 
     }
+     public function shakhes()
+    {
+         $time = Carbon::now()->timestamp;
+        if (Carbon::parse('10:24')->timestamp < $time && $time < Carbon::parse('10:35')->timestamp) {
+            dd('sdff');
+        }else{
+            dd('no');
+        }
+        foreach (Holding::all() as $key => $holding) {
+                        $holding->save_portfoy();
+                    }
+    }
 
-    public function shakhes()
+    public function getdMarketValue()
     {
 
-        $holding = Holding::whereId(7)->first();
+         $namads = $this->namads;
         $sum_market_value = 0;
-        foreach ($holding->namads as $key => $namad) {
-         $sum_market_value += $namad->pivot->amount_value * Cache::get($namad->id)['pl'];   
+        foreach ($namads as $key => $namad) {
+         $sum_market_value += $namad->pivot->amount_value * (int)Cache::get($namad->id)['pc'];   
         }
-        dd($sum_market_value);
+        return $sum_market_value;
         // dd($holding->namads->first()->pivot->amount_value);
 
 
@@ -89,13 +101,13 @@ class RedisController extends Controller
         //     '71704845530629737' => 'شاخص بازار دوم',
         // ];
 
-        $namads = Namad::all();
+        // $namads = Namad::all();
 
-        $array = [];
-        foreach ($namads as $namad) {
+        // $array = [];
+        // foreach ($namads as $namad) {
 
-            $this->saveDailyReport($namad);
-        }
+        //     $this->saveDailyReport($namad);
+        // }
     }
 
     public function saveDailyReport($namad)

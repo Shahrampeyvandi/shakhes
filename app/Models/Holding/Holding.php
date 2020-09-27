@@ -81,7 +81,7 @@ class Holding extends Model
         $namads = $this->namads;
         $sum_market_value = 0;
         foreach ($namads as $key => $namad) {
-         $sum_market_value += $namad->pivot->amount_value * Cache::get($namad->id)['pc'];   
+         $sum_market_value += $namad->pivot->amount_value * (int)Cache::get($namad->id)['pc'];   
         }
         return $sum_market_value;
     }
