@@ -46,7 +46,7 @@ class VolumeTradesController extends Controller
             $collection = VolumeTrade::where('namad_id', $namad->id)->paginate(20);
 
         } else {
-            $collection = VolumeTrade::latest()->paginate(20);
+            $collection = VolumeTrade::where('created_at', '>=', Carbon::today()->toDateString())->latest()->paginate(20);
             $all = [
                 'time' => $this->get_current_date_shamsi().'_'.date('H:i'),
                 ];

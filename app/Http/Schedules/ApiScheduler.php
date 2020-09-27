@@ -23,17 +23,17 @@ class ApiScheduler extends Controller
     {
 
 
+        $time = Carbon::now()->timestamp;
+        if (Carbon::parse('08:50')->timestamp < $time && $time < Carbon::parse('08:59')->timestamp) {
+            foreach (Holding::all() as $key => $holding) {
+                $holding->save_portfoy();
+            }
+        }
+
         if (Cache::has('bazarstatus')) {
             echo 'cache has bazar status = ' . PHP_EOL;
             $status = Cache::get('bazarstatus');
             if ($status == 'close') {
-
-                $time = Carbon::now()->timestamp;
-                    if (Carbon::parse('08:55')->timestamp < $time && $time < Carbon::parse('08:59')->timestamp) {
-                        foreach (Holding::all() as $key => $holding) {
-                            $holding->save_portfoy();
-                        }
-                    }
 
                 // echo ' cache is close= ' . PHP_EOL;
                 echo ' cache show bazar is close= ' . PHP_EOL;
@@ -50,12 +50,6 @@ class ApiScheduler extends Controller
                 if (preg_match('/بسته/', $status)) {
                     echo 'bazar baste ast = ' . PHP_EOL;
                     Cache::store()->put('bazarstatus', 'close', 1800); // 10 Minutes
-                    $time = Carbon::now()->timestamp;
-                    if (Carbon::parse('08:55')->timestamp < $time && $time < Carbon::parse('08:59')->timestamp) {
-                        foreach (Holding::all() as $key => $holding) {
-                            $holding->save_portfoy();
-                        }
-                    }
                     die;
                 }
             });
