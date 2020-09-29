@@ -17,7 +17,12 @@ class VolumeTradesController extends Controller
         if ($id) {
             $volume_trades = VolumeTrade::whereNamad_id($id)->paginate(20);
         } else {
-            $volume_trades = VolumeTrade::whereDate('created_at', Carbon::today())->orderBy('updated_at', 'desc')->paginate(20);
+           if (Cache::has('bazarstatus') && Cache::get('bazarstatus') == 'close') {
+                $orderby = 'volume_ratio';
+            } else {
+                $orderby = 'updated_at';
+            }
+            $volume_trades = VolumeTrade::whereDate('created_at', Carbon::today())->orderBy($orderby, 'desc')->paginate(20);
         }
 
         $all = [];
@@ -32,9 +37,9 @@ class VolumeTradesController extends Controller
             $all[] = $array;
         }
 
-        
+
         return response()->json(
-           ['data'=> $all],
+            ['data' => $all],
             200
         );
     }
@@ -44,19 +49,25 @@ class VolumeTradesController extends Controller
         if ($id !== null) {
             $namad = Namad::where('id', $id)->first();
             $collection = VolumeTrade::where('namad_id', $namad->id)->paginate(20);
-
         } else {
-            $collection = VolumeTrade::where('created_at', '>=', Carbon::today()->toDateString())->orderBy('updated_at', 'desc')->paginate(20);
+
+            if (Cache::has('bazarstatus') && Cache::get('bazarstatus') == 'close') {
+                $orderby = 'volume_ratio';
+            } else {
+                $orderby = 'updated_at';
+            }
+            $collection = VolumeTrade::where('created_at', '>=', Carbon::today()->toDateString())->orderBy($orderby, 'desc')->paginate(20);
             $all = [
-                'time' => $this->get_current_date_shamsi().'_'.date('H:i'),
-                ];
+                'time' => $this->get_current_date_shamsi() . '_' . date('H:i'),
+            ];
         }
 
 
-       
+
+
         $list = [];
         foreach ($collection as $key => $obj) {
-            $array=[];
+            $array = [];
             $namad = Namad::where('id', $obj->namad_id)->first();
             $array['namad'] = Cache::get($obj->namad_id);
             $array['namad']['symbol'] = $namad->symbol;
@@ -65,19 +76,15 @@ class VolumeTradesController extends Controller
             $array['vol'] = $this->show_with_symbol($obj->trade_vol);
             $array['ratio'] = $obj->volume_ratio;
             $array['new'] = $obj->new();
-            $array['publish_date'] = substr($obj->created_at,0,10);
+            $array['publish_date'] = substr($obj->created_at, 0, 10);
             $list[] = $array;
         }
         if ($id !== null) {
-            return response()->json(['data'=>$list], 200);
-
-        }else{
-            $all['data']=$list;
+            return response()->json(['data' => $list], 200);
+        } else {
+            $all['data'] = $list;
 
             return response()->json($all, 200);
-
         }
-
-
     }
 }

@@ -56,19 +56,19 @@ class Holding extends Model
         // محاسبه جمع تعداد سهام
         foreach ($holding_namads as $key => $pivot) {
              $namad_ = Namad::where('id', $pivot->namad_id)->first();
-            $pl = Cache::get($namad_->id)['pl'];
+            $pl = Cache::get($namad_->id)['pc'];
             $total += $pivot->amount_value * $pl;
         }
 
         // میزان تغییر و قیمت هر سهم
         foreach ($holding_namads as $key => $pivot) {
             $namad_ = Namad::where('id', $pivot->namad_id)->first();
-            $count = $pivot->amount_value * Cache::get($namad_->id)['pl'];
+            $count = $pivot->amount_value * Cache::get($namad_->id)['pc'];
             $array['symbol'] = $namad_->symbol;
             $array['name'] = $namad_->name;
             $array['amount_percent'] = number_format((float)(($count * 100) / $total), 1, '.', '');
-            $array['final_price_value'] = Cache::get($namad_->id)['pl'];
-            $array['last_price_percent'] = Cache::get($namad_->id)['final_price_percent'];
+            $array['final_price_value'] = Cache::get($namad_->id)['pc'];
+            $array['last_price_percent'] = isset(Cache::get($namad_->id)['payani_change_percent']) ? Cache::get($namad_->id)['payani_change_percent'] : 0;
             $array['status'] = Cache::get($namad_->id)['status'];
             $all[] = $array;
         }

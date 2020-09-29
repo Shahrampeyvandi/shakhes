@@ -278,6 +278,7 @@ class ApiScheduler extends Controller
 
         preg_match('/\'?(\d+)/', $explode[27], $matches);
         $array['EPS'] = count($matches) ? $matches[1] : '';
+        $array['P/E'] = isset($array['EPS']) && $array['EPS'] ? number_format(($array['pc'] / $array['EPS']), 2, '.', '') : '';
         preg_match('/=\'?(\d+)/', $explode[38], $matches);
         $array['minweek'] = count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/', $explode[39], $matches);
@@ -303,6 +304,7 @@ class ApiScheduler extends Controller
         preg_match('/=\'?(\d+)/', $explode[44], $matches);
         $array['sahamShenavar'] = count($matches) ? $matches[1] : '';
 
+        $array['payani_change_percent'] = isset($array['py']) && $array['py'] !== 0 ?  abs(number_format((float)(($array['pc'] - $array['py']) * 100) / $array['py'], 2, '.', '')) : '';
         if (isset($array['pl']) && isset($array['py'])) {
             $array['final_price_value'] = $array['pl'];
             $array['final_price_percent'] = $array['py'] ?  abs(number_format((float)(($array['pl'] - $array['py']) * 100) / $array['py'], 2, '.', '')) : '';
