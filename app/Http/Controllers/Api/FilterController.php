@@ -36,6 +36,7 @@ class FilterController extends Controller
 
             asort($array);
 
+            // return $array;
             $symbols_array = array_slice(array_keys(array_reverse($array)), 0, 50);
 
             foreach ($symbols_array as $key => $symbol) {
@@ -44,8 +45,8 @@ class FilterController extends Controller
 
                     $item['name'] = $namad->name;
                     $item['symbol'] = $namad->symbol;
-                    $item['first'] = $this->format((float)((float)Cache::get($namad->id)['personbuy'] / (float)Cache::get($namad->id)['personbuycount']));
-                    $item['second'] = $this->format((float)((float)Cache::get($namad->id)['personsell'] / (float)Cache::get($namad->id)['personsellcount']));
+                    $item['first'] = $this->format((float)((float)Cache::get($namad->id)['N_personbuy'] / (float)Cache::get($namad->id)['personbuycount']));
+                    $item['second'] = $this->format((float)((float)Cache::get($namad->id)['N_personsell'] / (float)Cache::get($namad->id)['personsellcount']));
                     $item['third'] = isset(Cache::get($namad->id)['filter']['person_most_buy_sell']) ?  number_format((float)Cache::get($namad->id)['filter']['person_most_buy_sell'], 0) : 0;
                     $data['data'][] = $item;
                 }
@@ -69,8 +70,8 @@ class FilterController extends Controller
                 if (isset(Cache::get($namad->id)['filter'])) {
                     $item['name'] = $namad->name;
                     $item['symbol'] = $namad->symbol;
-                    $item['second'] = $this->format((float)((float)Cache::get($namad->id)['legalbuy'] / (float)Cache::get($namad->id)['legalbuycount']));
-                    $item['first'] = $this->format((float)((float)Cache::get($namad->id)['legalsell'] / (float)Cache::get($namad->id)['legalsellcount']));
+                    $item['second'] = $this->format((float)((float)Cache::get($namad->id)['N_legalbuy'] / (float)Cache::get($namad->id)['legalbuycount']));
+                    $item['first'] = $this->format((float)((float)Cache::get($namad->id)['N_legalsell'] / (float)Cache::get($namad->id)['legalsellcount']));
                     $item['third'] = isset(Cache::get($namad->id)['filter']['legal_most_buy_sell']) ?  number_format((float)Cache::get($namad->id)['filter']['person_most_buy_sell'], 0) : 0;
                     $data['data'][] = $item;
                 }
@@ -264,7 +265,7 @@ class FilterController extends Controller
 
     public function send_json($kilid, $data)
     {
-        Cache::store()->put($kilid, $data, 1000); // 10 Minutes
+        Cache::store()->put($kilid, $data, 60); // 1 Minutes
         return response()->json($data, 200);
     }
 }

@@ -69,7 +69,7 @@ class Holding extends Model
             $array['amount_percent'] = number_format((float)(($count * 100) / $total), 1, '.', '');
             $array['final_price_value'] = Cache::get($namad_->id)['pl'];
             $array['last_price_percent'] = Cache::get($namad_->id)['final_price_percent'];
-            $array['status'] = 'green' ;
+            $array['status'] = Cache::get($namad_->id)['status'];
             $all[] = $array;
         }
 

@@ -29,7 +29,7 @@ class MoneyReportsController extends Controller
         } else {
             $array['namad']['namad_status'] = 'A';
         }
-        $array['namad']['status'] = 'green';
+        $array['namad']['status'] = $information['status'];
         if (is_null($holding_obj)) {
             return response()->json(
                 [
@@ -76,7 +76,7 @@ class MoneyReportsController extends Controller
 
             $array['namad']['symbol'] = $namad->symbol;
 
-            $array['namad']['status'] = 'green';
+            $array['namad']['status'] = $cache['status'];
             $yesterday_portfoy = $item->portfoy;
             $array['yesterday_portfoy'] = (int)$yesterday_portfoy;
             $array['portfoy'] = (int)$item->getMarketValue();
@@ -86,6 +86,10 @@ class MoneyReportsController extends Controller
             $array['countnamad'] = count($item->namads);
             $all['data'][] = $array;
         }
+
+        // return $all['data'];
+         usort($all['data'], function($a, $b) {return $a['portfoy']< $b['portfoy'];});
+       
 
         return response()->json(
             $all,

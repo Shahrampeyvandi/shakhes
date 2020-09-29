@@ -58,15 +58,16 @@ class RedisController extends Controller
     }
      public function shakhes()
     {
-         $time = Carbon::now()->timestamp;
-        if (Carbon::parse('10:24')->timestamp < $time && $time < Carbon::parse('10:35')->timestamp) {
-            dd('sdff');
-        }else{
-            dd('no');
-        }
-        foreach (Holding::all() as $key => $holding) {
-                        $holding->save_portfoy();
-                    }
+        
+        //  $time = Carbon::now()->timestamp;
+        // if (Carbon::parse('10:24')->timestamp < $time && $time < Carbon::parse('10:35')->timestamp) {
+        //     dd('sdff');
+        // }else{
+        //     dd('no');
+        // }
+        // foreach (Holding::all() as $key => $holding) {
+        //                 $holding->save_portfoy();
+        //             }
     }
 
     public function getdMarketValue()

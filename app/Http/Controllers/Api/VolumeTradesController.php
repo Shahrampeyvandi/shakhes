@@ -17,7 +17,7 @@ class VolumeTradesController extends Controller
         if ($id) {
             $volume_trades = VolumeTrade::whereNamad_id($id)->paginate(20);
         } else {
-            $volume_trades = VolumeTrade::whereDate('created_at', Carbon::today())->paginate(20);
+            $volume_trades = VolumeTrade::whereDate('created_at', Carbon::today())->orderBy('updated_at', 'desc')->paginate(20);
         }
 
         $all = [];
@@ -46,7 +46,7 @@ class VolumeTradesController extends Controller
             $collection = VolumeTrade::where('namad_id', $namad->id)->paginate(20);
 
         } else {
-            $collection = VolumeTrade::where('created_at', '>=', Carbon::today()->toDateString())->latest()->paginate(20);
+            $collection = VolumeTrade::where('created_at', '>=', Carbon::today()->toDateString())->orderBy('updated_at', 'desc')->paginate(20);
             $all = [
                 'time' => $this->get_current_date_shamsi().'_'.date('H:i'),
                 ];

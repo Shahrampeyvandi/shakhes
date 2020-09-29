@@ -108,6 +108,10 @@ class ApiScheduler extends Controller
         $data['legalsellcount'] = $buy_sell ? explode(',', $buy_sell)[9] : 0;
 
         $array['N_personbuy'] = $data['personbuy'];
+        $array['N_legalbuy'] = $data['legalbuy'];
+        $array['N_personsell'] = $data['personsell'];
+        $array['N_legalsell'] = $data['legalsell'];
+       
 
         foreach ($data as $key => $item) {
             if ((int)$item > 1000000 && (int)$item < 1000000000) {
@@ -335,13 +339,15 @@ class ApiScheduler extends Controller
 
 
         if (($time > $start) && ($time < $end) &&  ((int)$array['N_tradeVol'] > (int)$array['N_monthAVG'])) {
-            $zarib =   number_format((float)((int)$array['N_tradeVol'] / (int)$array['N_monthAVG']), 1, '.', '');
+            $zarib =   (float)((int)$array['N_tradeVol'] / (int)$array['N_monthAVG']);
             if ($zarib > 4 && VolumeTrade::check($namad->id)) {
                 // dd($namad->id);
 
                 VolumeTrade::create(['namad_id' => $namad->id, 'trade_vol' => $array['N_tradeVol'], 'month_avg' => $array['N_monthAVG'], 'volume_ratio' => $zarib]);
             } else {
-                VolumeTrade::where('namad_id', $namad->id)->update([
+                VolumeTrade::where('namad_id', $namad->id)
+                ->whereDate('created_at', Carbon::today())
+                ->update([
                     'trade_vol' => $array['N_tradeVol'],
                     'month_avg' => $array['N_monthAVG'],
                     'volume_ratio' => $zarib
