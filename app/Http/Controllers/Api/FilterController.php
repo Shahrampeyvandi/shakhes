@@ -14,9 +14,6 @@ class FilterController extends Controller
     public function get($kilid)
     {
 
-
-
-
         if (Cache::has($kilid)) {
             return Cache::get($kilid);
         }
@@ -33,9 +30,8 @@ class FilterController extends Controller
             foreach ($namads as $namad) {
                 $array[$namad->symbol] =  $this->get_from_cache($namad->id, $kilid);
             }
-
+            
             asort($array);
-
             // return $array;
             $symbols_array = array_slice(array_keys(array_reverse($array)), 0, 50);
 
@@ -47,7 +43,7 @@ class FilterController extends Controller
                     $item['symbol'] = $namad->symbol;
                     $item['first'] = $this->format((float)((float)Cache::get($namad->id)['N_personbuy'] / (float)Cache::get($namad->id)['personbuycount']));
                     $item['second'] = $this->format((float)((float)Cache::get($namad->id)['N_personsell'] / (float)Cache::get($namad->id)['personsellcount']));
-                    $item['third'] = isset(Cache::get($namad->id)['filter']['person_most_buy_sell']) ?  number_format((float)Cache::get($namad->id)['filter']['person_most_buy_sell'], 0) : 0;
+                    $item['third'] = isset(Cache::get($namad->id)['filter'][$kilid]) ?  number_format((float)Cache::get($namad->id)['filter'][$kilid], 0) : 0;
                     $data['data'][] = $item;
                 }
             }
@@ -71,9 +67,9 @@ class FilterController extends Controller
                     $item['id'] = $namad->id;
                     $item['name'] = $namad->name;
                     $item['symbol'] = $namad->symbol;
-                    $item['second'] = $this->format((float)((float)Cache::get($namad->id)['N_legalbuy'] / (float)Cache::get($namad->id)['legalbuycount']));
-                    $item['first'] = $this->format((float)((float)Cache::get($namad->id)['N_legalsell'] / (float)Cache::get($namad->id)['legalsellcount']));
-                    $item['third'] = isset(Cache::get($namad->id)['filter']['legal_most_buy_sell']) ?  number_format((float)Cache::get($namad->id)['filter']['person_most_buy_sell'], 0) : 0;
+                    $item['first'] = $this->format((float)((float)Cache::get($namad->id)['N_legalbuy'] / (float)Cache::get($namad->id)['legalbuycount']));
+                    $item['second'] = $this->format((float)((float)Cache::get($namad->id)['N_legalsell'] / (float)Cache::get($namad->id)['legalsellcount']));
+                    $item['third'] = isset(Cache::get($namad->id)['filter'][$kilid]) ?  number_format((float)Cache::get($namad->id)['filter'][$kilid], 0) : 0;
                     $data['data'][] = $item;
                 }
             }

@@ -8,25 +8,26 @@ use Carbon\Carbon;
 use App\Models\Namad\Namad;
 use App\Models\VolumeTrade;
 use Illuminate\Http\Request;
+use Morilog\Jalali\Jalalian;
 use App\Models\Holding\Holding;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use App\Models\Namad\NamadsDailyReport;
-use Morilog\Jalali\Jalalian;
 
 class RedisController extends Controller
 {
     public function getmain()
     {
 
-       // $crawler = Goutte::request('GET', 'https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true&CompanyState=-1&CompanyType=-1&Consolidatable=true&IsNotAudited=false&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&TracingNo=-1&search=false');
+        // $crawler = Goutte::request('GET', 'https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true&CompanyState=-1&CompanyType=-1&Consolidatable=true&IsNotAudited=false&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&TracingNo=-1&search=false');
 
-       // $all = $crawler->html();
+        // $all = $crawler->html();
 
         //dd($crawler);
 
-        $arraynamads=[
+        $arraynamads = [
             "تملي612",
             "ضبدر8058",
             "شستا994",
@@ -262,7 +263,7 @@ class RedisController extends Controller
             "اخزا818",
             "تملي701",
             "ضپاس7014",
-            "ختورح","دالبرح",
+            "ختورح", "دالبرح",
             "تابان02",
             "اخزا819",
             "غشوكوح",
@@ -584,35 +585,30 @@ class RedisController extends Controller
             "ضپنا1021",
             "ضگل8064",
             "هصيكو402",
-            "هپارس912",                  
+            "هپارس912",
         ];
 
 
-        $namads=Namad::all();
+        $namads = Namad::all();
 
-        $arrayezafi=[];
-        foreach($namads as $namad){
+        $arrayezafi = [];
+        foreach ($namads as $namad) {
 
             if (in_array($namad->symbol, $arraynamads)) {
-                echo $namad->symbol.' پاک می شود'.'<br/>';
+                echo $namad->symbol . ' پاک می شود' . '<br/>';
 
-                                $namad->delete();
-
-            }else{
-        echo $namad->symbol.' باقی خواهد ماند'.'<br/>';
-
-           
-
+                $namad->delete();
+            } else {
+                echo $namad->symbol . ' باقی خواهد ماند' . '<br/>';
             }
-
         }
 
         dd($arrayezafi);
 
 
-        $namad=Namad::find(861);
+        $namad = Namad::find(861);
 
-        $date=Jalalian::forge('now')->format('%Y/%m/%d');
+        $date = Jalalian::forge('now')->format('%Y/%m/%d');
 
         $ch = curl_init("https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=7&Childs=true&CompanyState=0&CompanyType=1&Consolidatable=true&FromDate=$date&IsNotAudited=false&Isic=251103&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&Symbol=$namad->symbol&TracingNo=-1&search=true");
         //$ch = curl_init('https://sandbox.zarinpal.com/pg/rest/WebGate/PaymentRequest.json');
@@ -630,41 +626,53 @@ class RedisController extends Controller
 
 
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=15');
-          
 
 
-//        $client = new \GuzzleHttp\Client();
-//     //    echo file_get_content('https://www.codal.ir/ReportList.aspx?search&Symbol=%D8%A2%D8%B3%DB%8C%D8%A7&LetterType=-1&Isic=660315&AuditorRef=-1&PageNumber=1&Audited&NotAudited&IsNotAudited=false&Childs&Mains&Publisher=false&CompanyState=0&Category=7&CompanyType=1&Consolidatable&NotConsolidatable');
-// $response = $client->request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=15');
-//         return $response->getBody();
-        
+
+        //        $client = new \GuzzleHttp\Client();
+        //     //    echo file_get_content('https://www.codal.ir/ReportList.aspx?search&Symbol=%D8%A2%D8%B3%DB%8C%D8%A7&LetterType=-1&Isic=660315&AuditorRef=-1&PageNumber=1&Audited&NotAudited&IsNotAudited=false&Childs&Mains&Publisher=false&CompanyState=0&Category=7&CompanyType=1&Consolidatable&NotConsolidatable');
+        // $response = $client->request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=15');
+        //         return $response->getBody();
+
 
     }
-     public function shakhes()
-    {
-        
-        //  $time = Carbon::now()->timestamp;
-        // if (Carbon::parse('10:24')->timestamp < $time && $time < Carbon::parse('10:35')->timestamp) {
-        //     dd('sdff');
-        // }else{
-        //     dd('no');
-        // }
-        // foreach (Holding::all() as $key => $holding) {
-        //                 $holding->save_portfoy();
-        //             }
-    }
 
-    public function getdMarketValue()
+
+    public function shakhes()
     {
 
-         $namads = $this->namads;
-        $sum_market_value = 0;
-        foreach ($namads as $key => $namad) {
-         $sum_market_value += $namad->pivot->amount_value * (int)Cache::get($namad->id)['pc'];   
+
+        do {
+            try {
+                $status = false;
+                $client = new \GuzzleHttp\Client();
+                $response = $client->request('GET', "http://www.tsetmc.com/tsev2/data/MarketWatchInit.aspx?h=0&r=0");
+            } catch (\Throwable $th) {
+                $status = true;
+                sleep(1);
+            }
+        } while ($status);
+
+        $datas = explode(';', $response->getBody());
+        foreach ($datas as $key => $row) {
+            dump(explode(',', $datas[$key]));
         }
-        return $sum_market_value;
-        // dd($holding->namads->first()->pivot->amount_value);
 
+        // میزان تغییر و قیمت هر سهم
+        // foreach ($holding_namads as $key => $pivot) {
+        //     $namad_ = Namad::where('id', $pivot->namad_id)->first();
+
+        //   if($namad_) {
+        //         $count = $pivot->amount_value * Cache::get($pivot->namad_id)['pc'];
+        //     $array['symbol'] = $namad_->symbol;
+        //     $array['name'] = $namad_->name;
+        //     $array['amount_percent'] = number_format((float)(($count * 100) / $total), 1, '.', '');
+        //     $array['final_price_value'] = Cache::get($pivot->namad_id)['pc'];
+        //     $array['last_price_percent'] = isset(Cache::get($pivot->namad_id)['payani_change_percent']) ? Cache::get($pivot->namad_id)['payani_change_percent'] : 0;
+        //     $array['status'] = Cache::get($pivot->namad_id)['status'];
+        //     $all[] = $array;
+        //   }
+        // }
 
 
         // $value = Cache::get('778253364357513');
@@ -701,12 +709,12 @@ class RedisController extends Controller
 
 
         $inscode = $namad->inscode;
-        $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=' . $inscode . '&c=57');
+        $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=65883838195688438&c=57');
         $all = \strip_tags($crawler->html());
 
         $array['symbol'] = $namad->symbol;
         $explode_all = explode(';', $all);
-        // dump($explode_all);
+        // dd($explode_all);
         $main_data = $explode_all[0];
         $buy_sell = $explode_all[4];
         $orders = $explode_all[2];
@@ -879,9 +887,10 @@ class RedisController extends Controller
         $dailyReport->tradecash = $array['tradecash'];
 
 
-        $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=' . $inscode . '');
+        $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=69143674941561637');
         $all = \strip_tags($crawler->html());
         $explode = \explode(',', $all);
+
 
         preg_match('/=\'?(\d+)/',  \explode(',', $all)[34], $matches);
         $array['maxrange'] =  count($matches) ? $matches[1] : '';
@@ -929,9 +938,9 @@ class RedisController extends Controller
         }
 
 
-        // dump($explode);
-        preg_match('/\'?(\d+)/', $explode[27], $matches);
+        preg_match('/\'?(-?\d+)/', $explode[27], $matches);
         $array['EPS'] = count($matches) ? $matches[1] : '';
+        // dd($array['EPS']);
         preg_match('/=\'?(\d+)/', $explode[38], $matches);
         $array['minweek'] = count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/', $explode[39], $matches);
