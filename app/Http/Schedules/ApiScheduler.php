@@ -53,7 +53,6 @@ class ApiScheduler extends Controller
                     die;
                 }
             });
-            // die;
         }
 
         $namads = [];

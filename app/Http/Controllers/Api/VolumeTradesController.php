@@ -71,6 +71,7 @@ class VolumeTradesController extends Controller
             $namad = Namad::where('id', $obj->namad_id)->first();
             $array['namad'] = Cache::get($obj->namad_id);
             $array['namad']['symbol'] = $namad->symbol;
+            $array['namad']['id'] = $namad->id;
             $array['namad']['name'] = $namad->name;
             $array['mothAVG'] = $this->show_with_symbol($obj->month_avg);
             $array['vol'] = $this->show_with_symbol($obj->trade_vol);

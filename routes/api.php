@@ -65,6 +65,7 @@ Route::get('/namad', 'Api\NamadsController@getnamad');
 Route::get('/member', 'Api\MembersDataController@personaldata');
 Route::get('/member/namads', 'Api\MembersDataController@namads');
 Route::post('/member/namads/add', 'Api\MembersDataController@add');
+Route::post('/member/namads/remove', 'Api\MembersDataController@remove');
 Route::get('/namads/search', 'Api\NamadsController@search');
 // ----- صورت های مالی
 Route::get('/getnamadmonthlyreports', 'Api\MoneyReportsController@getnamadmonthlyreports'); // اگر نماد , شرکت سرمایه گزاری باشد ...
