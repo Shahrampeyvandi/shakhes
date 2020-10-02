@@ -91,6 +91,10 @@ Route::get('/getholdings', 'Api\MoneyReportsController@getHoldings');
 // filter
 Route::get('/filter/{key}', 'Api\FilterController@get');
 
+Route::get('shownamad/{id}', 'Api\NamadsController@show');
+
+
+
 /** keys : 
  * 
  person_most_buy_sell

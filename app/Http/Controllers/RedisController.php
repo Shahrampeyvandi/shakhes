@@ -641,23 +641,98 @@ class RedisController extends Controller
     public function shakhes()
     {
 
+        
+      
 
-        do {
-            try {
-                $status = false;
-                $client = new \GuzzleHttp\Client();
-                $response = $client->request('GET', "http://www.tsetmc.com/tsev2/data/MarketWatchInit.aspx?h=0&r=0");
-            } catch (\Throwable $th) {
-                $status = true;
-                sleep(1);
+
+    
+         $inscode = '54277068923045214';
+        if ($inscode) {
+
+            $cache = Cache::get($inscode);
+
+            if ($cache) {
+                $cache = Cache::get($inscode);
+            
+            } else {
+                $cache = Cache::get(1);
             }
-        } while ($status);
 
-        $datas = explode(';', $response->getBody());
-        foreach ($datas as $key => $row) {
-            dump(explode(',', $datas[$key]));
+            do {
+                try {
+                    $status = false;
+                    $ch = curl_init("http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=$inscode&c=57");
+                    curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_ENCODING, "");
+                    $result = curl_exec($ch);
+                } catch (\Throwable $th) {
+                    $status = true;
+                    sleep(.5);
+                }
+            } while ($status);
+
+            $explode_all = explode(';', $result);
+            $orders = $explode_all[2];
+            if ($orders) {
+                $explode_orders = explode('@', $orders);
+                $explode_orders[1] = $this->format((int) $explode_orders[1]);
+                $array['lastbuys'][] = array('tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2], 'color' => $explode_orders[2] < $cache['minrange'] ? 'gray' : 'black');
+                $explode_orders[6] = $this->format((int) $explode_orders[6]);
+                $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7], 'color' => $explode_orders[7] < $cache['minrange'] ? 'gray' : 'black');
+                $explode_orders[11] = $this->format((int) $explode_orders[11]);
+                $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12], 'color' => $explode_orders[12] < $cache['minrange'] ? 'gray' : 'black');
+
+                $explode_orders[4] = $this->format((int) $explode_orders[4]);
+                $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3], 'color' => $explode_orders[3] > $cache['maxrange'] ? 'gray' : 'black');
+                $explode_orders[9] = $this->format((int) $explode_orders[9]);
+                $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8], 'color' => $explode_orders[8] > $cache['maxrange'] ? 'gray' : 'black');
+                $explode_orders[14] = $this->format((int) $explode_orders[14]);
+                $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13], 'color' => $explode_orders[13] > $cache['maxrange'] ? 'gray' : 'black');
+            }
+
+
+            $array['pl'] = $cache['pl'];
+            $array['pc'] = $cache['pc'];
+            $array['pf'] = $cache['pf'];
+            $array['py'] = $cache['py'];
+            // $array['pmin'] = Cache::get($id)['pmin'];
+            // $array['pmax'] = Cache::get($id)['pmin'];
+            $array['tradecount'] = $cache['tradecount'];
+            $array['N_tradeVol'] =  $this->format($cache['N_tradeVol']);
+            $array['N_tradecash'] =  $this->format($cache['N_tradecash']);
+            $array['EPS'] = $cache['EPS'];
+            $array['P/E'] = $cache['P/E'];
+            $array['TedadShaham'] = $cache['TedadShaham'];
+            $array['final_price_value'] = $cache['final_price_value'];
+            $array['final_price_percent'] = $cache['final_price_percent'];
+            $array['last_price_change'] = $cache['last_price_change'];
+            $array['last_price_status'] = $cache['last_price_status'];
+            $array['pc_change_percent'] = $cache['pc_change_percent'];
+            $array['pf_change_percent'] = $cache['pf_change_percent'];
+            // $array['flow'] = Cache::get($id)['flow'];
+            // $array['ID'] = Cache::get($id)['ID'];
+            // $array['BaseVol'] =  Cache::get($id)['BaseVol'];
+            // $array['status'] =  ($array['pl'] - $array['py'])  > 0 ? 'green' : 'red';
+            // $array['personbuy'] = Cache::get($id)['personbuy'];
+            // $array['legalbuy'] = Cache::get($id)['legalbuy'];
+            // $array['personsell'] = Cache::get($id)['personsell'];
+            // $array['legalsell'] = Cache::get($id)['legalsell'];
+            // $array['personbuycount'] = Cache::get($id)['personbuycount'];
+            // $array['legalbuycount'] = Cache::get($id)['legalbuycount'];
+            // $array['personsellcount'] = Cache::get($id)['personsellcount'];
+            // $array['legalsellcount'] = Cache::get($id)['legalsellcount'];
+            // $array['person_buy_power'] = Cache::get($id)['person_buy_power'];
+            // $array['person_sell_power'] = Cache::get($id)['person_sell_power'];
+            // $array['percent_legal_buy'] = Cache::get($id)['percent_legal_buy'];
+            // $array['percent_person_sell'] = Cache::get($id)['percent_person_sell'];
+            // $array['percent_legal_sell'] = Cache::get($id)['percent_legal_sell'];
+            
         }
 
+        dd($array);
         // میزان تغییر و قیمت هر سهم
         // foreach ($holding_namads as $key => $pivot) {
         //     $namad_ = Namad::where('id', $pivot->namad_id)->first();
