@@ -115,6 +115,24 @@ class MembersDataController extends Controller
         );
     }
 
+    public function remove(Request $request)
+    {
+
+        $member = $this->token($request->header('Authorization'));
+        $namad_ids = $request->id;
+
+        foreach($namad_ids as $namad){
+            $member->namads()->detach($namad);
+        }
+
+        return response()->json(
+            [
+                'message' => 'ok',
+            ],
+            200
+        );
+    }
+
 
     public function namadclarifications($namad_id = null)
     {

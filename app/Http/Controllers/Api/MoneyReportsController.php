@@ -107,10 +107,7 @@ class MoneyReportsController extends Controller
 
         $namad = Namad::where('id', $id)->first();
         if (count($namad->monthlyReports) == 0 || count($namad->seasonalReports) == 0 || count($namad->yearlyReports) == 0) {
-            return response()->json(
-                $all,
-                404
-            );
+            $all['notification1'] = '404';
         }
         $cache =  Cache::get($namad->id);
         $cache['symbol'] = $namad->symbol;
