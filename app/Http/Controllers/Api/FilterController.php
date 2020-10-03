@@ -233,7 +233,7 @@ class FilterController extends Controller
         if ($kilid == 'power_person_buy') {
             foreach ($namads as $namad) {
   
-                $array[$namad->symbol] = isset(Cache::get($namad->id)['N_tradeVol']) && Cache::get($namad->id)['N_tradeVol'] > 0 && isset(Cache::get($namad->id)['N_personbuy']) ? (int)Cache::get($namad->id)['N_personbuy'] / (int)Cache::get($namad->id)['N_tradeVol'] : 0;
+                $array[$namad->symbol] =  $this->get_from_cache($namad->id, $kilid);
             }
             foreach ($array as $array_item) {
                 if ($array_item == 0) {
@@ -252,7 +252,7 @@ class FilterController extends Controller
                 $item['symbol'] = $namad->symbol;
                 $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? Cache::get($namad->id)['personbuycount'] : '';
                 $item['second'] = $this->format((int)Cache::get($namad->id)['N_personbuy']);
-                $item['third'] = isset(Cache::get($namad->id)['N_tradeVol']) && Cache::get($namad->id)['N_tradeVol'] > 0 && isset(Cache::get($namad->id)['N_personbuy']) ? (int)Cache::get($namad->id)['N_personbuy'] / (int)Cache::get($namad->id)['N_tradeVol'] : 0;
+                $item['third'] = Cache::get($namad->id)['power_person_buy'];
                 $item['status'] = Cache::get($namad->id)['status'];
                 $data['data'][] = $item;
             }
