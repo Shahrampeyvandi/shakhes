@@ -417,8 +417,8 @@ class ApiScheduler extends Controller
             $array['filter']['person_sell_avg'] = $data['personsellcount'] > 0  && $data['legalsellcount'] > 0 ? $data['personsell'] /   (float)($data['personsellcount'] +  $data['legalsellcount']) : 0;
             $array['filter']['legal_most_buy_sell'] = $data['legalsellcount'] > 0 && $data['legalbuycount'] > 0 ?  (float)($data['legalbuy'] / $data['legalbuycount']) / (float)($data['legalsell'] / $data['legalsellcount']) : 0;
             $array['filter']['legal_most_sell_buy'] = $data['legalsellcount'] > 0 &&  $data['legalbuycount'] > 0 ? (float)($data['legalsell'] / $data['legalsellcount']) / (float)($data['legalbuy'] / $data['legalbuycount']) : 0;
-            // $array['filter']['power_person_buy'] = ($data['legalbuycount'] + $data['personbuycount']) > 0 ? $data['personbuycount'] / ($data['legalbuycount'] + $data['personbuycount']) : 0;
-            $array['filter']['power_person_sell'] = ($data['personsellcount'] + $data['legalsellcount']) > 0 ? $data['personsellcount'] / ($data['personsellcount'] + $data['legalsellcount']) : 0;
+            $array['filter']['power_person_buy'] = $data['personbuycount'] > 0 ? $data['N_personbuy'] /  $data['personbuycount'] : 0;
+            $array['filter']['power_person_sell'] = $data['personsellcount'] > 0 ? $data['N_personsell'] / $data['personsellcount'] : 0;
         }
         Cache::store()->put($namad->id, $array, 10000000); // 10 Minutes
 
