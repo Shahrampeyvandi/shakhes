@@ -26,7 +26,7 @@ class FilterController extends Controller
         ];
 
 
-        if ($kilid == 'person_most_buy_sell' || $kilid == 'person_most_sell_buy') {
+        if ($kilid == 'person_mosell_sell' || $kilid == 'person_most_sesell') {
             foreach ($namads as $namad) {
                 $array[$namad->symbol] =  $this->get_from_cache($namad->id, $kilid);
             }
@@ -242,6 +242,7 @@ class FilterController extends Controller
             }
 
             asort($array);
+            return $array;
             $symbols_array = array_slice(array_keys(array_reverse($array)), 0, 50);
             foreach ($symbols_array as $key => $symbol) {
                 $namad = Namad::whereSymbol($symbol)->first();
@@ -252,7 +253,36 @@ class FilterController extends Controller
                 $item['symbol'] = $namad->symbol;
                 $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? Cache::get($namad->id)['personbuycount'] : '';
                 $item['second'] = $this->format((int)Cache::get($namad->id)['N_personbuy']);
-                $item['third'] = Cache::get($namad->id)['power_person_buy'];
+                $item['third'] =isset(Cache::get($namad->id)['filter'][$kilid]) ?  number_format((float)Cache::get($namad->id)['filter'][$kilid], 0) : 0;
+                $item['status'] = Cache::get($namad->id)['status'];
+                $data['data'][] = $item;
+            }
+            return $this->send_json($kilid, $data);
+        }
+
+          if ($kilid == 'power_person_sell') {
+            foreach ($namads as $namad) {
+  
+                $array[$namad->symbol] =  $this->get_from_cache($namad->id, $kilid);
+            }
+            foreach ($array as $array_item) {
+                if ($array_item == 0) {
+                    unset($array_item);
+                }
+            }
+
+            asort($array);
+            $symbols_array = array_slice(array_keys(array_reverse($array)), 0, 50);
+            foreach ($symbols_array as $key => $symbol) {
+                $namad = Namad::whereSymbol($symbol)->first();
+                // return Cache::get($namad->id);
+                $item['id'] = $namad->id;
+                $item['namad_status'] = $namad->namad_status;   
+                $item['name'] = $namad->name;
+                $item['symbol'] = $namad->symbol;
+                $item['first'] = isset(Cache::get($namad->id)['personsellcount']) ? Cache::get($namad->id)['personsellcount'] : '';
+                $item['second'] = $this->format((int)Cache::get($namad->id)['N_personsell']);
+                $item['third'] =isset(Cache::get($namad->id)['filter'][$kilid]) ?  number_format((float)Cache::get($namad->id)['filter'][$kilid], 0) : 0;
                 $item['status'] = Cache::get($namad->id)['status'];
                 $data['data'][] = $item;
             }
