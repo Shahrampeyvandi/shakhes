@@ -128,7 +128,7 @@ class FilterController extends Controller
         }
         if ($kilid == 'most_person_buy') {
             foreach ($namads as $namad) {
-                $array[$namad->symbol] =  isset(Cache::get($namad->id)['personbuy']) ? Cache::get($namad->id)['personbuy'] : '';
+                $array[$namad->symbol] =  isset(Cache::get($namad->id)['N_personbuy']) ? Cache::get($namad->id)['N_personbuy'] : '';
             }
             asort($array);
 
@@ -154,7 +154,7 @@ class FilterController extends Controller
 
         if ($kilid == 'most_person_sell') {
             foreach ($namads as $namad) {
-                $array[$namad->symbol] =  isset(Cache::get($namad->id)['personsell']) ? Cache::get($namad->id)['personsell'] : '';
+                $array[$namad->symbol] =  isset(Cache::get($namad->id)['N_personsell']) ? Cache::get($namad->id)['N_personsell'] : '';
             }
             asort($array);
 
@@ -180,7 +180,7 @@ class FilterController extends Controller
 
         if ($kilid == 'most_legall_buy') {
             foreach ($namads as $namad) {
-                $array[$namad->symbol] =  isset(Cache::get($namad->id)['legallbuy']) ? Cache::get($namad->id)['legallbuy'] : '';
+                $array[$namad->symbol] =  isset(Cache::get($namad->id)['N_legallbuy']) ? Cache::get($namad->id)['N_legallbuy'] : '';
             }
             asort($array);
 
@@ -206,7 +206,7 @@ class FilterController extends Controller
 
         if ($kilid == 'most_legall_sell') {
             foreach ($namads as $namad) {
-                $array[$namad->symbol] =  isset(Cache::get($namad->id)['legallsell']) ? Cache::get($namad->id)['legallsell'] : '';
+                $array[$namad->symbol] =  isset(Cache::get($namad->id)['N_legallsell']) ? Cache::get($namad->id)['N_legallsell'] : '';
             }
             asort($array);
 

@@ -409,15 +409,12 @@ class ApiScheduler extends Controller
 
             $array['filter']['person_most_buy_sell'] = $data['personbuycount'] > 0 && $data['personsellcount'] ? (float)($array['N_personbuy'] / $data['personbuycount']) / (float)($array['N_personsell'] / $data['personsellcount']) : 0;
             $array['filter']['person_most_sell_buy'] = $data['personbuycount'] > 0 && $data['personsellcount'] ? (float)($array['N_personsell'] / $data['personsellcount']) / (float)($array['N_personbuy'] / $data['personbuycount']) : 0;
-            $array['filter']['legal_most_buy_sell'] = $data['legalbuycount'] > 0 && $data['legalsellcount'] ? (float)($array['N_legalbuy'] / $data['legalbuycount']) / (float)($array['N_legalsell'] / $data['personsellcount']) : 0;
+            $array['filter']['legal_most_buy_sell'] = $data['legalbuycount'] > 0 && $data['legalsellcount'] ? (float)($array['N_legalbuy'] / $data['legalbuycount']) / (float)($array['N_legalsell'] / $data['legalsellcount']) : 0;
             $array['filter']['legal_most_sell_buy'] = $data['legalbuycount'] > 0 && $data['legalsellcount'] ? (float)($array['N_legalsell'] / $data['legalsellcount']) / (float)($array['N_legalbuy'] / $data['legalbuycount']) : 0;
-            $array['filter']['person_most_sell_buy'] = $data['personsellcount'] > 0 && $data['personbuycount'] > 0 ?  (float)($array['N_personsell'] / $data['personsellcount']) / (float)($array['N_personbuy'] / $data['personbuycount']) : 0;
             $array['filter']['person_buy_avg'] = $data['personbuycount'] > 0  && $data['legalbuycount'] > 0 ?   $array['N_personbuy'] /   (float)($data['personbuycount'] +  $data['legalbuycount']) : 0;
             $array['filter']['person_sell_avg'] = $data['personsellcount'] > 0  && $data['legalsellcount'] > 0 ? $array['N_personsell'] /   (float)($data['personsellcount'] +  $data['legalsellcount']) : 0;
-            $array['filter']['legal_most_buy_sell'] = $data['legalsellcount'] > 0 && $data['legalbuycount'] > 0 ?  (float)($array['N_legalbuy'] / $data['legalbuycount']) / (float)($array['N_legalsell'] / $data['legalsellcount']) : 0;
-            $array['filter']['legal_most_sell_buy'] = $data['legalsellcount'] > 0 &&  $data['legalbuycount'] > 0 ? (float)($array['N_legalsell'] / $data['legalsellcount']) / (float)($array['N_legalbuy'] / $data['legalbuycount']) : 0;
-            $array['filter']['power_person_buy'] = $data['personbuycount'] > 0 ? (int)$array['N_personbuy'] /  $data['personbuycount'] : 0;
-            $array['filter']['power_person_sell'] = $data['personsellcount'] > 0 ? (int)$array['N_personsell'] / $data['personsellcount'] : 0;
+            $array['filter']['power_person_buy'] = $data['personbuycount'] > 0 ? ((int)$array['N_personbuy'] /  $data['personbuycount']) * $array['pc'] : 0;
+            $array['filter']['power_person_sell'] = $data['personsellcount'] > 0 ? (int)$array['N_personsell'] / $data['personsellcount'] * $array['pc'] : 0;
         }
         Cache::store()->put($namad->id, $array, 10000000); // 10 Minutes
 
