@@ -110,7 +110,7 @@ class ApiScheduler extends Controller
         $array['N_legalbuy'] = $data['legalbuy'];
         $array['N_personsell'] = $data['personsell'];
         $array['N_legalsell'] = $data['legalsell'];
-       
+
 
         foreach ($data as $key => $item) {
             if ((int)$item > 1000000 && (int)$item < 1000000000) {
@@ -275,7 +275,7 @@ class ApiScheduler extends Controller
         }
 
 
-       preg_match('/\'?(-?\d+)/', $explode[27], $matches);
+        preg_match('/\'?(-?\d+)/', $explode[27], $matches);
         $array['EPS'] = count($matches) ? $matches[1] : '';
         $array['P/E'] = isset($array['EPS']) && $array['EPS'] ? number_format(($array['pc'] / $array['EPS']), 2, '.', '') : '';
         preg_match('/=\'?(\d+)/', $explode[38], $matches);
@@ -349,12 +349,12 @@ class ApiScheduler extends Controller
                 VolumeTrade::create(['namad_id' => $namad->id, 'trade_vol' => $array['N_tradeVol'], 'month_avg' => $array['N_monthAVG'], 'volume_ratio' => $zarib]);
             } else {
                 VolumeTrade::where('namad_id', $namad->id)
-                ->whereDate('created_at', Carbon::today())
-                ->update([
-                    'trade_vol' => $array['N_tradeVol'],
-                    'month_avg' => $array['N_monthAVG'],
-                    'volume_ratio' => $zarib
-                ]);
+                    ->whereDate('created_at', Carbon::today())
+                    ->update([
+                        'trade_vol' => $array['N_tradeVol'],
+                        'month_avg' => $array['N_monthAVG'],
+                        'volume_ratio' => $zarib
+                    ]);
             }
         }
         // echo $array['pl'] . '<br/>';
@@ -405,7 +405,7 @@ class ApiScheduler extends Controller
 
         // filter calculate
 
-         if ($buy_sell) {
+        if ($buy_sell) {
 
             $array['filter']['person_most_buy_sell'] = $data['personbuycount'] > 0 && $data['personsellcount'] ? (float)($array['N_personbuy'] / $data['personbuycount']) / (float)($array['N_personsell'] / $data['personsellcount']) : 0;
             $array['filter']['person_most_sell_buy'] = $data['personbuycount'] > 0 && $data['personsellcount'] ? (float)($array['N_personsell'] / $data['personsellcount']) / (float)($array['N_personbuy'] / $data['personbuycount']) : 0;
@@ -413,12 +413,12 @@ class ApiScheduler extends Controller
             $array['filter']['legal_most_sell_buy'] = $data['legalbuycount'] > 0 && $data['legalsellcount'] ? (float)($array['N_legalsell'] / $data['legalsellcount']) / (float)($array['N_legalbuy'] / $data['legalbuycount']) : 0;
             $array['filter']['person_buy_avg'] = $data['personbuycount'] > 0  && $data['legalbuycount'] > 0 ?   $array['N_personbuy'] /   (float)($data['personbuycount'] +  $data['legalbuycount']) : 0;
             $array['filter']['person_sell_avg'] = $data['personsellcount'] > 0  && $data['legalsellcount'] > 0 ? $array['N_personsell'] /   (float)($data['personsellcount'] +  $data['legalsellcount']) : 0;
-            $array['filter']['power_person_buy'] = $data['personbuycount'] > 0 ? ((int)$array['N_personbuy'] /  $data['personbuycount']) * $array['pc'] : 0;
-            $array['filter']['power_person_sell'] = $data['personsellcount'] > 0 ? (int)$array['N_personsell'] / $data['personsellcount'] * $array['pc'] : 0;
+            if ($array['pc'] && isset($array['N_personbuy']) && isset($array['N_personsell'])) {
+                $array['filter']['power_person_buy'] = $data['personbuycount'] > 0  ? ((int)$array['N_personbuy'] /  $data['personbuycount']) * $array['pc'] : 0;
+                $array['filter']['power_person_sell'] = $data['personsellcount'] > 0  ? (int)$array['N_personsell'] / $data['personsellcount'] * $array['pc'] : 0;
+            }
         }
         Cache::store()->put($namad->id, $array, 10000000); // 10 Minutes
-
-
 
         echo 'pomad = ' . $namad->symbol . PHP_EOL;
 

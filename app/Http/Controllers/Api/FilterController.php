@@ -26,7 +26,7 @@ class FilterController extends Controller
         ];
 
 
-        if ($kilid == 'person_mosell_sell' || $kilid == 'person_most_sesell') {
+        if ($kilid == 'person_most_buy_sell' || $kilid == 'person_most_sell_buy') {
             foreach ($namads as $namad) {
                 $array[$namad->symbol] =  $this->get_from_cache($namad->id, $kilid);
             }
@@ -242,7 +242,7 @@ class FilterController extends Controller
             }
 
             asort($array);
-            return $array;
+          
             $symbols_array = array_slice(array_keys(array_reverse($array)), 0, 50);
             foreach ($symbols_array as $key => $symbol) {
                 $namad = Namad::whereSymbol($symbol)->first();
@@ -252,8 +252,8 @@ class FilterController extends Controller
                 $item['name'] = $namad->name;
                 $item['symbol'] = $namad->symbol;
                 $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? Cache::get($namad->id)['personbuycount'] : '';
-                $item['second'] = $this->format((int)Cache::get($namad->id)['N_personbuy']);
-                $item['third'] =isset(Cache::get($namad->id)['filter'][$kilid]) ?  number_format((float)Cache::get($namad->id)['filter'][$kilid], 0) : 0;
+                $item['second'] = isset(Cache::get($namad->id)['N_personbuy']) ? $this->format((int)Cache::get($namad->id)['N_personbuy']) : 0;
+                $item['third'] =isset(Cache::get($namad->id)['filter'][$kilid]) ? $this->format((float)Cache::get($namad->id)['filter'][$kilid]) : 0;
                 $item['status'] = Cache::get($namad->id)['status'];
                 $data['data'][] = $item;
             }
@@ -282,7 +282,7 @@ class FilterController extends Controller
                 $item['symbol'] = $namad->symbol;
                 $item['first'] = isset(Cache::get($namad->id)['personsellcount']) ? Cache::get($namad->id)['personsellcount'] : '';
                 $item['second'] = $this->format((int)Cache::get($namad->id)['N_personsell']);
-                $item['third'] =isset(Cache::get($namad->id)['filter'][$kilid]) ?  number_format((float)Cache::get($namad->id)['filter'][$kilid], 0) : 0;
+                $item['third'] =isset(Cache::get($namad->id)['filter'][$kilid]) ?  $this->format((float)Cache::get($namad->id)['filter'][$kilid], 0) : 0;
                 $item['status'] = Cache::get($namad->id)['status'];
                 $data['data'][] = $item;
             }
@@ -293,7 +293,7 @@ class FilterController extends Controller
     public function get_from_cache($id, $kilid)
     {
         try {
-            if (array_key_exists('filter', Cache::get($id))) {
+            if (array_key_exists('filter', Cache::get($id)) && isset(Cache::get($id)['filter'][$kilid]) ) {
 
                 return Cache::get($id)['filter'][$kilid];
             } else {
