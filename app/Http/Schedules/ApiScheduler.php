@@ -37,7 +37,7 @@ class ApiScheduler extends Controller
 
                 // echo ' cache is close= ' . PHP_EOL;
                 echo ' cache show bazar is close= ' . PHP_EOL;
-                die;
+                return;
             }
         } else {
             echo 'cache is empty = ' . PHP_EOL;
@@ -50,10 +50,11 @@ class ApiScheduler extends Controller
                 if (preg_match('/بسته/', $status)) {
                     echo 'bazar baste ast = ' . PHP_EOL;
                     Cache::store()->put('bazarstatus', 'close', 1800); // 10 Minutes
-                    die;
+                    return;
                 }
             });
         }
+
 
         $namads = [];
         if (Cache::has('namadlist')) {
@@ -62,9 +63,6 @@ class ApiScheduler extends Controller
             $namads = Namad::all();
             Cache::store()->put('namadlist', $namads, 86400); // 10 Minutes
         }
-
-
-
 
         foreach ($namads as $namad) {
 

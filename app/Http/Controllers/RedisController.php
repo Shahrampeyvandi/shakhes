@@ -20,6 +20,8 @@ class RedisController extends Controller
 {
     public function getmain()
     {
+        dd(Cache::get(3));
+
 
         // $crawler = Goutte::request('GET', 'https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true&CompanyState=-1&CompanyType=-1&Consolidatable=true&IsNotAudited=false&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&TracingNo=-1&search=false');
 
