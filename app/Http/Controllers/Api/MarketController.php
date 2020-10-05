@@ -104,6 +104,43 @@ class MarketController extends Controller
                 $information['namad_status'] = 'A';
             }
 
+            unset($information['lastsells']);
+            unset($information['lastbuys']);
+
+            do {
+                try {
+                    $status = false;
+                    $ch = curl_init("http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=$namad->inscode&c=57");
+                    curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_ENCODING, "");
+                    $result = curl_exec($ch);
+                } catch (\Throwable $th) {
+                    $status = true;
+                    sleep(.5);
+                }
+            } while ($status);
+
+            $explode_all = explode(';', $result);
+            $orders = $explode_all[2];
+            if ($orders) {
+                $explode_orders = explode('@', $orders);
+                $explode_orders[1] = $this->format((int) $explode_orders[1]);
+                $information['lastbuys'][] = array('tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2], 'color' => $explode_orders[2] < $information['minrange'] ? 'gray' : 'black');
+                $explode_orders[6] = $this->format((int) $explode_orders[6]);
+                $information['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7], 'color' => $explode_orders[7] < $information['minrange'] ? 'gray' : 'black');
+                $explode_orders[11] = $this->format((int) $explode_orders[11]);
+                $information['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12], 'color' => $explode_orders[12] < $information['minrange'] ? 'gray' : 'black');
+
+                $explode_orders[4] = $this->format((int) $explode_orders[4]);
+                $information['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3], 'color' => $explode_orders[3] > $information['maxrange'] ? 'gray' : 'black');
+                $explode_orders[9] = $this->format((int) $explode_orders[9]);
+                $information['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8], 'color' => $explode_orders[8] > $information['maxrange'] ? 'gray' : 'black');
+                $explode_orders[14] = $this->format((int) $explode_orders[14]);
+                $information['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13], 'color' => $explode_orders[13] > $information['maxrange'] ? 'gray' : 'black');
+             }
 
 
             return response()->json($information, 200);
