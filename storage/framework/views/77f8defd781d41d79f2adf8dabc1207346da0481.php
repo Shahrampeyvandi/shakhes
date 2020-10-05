@@ -200,7 +200,7 @@
                                     class="align-middle mr-1 fas fa-fw fa-user ml-2"></i>ویرایش پروفایل</a>
 
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#"><i
+                            <a class="dropdown-item" href="<?php echo e(route('logout')); ?>"><i
                                     class="align-middle mr-1 fas fa-fw fa-arrow-alt-circle-right ml-2"></i>خروج از
                                 حساب</a>
                         </div>
