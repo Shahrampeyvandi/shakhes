@@ -39,7 +39,7 @@ class FilterController extends Controller
                 $namad = Namad::whereSymbol($symbol)->first();
                 if (isset(Cache::get($namad->id)['filter'])) {
                     $item['id'] = $namad->id;
-                    $item['namad_status'] = Cache::get($namad->id)['namad_status'];
+                    $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
                     $item['name'] = $namad->name;
                     $item['symbol'] = $namad->symbol;
                     $item['first'] = $this->format((float)((float)Cache::get($namad->id)['N_personbuy'] / (float)Cache::get($namad->id)['personbuycount']));
@@ -66,7 +66,7 @@ class FilterController extends Controller
                 // return $this->format((float)((float)Cache::get($namad->id)['personsell'] / (float)Cache::get($namad->id)['personsellcount']));
                 if (isset(Cache::get($namad->id)['filter'])) {
                     $item['id'] = $namad->id;
-                    $item['namad_status'] = Cache::get($namad->id)['namad_status'];
+                    $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
                     $item['name'] = $namad->name;
                     $item['symbol'] = $namad->symbol;
                     $item['first'] = $this->format((float)((float)Cache::get($namad->id)['N_legalbuy'] / (float)Cache::get($namad->id)['legalbuycount']));
@@ -78,6 +78,7 @@ class FilterController extends Controller
 
             return $this->send_json($kilid, $data);
         }
+        
         if ($kilid == 'most_cash_trade') {
             foreach ($namads as $namad) {
                 $array[$namad->symbol] =  Cache::get($namad->id) && isset(Cache::get($namad->id)['N_tradecash']) ? Cache::get($namad->id)['N_tradecash'] : 0;
@@ -90,7 +91,7 @@ class FilterController extends Controller
                 // return Cache::get($namad->id);
                 $item['id'] = $namad->id;
                 $item['name'] = $namad->name;
-                $item['namad_status'] = Cache::get($namad->id)['namad_status'];
+                $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
                 $item['symbol'] = $namad->symbol;
                 $item['first'] = isset(Cache::get($namad->id)['tradevol']) ? Cache::get($namad->id)['tradevol'] : '';
                 $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
@@ -111,7 +112,7 @@ class FilterController extends Controller
 
             foreach ($symbols_array as $key => $symbol) {
                 $namad = Namad::whereSymbol($symbol)->first();
-                $item['namad_status'] = Cache::get($namad->id)['namad_status'];
+                $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
                 $item['id'] = $namad->id;
                 $item['name'] = $namad->name;
                 $item['symbol'] = $namad->symbol;
@@ -139,7 +140,7 @@ class FilterController extends Controller
                 // return Cache::get($namad->id);
                 $item['id'] = $namad->id;
                 $item['name'] = $namad->name;
-                $item['namad_status'] = Cache::get($namad->id)['namad_status'];
+                $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
                 $item['symbol'] = $namad->symbol;
                 $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? Cache::get($namad->id)['personbuycount'] : '';
                 $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
@@ -164,7 +165,7 @@ class FilterController extends Controller
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
                 $item['id'] = $namad->id;
-                $item['namad_status'] = Cache::get($namad->id)['namad_status'];
+                $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
                 $item['name'] = $namad->name;
                 $item['symbol'] = $namad->symbol;
                 $item['first'] = isset(Cache::get($namad->id)['personsellcount']) ? Cache::get($namad->id)['personsellcount'] : '';
@@ -180,7 +181,7 @@ class FilterController extends Controller
 
         if ($kilid == 'most_legall_buy') {
             foreach ($namads as $namad) {
-                $array[$namad->symbol] =  isset(Cache::get($namad->id)['N_legallbuy']) ? Cache::get($namad->id)['N_legallbuy'] : '';
+                $array[$namad->symbol] =  isset(Cache::get($namad->id)['N_legalbuy']) ? Cache::get($namad->id)['N_legalbuy'] : '';
             }
             asort($array);
 
@@ -190,13 +191,13 @@ class FilterController extends Controller
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
                 $item['id'] = $namad->id;
-                $item['namad_status'] = Cache::get($namad->id)['namad_status'];
+                $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
                 $item['name'] = $namad->name;
                 $item['symbol'] = $namad->symbol;
-                $item['first'] = isset(Cache::get($namad->id)['legallbuycount']) ? Cache::get($namad->id)['legallbuycount'] : '';
+                $item['first'] = isset(Cache::get($namad->id)['legalbuycount']) ? Cache::get($namad->id)['legalbuycount'] : '';
                 $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
                 $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? Cache::get($namad->id)['final_price_percent'] : '';
-                $item['third'] = isset(Cache::get($namad->id)['legallbuy']) ? Cache::get($namad->id)['legallbuy'] : '';
+                $item['third'] = isset(Cache::get($namad->id)['legalbuy']) ? Cache::get($namad->id)['legalbuy'] : '';
                 $item['status'] = Cache::get($namad->id)['status'];
                 $data['data'][] = $item;
             }
@@ -206,7 +207,7 @@ class FilterController extends Controller
 
         if ($kilid == 'most_legall_sell') {
             foreach ($namads as $namad) {
-                $array[$namad->symbol] =  isset(Cache::get($namad->id)['N_legallsell']) ? Cache::get($namad->id)['N_legallsell'] : '';
+                $array[$namad->symbol] =  isset(Cache::get($namad->id)['N_legalsell']) ? Cache::get($namad->id)['N_legalsell'] : '';
             }
             asort($array);
 
@@ -216,13 +217,13 @@ class FilterController extends Controller
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
                 $item['id'] = $namad->id;
-                $item['namad_status'] = Cache::get($namad->id)['namad_status'];
+                $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
                 $item['name'] = $namad->name;
                 $item['symbol'] = $namad->symbol;
-                $item['first'] = isset(Cache::get($namad->id)['legallsellcount']) ? Cache::get($namad->id)['legallsellcount'] : '';
+                $item['first'] = isset(Cache::get($namad->id)['legalsellcount']) ? Cache::get($namad->id)['legalsellcount'] : '';
                 $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
                 $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? Cache::get($namad->id)['final_price_percent'] : '';
-                $item['third'] = isset(Cache::get($namad->id)['legallsell']) ? Cache::get($namad->id)['legallsell'] : '';
+                $item['third'] = isset(Cache::get($namad->id)['legalsell']) ? Cache::get($namad->id)['legalsell'] : '';
                 $item['status'] = Cache::get($namad->id)['status'];
                 $data['data'][] = $item;
             }
@@ -248,7 +249,7 @@ class FilterController extends Controller
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
                 $item['id'] = $namad->id;
-                $item['namad_status'] = Cache::get($namad->id)['namad_status'];
+                $item['namad_status'] = isset(Cache::get($namad->id)['namad_status'])  ? Cache::get($namad->id)['namad_status'] : '' ;
                 $item['name'] = $namad->name;
                 $item['symbol'] = $namad->symbol;
                 $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? Cache::get($namad->id)['personbuycount'] : '';
@@ -277,7 +278,7 @@ class FilterController extends Controller
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
                 $item['id'] = $namad->id;
-                $item['namad_status'] = Cache::get($namad->id)['namad_status'];
+                $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
                 $item['name'] = $namad->name;
                 $item['symbol'] = $namad->symbol;
                 $item['first'] = isset(Cache::get($namad->id)['personsellcount']) ? Cache::get($namad->id)['personsellcount'] : '';
