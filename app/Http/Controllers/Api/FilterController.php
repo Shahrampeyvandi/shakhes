@@ -78,6 +78,7 @@ class FilterController extends Controller
 
             return $this->send_json($kilid, $data);
         }
+        
         if ($kilid == 'most_cash_trade') {
             foreach ($namads as $namad) {
                 $array[$namad->symbol] =  Cache::get($namad->id) && isset(Cache::get($namad->id)['N_tradecash']) ? Cache::get($namad->id)['N_tradecash'] : 0;
@@ -248,7 +249,7 @@ class FilterController extends Controller
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
                 $item['id'] = $namad->id;
-                $item['namad_status'] = $namad->namad_status;   
+                $item['namad_status'] = Cache::get($namad->id)['namad_status'];   
                 $item['name'] = $namad->name;
                 $item['symbol'] = $namad->symbol;
                 $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? Cache::get($namad->id)['personbuycount'] : '';
