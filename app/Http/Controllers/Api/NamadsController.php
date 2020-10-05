@@ -80,6 +80,7 @@ class NamadsController extends Controller
         }
 
         $namad = Namad::find($id);
+         $old_cache = Cache::get($id);
         if (!$namad) {
             return response()->json(['data' => null, 'error' => true], 200);
         }
@@ -137,8 +138,8 @@ class NamadsController extends Controller
             $array['pc'] = $cache['pc'];
             $array['pf'] = $cache['pf'];
             $array['py'] = $cache['py'];
-            $array['pmin'] = Cache::get($id)['pmin'];
-            $array['pmax'] = Cache::get($id)['pmin'];
+            $array['pmin'] =$old_cache['pmin'];
+            $array['pmax'] =$old_cache['pmin'];
             $array['tradecount'] = $cache['tradecount'];
             $array['N_tradeVol'] =  $this->format($cache['N_tradeVol']);
             $array['N_tradecash'] =  $this->format($cache['N_tradecash']);
@@ -151,23 +152,23 @@ class NamadsController extends Controller
             $array['last_price_status'] = $cache['last_price_status'];
             $array['pc_change_percent'] = $cache['pc_change_percent'];
             $array['pf_change_percent'] = $cache['pf_change_percent'];
-            $array['flow'] = Cache::get($id)['flow'];
-            $array['ID'] = Cache::get($id)['ID'];
-            $array['BaseVol'] =  Cache::get($id)['BaseVol'];
+            $array['flow'] =$old_cache['flow'];
+            $array['ID'] =$old_cache['ID'];
+            $array['BaseVol'] = $old_cache['BaseVol'];
             $array['status'] =  ($array['pl'] - $array['py'])  > 0 ? 'green' : 'red';
-            $array['personbuy'] = Cache::get($id)['personbuy'];
-            $array['legalbuy'] = Cache::get($id)['legalbuy'];
-            $array['personsell'] = Cache::get($id)['personsell'];
-            $array['legalsell'] = Cache::get($id)['legalsell'];
-            $array['personbuycount'] = Cache::get($id)['personbuycount'];
-            $array['legalbuycount'] = Cache::get($id)['legalbuycount'];
-            $array['personsellcount'] = Cache::get($id)['personsellcount'];
-            $array['legalsellcount'] = Cache::get($id)['legalsellcount'];
-            $array['person_buy_power'] = Cache::get($id)['person_buy_power'];
-            $array['person_sell_power'] = Cache::get($id)['person_sell_power'];
-            $array['percent_legal_buy'] = Cache::get($id)['percent_legal_buy'];
-            $array['percent_person_sell'] = Cache::get($id)['percent_person_sell'];
-            $array['percent_legal_sell'] = Cache::get($id)['percent_legal_sell'];
+            $array['personbuy'] =$old_cache['personbuy'];
+            $array['legalbuy'] =$old_cache['legalbuy'];
+            $array['personsell'] =$old_cache['personsell'];
+            $array['legalsell'] =$old_cache['legalsell'];
+            $array['personbuycount'] =$old_cache['personbuycount'];
+            $array['legalbuycount'] =$old_cache['legalbuycount'];
+            $array['personsellcount'] =$old_cache['personsellcount'];
+            $array['legalsellcount'] =$old_cache['legalsellcount'];
+            $array['person_buy_power'] =$old_cache['person_buy_power'];
+            $array['person_sell_power'] =$old_cache['person_sell_power'];
+            $array['percent_legal_buy'] =$old_cache['percent_legal_buy'];
+            $array['percent_person_sell'] =$old_cache['percent_person_sell'];
+            $array['percent_legal_sell'] =$old_cache['percent_legal_sell'];
 
             Cache::put('data-' . $id, $array, 5);  // 5 seconds
             return response()->json(['data' => $array, 'error' => false]);
