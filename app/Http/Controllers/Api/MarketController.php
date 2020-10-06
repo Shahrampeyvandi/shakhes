@@ -21,48 +21,48 @@ class MarketController extends Controller
 
 
 
-    //     $days = 100;
+        //     $days = 100;
 
-    //     $url = 'http://www.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=70289374539527245&Top=' . $days . '&A=1';
-    //     $crawler = Goutte::request('GET', $url);
-    //     $history = \strip_tags($crawler->html());
-    //    return $explode_history = explode(';', $history);
-    //     foreach ($explode_history as $key => $row) {
-    //         (int)$last_price_day = isset(explode('@', $row)[4]) ? explode('@', $row)[4] : '';
-    //         $array[] = (int)$last_price_day;
-    //     }
-    //     return $array;
+        //     $url = 'http://www.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=70289374539527245&Top=' . $days . '&A=1';
+        //     $crawler = Goutte::request('GET', $url);
+        //     $history = \strip_tags($crawler->html());
+        //    return $explode_history = explode(';', $history);
+        //     foreach ($explode_history as $key => $row) {
+        //         (int)$last_price_day = isset(explode('@', $row)[4]) ? explode('@', $row)[4] : '';
+        //         $array[] = (int)$last_price_day;
+        //     }
+        //     return $array;
 
-    //     $count =  count($array);
-    //     $sum = array_sum($array);
-    //     $avg = number_format((float)($sum / $count), 2, '.', '');
-    //     $five_percent = ($array['pl'] * 5) / 100;
-    //     $min_check = $array['pl'] - $five_percent;
-    //     $max_check = $array['pl'] + $five_percent;
+        //     $count =  count($array);
+        //     $sum = array_sum($array);
+        //     $avg = number_format((float)($sum / $count), 2, '.', '');
+        //     $five_percent = ($array['pl'] * 5) / 100;
+        //     $min_check = $array['pl'] - $five_percent;
+        //     $max_check = $array['pl'] + $five_percent;
 
-    //     if ($avg > $min_check && $avg < $max_check) {
-    //         $oneDayAgo = $array[0];
-    //         $twoDayAgo = $array[1];
-    //         $threeDayAgo = $array[2];
-    //         if ($avg > $oneDayAgo && $avg > $twoDayAgo && $avg >  $threeDayAgo) {
-    //             MovingAverage::create([
-    //                 'namad_id' => $namad->id,
-    //                 'symbol' => $namad->symbol,
-    //                 'avg' => $avg,
-    //                 'status' => 'moghavemat',
-    //                 'days' => $days
-    //             ]);
-    //         }
-    //         if ($avg < $oneDayAgo && $avg < $twoDayAgo && $avg <  $threeDayAgo) {
-    //             MovingAverage::create([
-    //                 'namad_id' => $namad->id,
-    //                 'symbol' => $namad->symbol,
-    //                 'avg' => $avg,
-    //                 'status' => 'hemayat',
-    //                 'days' => $days
-    //             ]);
-    //         }
-    //     }
+        //     if ($avg > $min_check && $avg < $max_check) {
+        //         $oneDayAgo = $array[0];
+        //         $twoDayAgo = $array[1];
+        //         $threeDayAgo = $array[2];
+        //         if ($avg > $oneDayAgo && $avg > $twoDayAgo && $avg >  $threeDayAgo) {
+        //             MovingAverage::create([
+        //                 'namad_id' => $namad->id,
+        //                 'symbol' => $namad->symbol,
+        //                 'avg' => $avg,
+        //                 'status' => 'moghavemat',
+        //                 'days' => $days
+        //             ]);
+        //         }
+        //         if ($avg < $oneDayAgo && $avg < $twoDayAgo && $avg <  $threeDayAgo) {
+        //             MovingAverage::create([
+        //                 'namad_id' => $namad->id,
+        //                 'symbol' => $namad->symbol,
+        //                 'avg' => $avg,
+        //                 'status' => 'hemayat',
+        //                 'days' => $days
+        //             ]);
+        //         }
+        //     }
 
 
 
@@ -107,43 +107,51 @@ class MarketController extends Controller
             unset($information['lastsells']);
             unset($information['lastbuys']);
 
-            do {
-                try {
-                    $status = false;
-                    $ch = curl_init("http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=$namad->inscode&c=57");
-                    curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                    curl_setopt($ch, CURLOPT_ENCODING, "");
-                    $result = curl_exec($ch);
-                } catch (\Throwable $th) {
-                    $status = true;
-                    sleep(.5);
+            if (Cache::has('order' . $namad->id)) {
+                $sefareshat=Cache::get('order' . $namad->id);
+            } else {
+                $sefareshat = [];
+                do {
+                    try {
+                        $status = false;
+                        $ch = curl_init("http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=$namad->inscode&c=57");
+                        curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                        curl_setopt($ch, CURLOPT_ENCODING, "");
+                        $result = curl_exec($ch);
+                    } catch (\Throwable $th) {
+                        $status = true;
+                        sleep(.5);
+                    }
+                } while ($status);
+
+                $explode_all = explode(';', $result);
+                $orders = $explode_all[2];
+                if ($orders) {
+                    $explode_orders = explode('@', $orders);
+                    $explode_orders[1] = $this->format((int) $explode_orders[1]);
+                    $sefareshat['lastbuys'][] = array('tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2], 'color' => $explode_orders[2] < $information['minrange'] ? 'gray' : 'black');
+                    $explode_orders[6] = $this->format((int) $explode_orders[6]);
+                    $sefareshat['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7], 'color' => $explode_orders[7] < $information['minrange'] ? 'gray' : 'black');
+                    $explode_orders[11] = $this->format((int) $explode_orders[11]);
+                    $sefareshat['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12], 'color' => $explode_orders[12] < $information['minrange'] ? 'gray' : 'black');
+
+                    $explode_orders[4] = $this->format((int) $explode_orders[4]);
+                    $sefareshat['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3], 'color' => $explode_orders[3] > $information['maxrange'] ? 'gray' : 'black');
+                    $explode_orders[9] = $this->format((int) $explode_orders[9]);
+                    $sefareshat['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8], 'color' => $explode_orders[8] > $information['maxrange'] ? 'gray' : 'black');
+                    $explode_orders[14] = $this->format((int) $explode_orders[14]);
+                    $sefareshat['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13], 'color' => $explode_orders[13] > $information['maxrange'] ? 'gray' : 'black');
                 }
-            } while ($status);
 
-            $explode_all = explode(';', $result);
-            $orders = $explode_all[2];
-            if ($orders) {
-                $explode_orders = explode('@', $orders);
-                $explode_orders[1] = $this->format((int) $explode_orders[1]);
-                $information['lastbuys'][] = array('tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2], 'color' => $explode_orders[2] < $information['minrange'] ? 'gray' : 'black');
-                $explode_orders[6] = $this->format((int) $explode_orders[6]);
-                $information['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7], 'color' => $explode_orders[7] < $information['minrange'] ? 'gray' : 'black');
-                $explode_orders[11] = $this->format((int) $explode_orders[11]);
-                $information['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12], 'color' => $explode_orders[12] < $information['minrange'] ? 'gray' : 'black');
+                Cache::store()->put('order' . $namad->id, $sefareshat, 15); // 10 Minutes
+            }
 
-                $explode_orders[4] = $this->format((int) $explode_orders[4]);
-                $information['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3], 'color' => $explode_orders[3] > $information['maxrange'] ? 'gray' : 'black');
-                $explode_orders[9] = $this->format((int) $explode_orders[9]);
-                $information['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8], 'color' => $explode_orders[8] > $information['maxrange'] ? 'gray' : 'black');
-                $explode_orders[14] = $this->format((int) $explode_orders[14]);
-                $information['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13], 'color' => $explode_orders[13] > $information['maxrange'] ? 'gray' : 'black');
-             }
+            $result = array_merge($information, $sefareshat);
 
-
-            return response()->json($information, 200);
+            return response()->json($result, 200);
         }
     }
 
@@ -438,8 +446,8 @@ class MarketController extends Controller
 
         $information = Cache::get($idd);
         if ($information) {
-            $collect=collect($information);
-           $result=$collect->paginate(20);
+            $collect = collect($information);
+            $result = $collect->paginate(20);
             return response()->json($result, 200);
         }
 
@@ -527,8 +535,8 @@ class MarketController extends Controller
     {
         $information = Cache::get($idd);
         if ($information) {
-            $collect=collect($information);
-            $result=$collect->paginate(20);
+            $collect = collect($information);
+            $result = $collect->paginate(20);
             return response()->json($result, 200);
         }
 
