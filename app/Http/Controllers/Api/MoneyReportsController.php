@@ -106,6 +106,7 @@ class MoneyReportsController extends Controller
         ];
 
         $namad = Namad::where('id', $id)->first();
+        $all['notification1'] = '200';
         if (count($namad->monthlyReports) == 0 || count($namad->seasonalReports) == 0 || count($namad->yearlyReports) == 0) {
             $all['notification1'] = '404';
         }

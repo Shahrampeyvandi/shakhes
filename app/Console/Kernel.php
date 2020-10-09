@@ -29,7 +29,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 
-        $schedule->call(new InformationScheduler)->dailyAt('20:56');
+        $schedule->call(new InformationScheduler)->dailyAt('20:50');
         //$schedule->call(new InformationScheduler)->everyMinute();
 
 
@@ -38,7 +38,7 @@ class Kernel extends ConsoleKernel
         //$schedule->call(new DailyReportScheduler)->dailyAt('11:55');
 
         $schedule->call(new ApiScheduler)->everyFiveMinutes();
-       // $schedule->call(new ApiScheduler)->everyMinute();
+        //$schedule->call(new ApiScheduler)->everyMinute();
 
         
         // $schedule->call(new FastScheduler)->everyMinute();
