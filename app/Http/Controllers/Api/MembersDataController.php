@@ -163,6 +163,7 @@ class MembersDataController extends Controller
                 $array['publish_date'] = $clarification_obj->publish_date;
                 $array['link_to_codal'] = $clarification_obj->link_to_codal;
                 $array['new'] = $clarification_obj->new;
+                $array['id'] = $clarification_obj->id;
                 $list[] = $array;
             }
 
@@ -356,18 +357,18 @@ class MembersDataController extends Controller
         ])->first();
         if ($selected) {
             $selected->delete();
-            $res = 'delete from selected';
+            $res = 'با موفقیت پاک شد';
         }else{
             Selected::create([
                 'member_id' => $member->id,
                 'model_id' => $id,
                 'type' => $type,
             ]);
-            $res = 'selected';
+            $res = 'با موفقیت افزوده شد';
 
         }
 
-        return Response::json(array('success' => true,'response'=>$res), 200);
+        return Response::json(array('code' => 200,'message'=>$res), 200);
     }
 
     public function userSelected($type)
