@@ -54,7 +54,6 @@ Route::group(['middleware' => ['admin']], function () {
     Route::post('/education/add', 'EducationController@Save')->name('Education.Add');
     Route::post('/education/delete', 'EducationController@Delete');
     Route::get('/education/list', 'EducationController@List')->name('Education.List');
-    Route::get('/education/{id}', 'EducationController@Show')->name('Education.Show');
     // ajax routes
     Route::post('/moneyreports/getdata', 'Ajax\MoneyReportController@getmoneyreportsdata')->name('getmoneyreportsdata');
     // Route::post('/moneyreports/getseasondata', 'AjaxController@getmoneyreportseasonaldata')->name('getmoneyreportseasonaldata');
@@ -66,3 +65,6 @@ Route::group(['middleware' => ['admin']], function () {
 
     Route::get('/logout', 'AuthController@Logout')->name('logout');
 });
+
+    Route::get('/education/{id}', 'EducationController@Show')->name('Education.Show');
+
