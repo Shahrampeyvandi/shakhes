@@ -349,13 +349,25 @@ class MembersDataController extends Controller
     {
         $member = $this->token(request()->header('Authorization'));
 
-        Selected::create([
+        $selected = Selected::where([
             'member_id' => $member->id,
             'model_id' => $id,
-            'type' => $type,
-        ]);
+            'type' => $type
+        ])->first();
+        if ($selected) {
+            $selected->delete();
+            $res = 'delete from selected';
+        }else{
+            Selected::create([
+                'member_id' => $member->id,
+                'model_id' => $id,
+                'type' => $type,
+            ]);
+            $res = 'selected';
 
-        return Response::json(array('success' => true), 200);
+        }
+
+        return Response::json(array('success' => true,'response'=>$res), 200);
     }
 
     public function userSelected($type)

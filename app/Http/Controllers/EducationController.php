@@ -132,7 +132,9 @@ class EducationController extends Controller
 
     public function Show($id)
     {
+
         $education = Education::find($id);
+        $education->increment('views');
         return view('Education.show',compact('education'));
     }
 }
