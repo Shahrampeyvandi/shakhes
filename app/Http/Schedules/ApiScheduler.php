@@ -22,6 +22,7 @@ class ApiScheduler extends Controller
     public function __invoke()
     {
 
+        $bstatclose=false;
 
         $time = Carbon::now()->timestamp;
         if (Carbon::parse('08:50')->timestamp < $time && $time < Carbon::parse('08:59')->timestamp) {
@@ -37,6 +38,7 @@ class ApiScheduler extends Controller
 
                 // echo ' cache is close= ' . PHP_EOL;
                 echo ' cache show bazar is close= ' . PHP_EOL;
+                $bstatclose=true;
                 return;
             }
         } else {
@@ -45,16 +47,20 @@ class ApiScheduler extends Controller
 
             $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=15');
             $all = [];
-            $crawler->filter('table')->each(function ($node) use (&$all) {
+            $crawler->filter('table')->each(function ($node) use (&$bstatclose) {
                 $status = $node->filter('tr:nth-of-type(1)')->text();
                 if (preg_match('/بسته/', $status)) {
                     echo 'bazar baste ast = ' . PHP_EOL;
                     Cache::store()->put('bazarstatus', 'close', 1800); // 10 Minutes
+                    $bstatclose=true;
                     return;
                 }
             });
         }
 
+        if($bstatclose){
+            return;
+        }
 
         $namads = [];
         if (Cache::has('namadlist')) {

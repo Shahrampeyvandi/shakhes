@@ -15,12 +15,12 @@ class FastScheduler
 
     public function __invoke()
     {
-        if (date('H') >= 8 && date('H') <= 12) {
+       // if (date('H') >= 8 && date('H') <= 12) {
             try {
                 $this->get_data();
             } catch (Exception $e) {
             }
-        }
+     //   }
     }
 
 
