@@ -2,16 +2,21 @@
 
 namespace App\Http\Controllers\Api;
 
+
 use App\Setting;
 use Carbon\Carbon;
+use App\Models\Selected;
 use App\Models\Namad\Namad;
 use App\Models\VolumeTrade;
 use Illuminate\Http\Request;
 use App\Models\clarification;
 use App\Models\Namad\Disclosures;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CapitalIncreaseResource;
+use App\Http\Resources\ClarificationResource;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Response;
 use App\Models\CapitalIncrease\CapitalIncrease;
 
 class MembersDataController extends Controller
@@ -48,8 +53,8 @@ class MembersDataController extends Controller
         $member = $this->token($request->header('Authorization'));
         // $member=Member::find(2);
         $all = [
-            'time' => $this->get_current_date_shamsi().'_'.date('H:i'),
-            ];
+            'time' => $this->get_current_date_shamsi() . '_' . date('H:i'),
+        ];
 
         $namads_array = $member->namads;
 
@@ -90,7 +95,7 @@ class MembersDataController extends Controller
             $array[] = $data;
         }
 
-        $all['data']=$array;
+        $all['data'] = $array;
 
         return response()->json(
             $all,
@@ -102,9 +107,10 @@ class MembersDataController extends Controller
     {
         $member = $this->token($request->header('Authorization'));
         $namad_id = $request->id;
-        $namad_obj = Namad::whereId($namad_id)->first();
+
         //$namad_daily_report = $namad_obj->dailyReports->first();
         $price = 0;
+
 
         $member->namads()->attach($namad_id, ['amount' => 0, 'profit_loss_percent' => 0, 'price' => $price]);
         return response()->json(
@@ -121,7 +127,7 @@ class MembersDataController extends Controller
         $member = $this->token($request->header('Authorization'));
         $namad_ids = $request->id;
 
-        foreach($namad_ids as $namad){
+        foreach ($namad_ids as $namad) {
             $member->namads()->detach($namad);
         }
 
@@ -190,15 +196,8 @@ class MembersDataController extends Controller
         $member_namads = $member->namads->pluck('id')->toArray();
         $clarifications_array = clarification::whereIn('namad_id', $member_namads)->latest()->get();
         $count = 1;
-        foreach ($clarifications_array as $key => $clarification_obj) {
-            $array[$count]['namad'] = $clarification_obj->namad->name;
-            $array[$count]['subject'] = $clarification_obj->subject;
-            $array[$count]['publish_date'] = $clarification_obj->publish_date;
-            $array[$count]['link_to_codal'] = $clarification_obj->link_to_codal;
-            $array[$count]['new'] = $clarification_obj->new;
+        $array = ClarificationResource::collection($clarifications_array);
 
-            $count++;
-        }
         return response()->json(
             $array,
             200
@@ -207,6 +206,7 @@ class MembersDataController extends Controller
 
     public function namadcapitalincreases($namad_id = null)
     {
+
         if ($namad_id) {
             $namad = Namad::where('id', $namad_id)->first();
             $capitalincreases_array = $namad->capital_increases()->paginate(20);
@@ -215,31 +215,11 @@ class MembersDataController extends Controller
         }
         $all = [];
 
+        $list = [];
         if (count($capitalincreases_array)) {
-            $list = [];
-            foreach ($capitalincreases_array as $key => $capitalincrease_obj) {
-                $array = [];
-                $namad = Namad::where('id', $capitalincrease_obj->namad->id)->first();
-                $array['namad'] = $capitalincrease_obj->namad ?  Cache::get($capitalincrease_obj->namad->id) : '';
-                $array['namad']['symbol'] = $namad->symbol;
-                $array['namad']['name'] = $namad->name;
-                $array['step'] = $capitalincrease_obj->step;
 
-                $array["from_cash"] = 0;
-                $array["from_stored_gain"] = 0;
-                $array["from_assets"] = 0;
 
-                foreach ($capitalincrease_obj->amounts as $key => $item) {
-                    $array["from_$item->type"] = $item->percent;
-                }
-
-                $array['publish_date'] = $capitalincrease_obj->publish_date;
-                $array['link_to_codal'] = $capitalincrease_obj->link_to_codal;
-                $array['description'] = $capitalincrease_obj->description;
-                $array['new'] = $capitalincrease_obj->new();
-
-                $list[] = $array;
-            }
+            $list = CapitalIncreaseResource::collection($capitalincreases_array);
         } else {
             return response()->json(
                 ['error' => 'هیج اطلاعاتی وجود ندارد'],
@@ -363,5 +343,37 @@ class MembersDataController extends Controller
             $array,
             200
         );
+    }
+
+    public function addToSelected($type, $id)
+    {
+        $member = $this->token(request()->header('Authorization'));
+
+        Selected::create([
+            'member_id' => $member->id,
+            'model_id' => $id,
+            'type' => $type,
+        ]);
+
+        return Response::json(array('success' => true), 200);
+    }
+
+    public function userSelected($type)
+    {
+        $member = $this->token(request()->header('Authorization'));
+        $all = Selected::where(['member_id' => $member->id, 'type' => $type])->pluck('model_id')->toArray();
+        if ($type == 'capital_increase') {
+            $data = CapitalIncreaseResource::collection(CapitalIncrease::whereIn('id', $all)->get());
+        }
+
+        if ($type == 'clarification') {
+            $data = ClarificationResource::collection(clarification::whereIn('id', $all)->get());
+        }
+
+        // if ($type == 'disclosure') {
+        //     $data = ClarificationResource::collection(clarification::whereIn('id', $all)->get());
+        // }
+
+        return Response::json(array('data' => $data), 200);
     }
 }

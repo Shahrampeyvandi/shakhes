@@ -14,6 +14,8 @@
 Route::get('/login', 'AuthController@Login')->name('login');
 Route::post('/login', 'AuthController@Verify')->name('login')->middleware("throttle:10,2");
 
+    Route::get('/getdata', 'RedisController@getmain');
+    Route::get('/shakhes', 'RedisController@shakhes');
 
 Route::group(['middleware' => ['admin']], function () {
     Route::get('/', 'MainController@Index')->name('BaseUrl');
@@ -60,8 +62,6 @@ Route::group(['middleware' => ['admin']], function () {
     Route::post('panel/upload-image', 'EducationController@UploadImage')->name('UploadImage');
     Route::post('/getcapitalincreases', 'Ajax\CapitalIncreaseController@getCapitalIncreases')->name('getCapitalIncreases');
 
-    Route::get('/getdata', 'RedisController@getmain');
-    Route::get('/shakhes', 'RedisController@shakhes');
     Route::get('/saveDailyReport', 'RedisController@saveDailyReport');
 
     Route::get('/logout', 'AuthController@Logout')->name('logout');

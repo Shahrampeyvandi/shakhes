@@ -643,7 +643,18 @@ class RedisController extends Controller
     public function shakhes()
     {
 
-        
+          $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=778253364357513&c=57');
+        $all = \strip_tags($crawler->html());
+        $array = [];
+        // $array['symbol'] = $namad->symbol;
+        // $array['name'] = $namad->name;
+        $explode_all = explode(';', $all);
+        dd($explode_all);
+        $main_data = $explode_all[0];
+        $buy_sell = $explode_all[4];
+        $orders = $explode_all[2];
+
+        dd($buy_sell);
         // $namads = Namad::all();
         // foreach ($namads as $key => $namad) {
         //     dump(Cache::get($namad->id));

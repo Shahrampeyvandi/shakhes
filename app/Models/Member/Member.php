@@ -5,6 +5,7 @@ namespace App\Models\Member;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Member\Subscribe;
 use App\Models\Accounting\Transaction;
+use App\Models\CapitalIncrease\CapitalIncrease;
 use App\Models\Namad\Namad;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -41,4 +42,5 @@ class Member extends  Authenticatable  implements JWTSubject
     {
         return $this->belongsToMany(Namad::class,'members_namads')->withPivot(['amount', 'profit_loss_percent', 'price']);
     }
+  
 }

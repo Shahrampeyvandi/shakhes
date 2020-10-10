@@ -94,6 +94,19 @@ Route::get('/filter/{key}', 'Api\FilterController@get');
 
 Route::get('shownamad/{id}', 'Api\NamadsController@show');
 
+Route::get('addselect/{type}/{id}', 'Api\MembersDataController@addToSelected');
+
+/**
+ * types : 
+ * capital_increase,
+ * clarification,
+ * disclosure,
+ * continuning_pattern,
+ * support_resistance_line
+ * 
+ */
+
+
 
 
 /** keys : 

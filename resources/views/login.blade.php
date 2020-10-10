@@ -20,7 +20,6 @@
             <img src="{{asset('assets/images/logo-shakhes.jpg')}}" style="width: 100px" alt="shakhes-logo">
             </div>
             <div class="login-html">
-
                 <div class="login-form">
                     <form action="{{route('login')}}" method="post">
                         {{csrf_field()}}

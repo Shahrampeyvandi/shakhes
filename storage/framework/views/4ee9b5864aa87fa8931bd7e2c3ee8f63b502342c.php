@@ -17,10 +17,9 @@
     <div class=" pt-5" style=" display: flex; justify-content: center; align-items: center;">
         <div class="login-wrap">
             <div class="head-login">
-            <img src="<?php echo e(asset('assets/images/logo-shakhes.jpg')); ?>" alt="shakhes-logo">
+            <img src="<?php echo e(asset('assets/images/logo-shakhes.jpg')); ?>" style="width: 100px" alt="shakhes-logo">
             </div>
             <div class="login-html">
-
                 <div class="login-form">
                     <form action="<?php echo e(route('login')); ?>" method="post">
                         <?php echo e(csrf_field()); ?>
@@ -36,7 +35,7 @@
                                 <input id="address_email" type="password" name="password" class="input mb-3">
                             </div>
                             <div class="group mt-5">
-                                <input type="submit" class="button" value="تایید">
+                                <input type="submit" class="button p-2" value="تایید">
                             </div>
 
                         </div>
