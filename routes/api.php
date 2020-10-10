@@ -84,10 +84,10 @@ Route::get('/getholdings', 'Api\MoneyReportsController@getHoldings');
 //------------------------
 
 
-Route::get('/getvolumetrades/{id?}', 'Api\VolumeTradesController@get'); 
+//Route::get('/getvolumetrades/{id?}', 'Api\VolumeTradesController@get'); 
 
-Route::get('/getholdingdata/{id}', 'Api\MoneyReportsController@get_holding_data');
-Route::get('/getholdings', 'Api\MoneyReportsController@getHoldings');
+//Route::get('/getholdingdata/{id}', 'Api\MoneyReportsController@get_holding_data');
+//Route::get('/getholdings', 'Api\MoneyReportsController@getHoldings');
 
 // filter
 Route::get('/filter/{key}', 'Api\FilterController@get');
