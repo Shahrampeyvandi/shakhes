@@ -27,6 +27,7 @@ class CapitalIncreaseResource extends JsonResource
             'publish_date' => $this->publish_date,
             'link_to_codal' => $this->link_to_codal,
             'description' => $this->description,
+            'selected'=>true,
             'new' => $this->new()
         ];
     }

@@ -22,6 +22,7 @@ class ClarificationResource extends JsonResource
             'id'=>$this->id,
             'subject' => $this->subject,
             'publish_date' => $this->publish_date,
+            'selected'=>true,
             'link_to_codal' => $this->link_to_codal,
             'new' => $this->new,
         ];
