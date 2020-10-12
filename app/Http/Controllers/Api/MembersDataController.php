@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Response;
 use App\Models\CapitalIncrease\CapitalIncrease;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class MembersDataController extends Controller
 {
@@ -207,6 +208,7 @@ class MembersDataController extends Controller
 
     public function namadcapitalincreases($namad_id = null)
     {
+        
 
         if ($namad_id) {
             $namad = Namad::where('id', $namad_id)->first();
@@ -214,12 +216,10 @@ class MembersDataController extends Controller
         } else {
             $capitalincreases_array = CapitalIncrease::latest()->paginate(20);
         }
-        $all = [];
 
+        $all = [];
         $list = [];
         if (count($capitalincreases_array)) {
-
-
             $list = CapitalIncreaseResource::collection($capitalincreases_array);
         } else {
             return response()->json(

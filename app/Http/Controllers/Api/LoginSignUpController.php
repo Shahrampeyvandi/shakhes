@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\ActivationCode;
 use App\Models\Member\Member;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -33,6 +34,8 @@ class LoginSignUpController extends Controller
 
     public function verify(Request $request)
     {
+        // return Auth::guard('api')->user();
+
         $code = $request->code;
         $mobile = $request->phone;
         $activationCode_OBJ = ActivationCode::where('v_code', $code)->where('mobile', $mobile)->first();
@@ -40,7 +43,7 @@ class LoginSignUpController extends Controller
 
             // check member 
             if ($member = Member::where('phone', $mobile)->first()) {
-                $token = JWTAuth::fromUser($member);
+                  $token =     Auth::guard('api')->login($member);
                 return response()->json([
                     'code' => 201,
                     'data' => $token,
@@ -50,7 +53,8 @@ class LoginSignUpController extends Controller
                 $member = new Member;
                 $member->phone = $request->phone;
                 if ($member->save()) {
-                    $token = JWTAuth::fromUser($member);
+               $token =     Auth::guard('api')->login($member);
+                   
                     return response()->json([
                         'code' => 201,
                         'data' => $token,
@@ -74,7 +78,7 @@ class LoginSignUpController extends Controller
         $member->lname = $request->lname;
         $member->phone = $request->phone;
         if ($member->save()) {
-            $token = JWTAuth::fromUser($member);
+            $token =     Auth::guard('api')->login($member);
             return response()->json([
                 'code' => 200,
                 'data' => $token,

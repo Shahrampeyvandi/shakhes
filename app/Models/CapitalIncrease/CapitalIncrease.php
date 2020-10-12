@@ -27,6 +27,11 @@ class CapitalIncrease extends Model
         return null;
     }
 
+    public function member_selected()
+    {
+        # code...
+    }
+
     public function showPercents()
     {
         if (count($this->amounts) == 0) {
