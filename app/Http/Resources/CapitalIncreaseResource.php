@@ -16,7 +16,7 @@ class CapitalIncreaseResource extends JsonResource
      */
     public function toArray($request)
     {
-        $namad = Namad::where('id', $this->namad->id)->first();
+        
         return  [
             'namad' => $this->namad ?  Cache::get($this->namad->id) : '',
             'step' => $this->step,
