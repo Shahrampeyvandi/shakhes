@@ -19,6 +19,7 @@ class CapitalIncreaseResource extends JsonResource
         
         return  [
             'namad' => $this->namad ?  Cache::get($this->namad->id) : '',
+            'id' => $this->id,
             'step' => $this->step,
             "from_cash" => $this->get_percent('from_cash'),
             "from_stored_gain" => $this->get_percent('from_stored_gain'),
@@ -26,6 +27,7 @@ class CapitalIncreaseResource extends JsonResource
             'publish_date' => $this->publish_date,
             'link_to_codal' => $this->link_to_codal,
             'description' => $this->description,
+            'selected'=>true,
             'new' => $this->new()
         ];
     }

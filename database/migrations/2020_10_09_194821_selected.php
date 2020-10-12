@@ -14,6 +14,7 @@ class Selected extends Migration
      public function up()
     {
         Schema::create('selected', function (Blueprint $table) {
+            $table->bigIncrements('id');
             $table->unsignedBigInteger('member_id');
             $table->unsignedBigInteger('model_id');
             $table->enum('type',['capital_increase','clarification','disclosure','continuning_pattern','support_resistance_line']);
