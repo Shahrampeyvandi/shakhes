@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\Namad\Namad;
-use App\Models\Holding\Holding;
 use Carbon\Carbon;
+use Prophecy\Call\Call;
+use App\Models\Namad\Namad;
 use Illuminate\Http\Request;
+use Morilog\Jalali\Jalalian;
+use App\Models\Holding\Holding;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
-use Prophecy\Call\Call;
 
 class NamadsController extends Controller
 {
@@ -80,7 +81,7 @@ class NamadsController extends Controller
         }
 
         $namad = Namad::find($id);
-         $old_cache = Cache::get($id);
+        $old_cache = Cache::get($id);
         if (!$namad) {
             return response()->json(['data' => null, 'error' => true], 200);
         }
@@ -138,8 +139,8 @@ class NamadsController extends Controller
             $array['pc'] = $cache['pc'];
             $array['pf'] = $cache['pf'];
             $array['py'] = $cache['py'];
-            $array['pmin'] =$old_cache['pmin'];
-            $array['pmax'] =$old_cache['pmin'];
+            $array['pmin'] = $old_cache['pmin'];
+            $array['pmax'] = $old_cache['pmin'];
             $array['tradecount'] = $cache['tradecount'];
             $array['N_tradeVol'] =  $this->format($cache['N_tradeVol']);
             $array['N_tradecash'] =  $this->format($cache['N_tradecash']);
@@ -152,26 +153,62 @@ class NamadsController extends Controller
             $array['last_price_status'] = $cache['last_price_status'];
             $array['pc_change_percent'] = $cache['pc_change_percent'];
             $array['pf_change_percent'] = $cache['pf_change_percent'];
-            $array['flow'] =$old_cache['flow'];
-            $array['ID'] =$old_cache['ID'];
+            $array['flow'] = $old_cache['flow'];
+            $array['ID'] = $old_cache['ID'];
             $array['BaseVol'] = $old_cache['BaseVol'];
             $array['status'] =  ($array['pl'] - $array['py'])  > 0 ? 'green' : 'red';
-            $array['personbuy'] =$old_cache['personbuy'];
-            $array['legalbuy'] =$old_cache['legalbuy'];
-            $array['personsell'] =$old_cache['personsell'];
-            $array['legalsell'] =$old_cache['legalsell'];
-            $array['personbuycount'] =$old_cache['personbuycount'];
-            $array['legalbuycount'] =$old_cache['legalbuycount'];
-            $array['personsellcount'] =$old_cache['personsellcount'];
-            $array['legalsellcount'] =$old_cache['legalsellcount'];
-            $array['person_buy_power'] =$old_cache['person_buy_power'];
-            $array['person_sell_power'] =$old_cache['person_sell_power'];
-            $array['percent_legal_buy'] =$old_cache['percent_legal_buy'];
-            $array['percent_person_sell'] =$old_cache['percent_person_sell'];
-            $array['percent_legal_sell'] =$old_cache['percent_legal_sell'];
+            $array['personbuy'] = $old_cache['personbuy'];
+            $array['legalbuy'] = $old_cache['legalbuy'];
+            $array['personsell'] = $old_cache['personsell'];
+            $array['legalsell'] = $old_cache['legalsell'];
+            $array['personbuycount'] = $old_cache['personbuycount'];
+            $array['legalbuycount'] = $old_cache['legalbuycount'];
+            $array['personsellcount'] = $old_cache['personsellcount'];
+            $array['legalsellcount'] = $old_cache['legalsellcount'];
+            $array['person_buy_power'] = $old_cache['person_buy_power'];
+            $array['person_sell_power'] = $old_cache['person_sell_power'];
+            $array['percent_legal_buy'] = $old_cache['percent_legal_buy'];
+            $array['percent_person_sell'] = $old_cache['percent_person_sell'];
+            $array['percent_legal_sell'] = $old_cache['percent_legal_sell'];
 
             Cache::put('data-' . $id, $array, 5);  // 5 seconds
             return response()->json(['data' => $array, 'error' => false]);
         }
+    }
+
+    public function chart_data()
+    {
+        $namad_id = request()->id;
+        $days = request()->days;
+        
+        $inscode = Namad::find($namad_id)->inscode;
+
+        $ch = curl_init("http://members.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=$inscode&Top=$days&A=0");
+        curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_ENCODING, "");
+      $result = curl_exec($ch);
+        $day_data = explode(';', $result);
+        foreach ($day_data as $key => $value) {
+            $data = explode('@', $value);
+            if (count($data) == 10) {
+                $pl = $data[4];
+                $pc = $data[3];
+                $year = substr($data[0], 0, 4);
+                $month = substr($data[0], 4, 2);
+                $day = substr($data[0], 6, 2);
+                $timestamp = mktime(0, 0, 0, $month, $day, $year);
+                $shamsi = Jalalian::forge($timestamp)->format('%d/%m/%y');
+                $array[] = [
+                    'pl' => $pl,
+                    'pc' => $pc,
+                    'date' => $shamsi
+                ];
+            }
+        }
+
+        return response()->json(['data'=>$array],200);
     }
 }

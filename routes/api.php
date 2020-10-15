@@ -97,6 +97,9 @@ Route::get('shownamad/{id}', 'Api\NamadsController@show');
 Route::get('addselect/{type}/{id}', 'Api\MembersDataController@addToSelected');
 Route::get('userselected/{type}', 'Api\MembersDataController@userSelected');
 
+Route::get('namad/chart', 'Api\NamadsController@chart_data');
+
+
 /**
  * types : 
  * capital_increase,

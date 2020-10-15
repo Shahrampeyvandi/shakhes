@@ -643,27 +643,48 @@ class RedisController extends Controller
     public function shakhes()
     {
 
-          $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=778253364357513&c=57');
-        $all = \strip_tags($crawler->html());
-        $array = [];
-        // $array['symbol'] = $namad->symbol;
-        // $array['name'] = $namad->name;
-        $explode_all = explode(';', $all);
-        dd($explode_all);
-        $main_data = $explode_all[0];
-        $buy_sell = $explode_all[4];
-        $orders = $explode_all[2];
+        $status = false;
+        $ch = curl_init("http://members.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=778253364357513&Top=100&A=0");
+        curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_ENCODING, "");
+        $result = curl_exec($ch);
+        $day_data = explode(';', $result);
+        foreach ($day_data as $key => $value) {
+            $data = explode('@', $value);
+            if (count($data) == 10) {
+                $pl = $data[4];
+                $pc = $data[3];
+                $year = substr($data[0], 0, 4);
+                $month = substr($data[0], 4, 2);
+                $day = substr($data[0], 6, 2);
+                $timestamp = mktime(0, 0, 0, $month, $day, $year);
+                $shamsi = Jalalian::forge($timestamp)->format('%d/%m/%y');
+                $array[] = [
+                    'pl' => $pl,
+                    'pc' => $pc,
+                    'date' => $shamsi
+                ];
+            }
+        }
+        dd($array);
 
-        dd($buy_sell);
+        // dd($data,$year,$month,$day);
+
+        $date = $data[0];
+        $pl = $data[4];
+        $pc = $data[3];
         // $namads = Namad::all();
         // foreach ($namads as $key => $namad) {
         //     dump(Cache::get($namad->id));
         // }
-      
 
 
 
-    
+
+
         //  $inscode = '54277068923045214';
         // if ($inscode) {
 
@@ -671,7 +692,7 @@ class RedisController extends Controller
 
         //     if ($cache) {
         //         $cache = Cache::get($inscode);
-            
+
         //     } else {
         //         $cache = Cache::get(1);
         //     }
@@ -747,7 +768,7 @@ class RedisController extends Controller
         //     // $array['percent_legal_buy'] = Cache::get($id)['percent_legal_buy'];
         //     // $array['percent_person_sell'] = Cache::get($id)['percent_person_sell'];
         //     // $array['percent_legal_sell'] = Cache::get($id)['percent_legal_sell'];
-            
+
         // }
 
         // dd($array);
@@ -833,7 +854,7 @@ class RedisController extends Controller
         $array['N_legalbuy'] = $data['legalbuy'];
         $array['N_personsell'] = $data['personsell'];
         $array['N_legalsell'] = $data['legalsell'];
-       
+
 
         foreach ($data as $key => $item) {
             if ((int)$item > 1000000 && (int)$item < 1000000000) {
@@ -998,7 +1019,7 @@ class RedisController extends Controller
         }
 
 
-       preg_match('/\'?(-?\d+)/', $explode[27], $matches);
+        preg_match('/\'?(-?\d+)/', $explode[27], $matches);
         $array['EPS'] = count($matches) ? $matches[1] : '';
         $array['P/E'] = isset($array['EPS']) && $array['EPS'] ? number_format(($array['pc'] / $array['EPS']), 2, '.', '') : '';
         preg_match('/=\'?(\d+)/', $explode[38], $matches);
@@ -1072,12 +1093,12 @@ class RedisController extends Controller
                 VolumeTrade::create(['namad_id' => $namad->id, 'trade_vol' => $array['N_tradeVol'], 'month_avg' => $array['N_monthAVG'], 'volume_ratio' => $zarib]);
             } else {
                 VolumeTrade::where('namad_id', $namad->id)
-                ->whereDate('created_at', Carbon::today())
-                ->update([
-                    'trade_vol' => $array['N_tradeVol'],
-                    'month_avg' => $array['N_monthAVG'],
-                    'volume_ratio' => $zarib
-                ]);
+                    ->whereDate('created_at', Carbon::today())
+                    ->update([
+                        'trade_vol' => $array['N_tradeVol'],
+                        'month_avg' => $array['N_monthAVG'],
+                        'volume_ratio' => $zarib
+                    ]);
             }
         }
         // echo $array['pl'] . '<br/>';
@@ -1125,9 +1146,9 @@ class RedisController extends Controller
         //     }
         // }
 
-        
+
         // filter calculate
-        
+
         if ($buy_sell) {
 
             $array['filter']['person_most_buy_sell'] = $data['personbuycount'] > 0 && $data['personsellcount'] ? (float)($array['N_personbuy'] / $data['personbuycount']) / (float)($array['N_personsell'] / $data['personsellcount']) : 0;
