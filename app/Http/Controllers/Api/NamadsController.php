@@ -193,6 +193,7 @@ class NamadsController extends Controller
 
         $inscode = Namad::find($namad_id)->inscode;
 
+        $array=[];
         $ch = curl_init("http://members.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=$inscode&Top=$days&A=0");
         curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -204,8 +205,8 @@ class NamadsController extends Controller
         foreach ($day_data as $key => $value) {
             $data = explode('@', $value);
             if (count($data) == 10) {
-                $pl = $data[4];
-                $pc = $data[3];
+                $pl = substr($data[4],0,-3);
+                $pc = substr($data[3],0,-3);;
                 $year = substr($data[0], 0, 4);
                 $month = substr($data[0], 4, 2);
                 $day = substr($data[0], 6, 2);
@@ -219,6 +220,9 @@ class NamadsController extends Controller
             }
         }
 
+        $reversed = array_reverse($array);
+
+        return response()->json(['data'=>$reversed],200);
         return response()->json(['data' => $array], 200);
     }
 }
