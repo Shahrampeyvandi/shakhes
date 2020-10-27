@@ -15,7 +15,7 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
 
-    protected function token($token)
+    protected function token()
     {
         $payload = JWTAuth::parseToken(request()->header('Authorization'))->getPayload();
         $mobile = $payload->get('mobile');
@@ -71,5 +71,28 @@ class Controller extends BaseController
     public function get_current_date_shamsi()
     {
         return Jalalian::forge('now')->format('%Y/%m/%d');
+    }
+
+    public function sendSMS($patterncode, $phone, $data)
+    {
+        $datas = array(
+            "pattern_code" => $patterncode,
+            "originator" => "+985000125475",
+            "recipient" => '+98' . substr($phone, 1),
+            "values" => $data
+        );
+
+        $url = "http://rest.ippanel.com/v1/messages/patterns/send";
+        $handler = curl_init($url);
+        curl_setopt($handler, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($handler, CURLOPT_POSTFIELDS, json_encode($datas));
+        curl_setopt($handler, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($handler, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Authorization: AccessKey LH5pTlnaCiZKZiEL7gPYh_nr-c6OmdmhRh9uKLSkkP0='
+        ));
+
+        $response = curl_exec($handler);
+        return $response;
     }
 }

@@ -10,6 +10,14 @@
     <link rel="stylesheet" href="{{route('BaseUrl')}}/vendor/FontAwesome/all.css">
 </head>
 
+<style>
+    .desciption img{
+        max-width: 100% !important;
+        object-fit: cover;
+    }
+</style>
+
+
 <body>
     <div class="container-fluid panel-table mt-5">
     <div class="card">

@@ -22,12 +22,12 @@ class ActivationCode extends Model
             if($beforecode->expire > Carbon::now()){
                 return false;
             }
-            $beforecode->Delete();
+            $beforecode->delete();
         }
         return static::create([
             'mobile' => $mobile,
             'v_code' => $code,
-            'expire' => Carbon::now()->addMinutes(15)
+            'expire' => Carbon::now()->addMinutes(1)
         ]);
     }
 

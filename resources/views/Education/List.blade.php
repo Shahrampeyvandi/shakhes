@@ -1,20 +1,16 @@
 @extends('layout.temp')
 @section('content')
-<style>
-    thead {
-        background: #00a0ff;
-    }
-</style>
-<div class="container-fluid panel-table mt-5">
-    <div class="head-panel">
-        <h5>آموزش ها</h5>
-    </div>
-    <div class="col-md-12 ">
-        <div class="card">
-            <div class="card-body">
-                <div style="overflow-x: auto;">
-                    <table id="example1" class="table table-striped  table-bordered w-100">
-                        <thead>
+
+<div class="container-fluid ">
+  <div class="card">
+    <div class="card-body">
+      <div class="card-title">
+        <h5 class="text-center">آموزش ها</h5>
+        <hr />
+      </div>
+      <div style="overflow-x: auto;">
+        <table id="example1" class="table table-striped table-bordered">
+          <thead>
                             <tr>
                                 <th>ردیف</th>
                                 <th>

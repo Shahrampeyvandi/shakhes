@@ -17,8 +17,10 @@ class CreateNotificationsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('member_id');
             $table->unsignedBigInteger('namad_id')->nullable();
-            $table->text('text');
-            $table->boolean('read');
+            $table->integer('notificationable_id');
+            $table->string('notificationable_type');
+            $table->text('text')->nullable();
+            $table->boolean('new')->default(true);
             $table->timestamps();
         });
     }

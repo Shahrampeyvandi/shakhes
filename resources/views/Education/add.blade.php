@@ -1,9 +1,9 @@
 @extends('layout.temp')
 @section('content')
 
-<main class="main-content">
-    <div class="container-fluid">
-        <div class="card">
+<div class="container-fluid ">
+    <div class="card">
+        <div class="card-body">
             <div class="card-body">
                 <div class="card-title">
                     <h5 class="text-center">افزودن آموزش</h5>
@@ -46,17 +46,12 @@
                         <div class="col-md-4 right-side">
                             <div class="cat">
                                 <h6 class="card-title">دسته بندی ها: </h6>
-                                <input type="text"  class="form-control mb-2" name="category" id="category"
-                                    placeholder="جدید">
-                                <button class="btn btn-outline-primary btn-sm mb-2"
-                                    onclick="addCategory(event)">افزودن</button>
+                                <input type="text" class="form-control mb-2" name="category" id="category" placeholder="جدید">
+                                <button class="btn btn-outline-primary btn-sm mb-2" onclick="addCategory(event)">افزودن</button>
                                 <div class="cat-wrapper">
                                     @foreach ($categories as $key=>$category)
                                     <div class="custom-control custom-radio custom-control-inline">
-                                        <input type="radio" id="{{$key+1}}" name="category" value="{{$category->name}}"
-                                            class="custom-control-input" @if (($key+1) == 1)
-                                                checked
-                                            @endif>
+                                        <input type="radio" id="{{$key+1}}" name="category" value="{{$category->name}}" class="custom-control-input" @if (($key+1)==1) checked @endif>
                                         <label class="custom-control-label" for="{{$key+1}}">{{$category->name}}</label>
                                     </div>
                                     @endforeach
@@ -80,8 +75,7 @@
             </div>
         </div>
     </div>
-    </div>
-</main>
+</div>
 
 
 
@@ -92,15 +86,17 @@
 @section('js')
 <script src="{{asset('vendor/ckeditor/ckeditor.js')}}"></script>
 <script>
-    CKEDITOR.replace('desc',{
-            contentsLangDirection: 'rtl',
-            extraPlugins: 'uploadimage',
-            filebrowserUploadUrl: '{{route('UploadImage')}}?type=file',
-            imageUploadUrl: '{{route('UploadImage')}}?type=image',
-        });
+    CKEDITOR.replace('desc', {
+        contentsLangDirection: 'rtl',
+        extraPlugins: 'uploadimage',
+        filebrowserUploadUrl: '{{route('
+        UploadImage ')}}?type=file',
+        imageUploadUrl: '{{route('
+        UploadImage ')}}?type=image',
+    });
 
     function addCategory(event) {
-       event.preventDefault()
+        event.preventDefault()
         let val = $(event.target).prev().val();
         let id = Math.random();
         let wrapper = $(event.target).next();
@@ -114,7 +110,7 @@
                             <label class="custom-control-label" for="${id}">${val}</label>
                         </div>
          `);
-    
-}
+
+    }
 </script>
 @endsection

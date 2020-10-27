@@ -10,4 +10,9 @@ class Disclosures extends Model
     {
         return $this->belongsTo(Namad::class,'namad_id');
     }
+      public function readed_notifications()
+    {
+        return $this->morphMany('App\Models\Notification', 'notificationable');
+    }
+
 }

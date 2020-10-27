@@ -14,8 +14,8 @@
 Route::get('/login', 'AuthController@Login')->name('login');
 Route::post('/login', 'AuthController@Verify')->name('login')->middleware("throttle:10,2");
 
-    Route::get('/getdata', 'RedisController@getmain');
-    Route::get('/shakhes', 'RedisController@shakhes');
+Route::get('/getdata', 'RedisController@getmain');
+Route::get('/shakhes', 'RedisController@shakhes');
 
 Route::group(['middleware' => ['admin']], function () {
     Route::get('/', 'MainController@Index')->name('BaseUrl');
@@ -64,7 +64,20 @@ Route::group(['middleware' => ['admin']], function () {
     Route::get('/saveDailyReport', 'RedisController@saveDailyReport');
 
     Route::get('/logout', 'AuthController@Logout')->name('logout');
+
+
+    // plans
+    Route::get('plans/add', 'PlanController@Add')->name('Panel.AddPlan');
+    Route::post('plans/add', 'PlanController@Save')->name('Panel.AddPlan');
+    Route::get('plans/{id}/edit', 'PlanController@Edit')->name('Panel.EditPlan');
+    Route::put('plans/{id}/edit', 'PlanController@SaveEdit')->name('Panel.EditPlan');
+    Route::get('plans/list', 'PlanController@List')->name('Panel.PlanList');
+    Route::delete('plans/delete', 'PlanController@Delete')->name('Panel.DeletePlan');
+
+    Route::get('paymants', 'PayController@list')->name('Panel.Pays');
 });
 
-    Route::get('/education/{id}', 'EducationController@Show')->name('Education.Show');
+Route::get('pay', 'PayController@pay')->middleware('jwt.verify');
+Route::get('pay/callback', 'PayController@callback')->middleware('jwt.verify');
 
+Route::get('/education/{id}', 'EducationController@Show')->name('Education.Show');

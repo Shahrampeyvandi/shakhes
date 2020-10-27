@@ -21,19 +21,23 @@ class NamadsController extends Controller
     }
     public function search(Request $request)
     {
-
         $key = $request->search;
-
-        $namads = Namad::where('symbol', 'like', '%' . $key . '%')
-            ->take(5)->get();
-
-        return response()->json([
-            'data' => $namads
-        ], 200);
+        if($key) {
+            // $end_char = substr($key, -1);
+            // if($end_char == 'ی') {
+            //    str_replace('ی', 'ي', $end_char);
+            // }
+            $namads = Namad::where('symbol', 'like', '%' . $key . '%')
+                ->take(5)->get();
+            return response()->json([
+                'data' => $namads
+            ], 200);
+        }
     }
 
     public function getnamad(Request $request)
     {
+        $member = $this->token(request()->header('Authorization'));
         $namad = Namad::find($request->id);
         if ($namad) {
             $information = Cache::get($namad->id);
@@ -59,17 +63,23 @@ class NamadsController extends Controller
             }
             $information['holding'] = 0;
 
-            $result =  array_merge($information, $namad->getNamadNotifications());
+            $result =  array_merge($information, $namad->getUserNamadNotifications($member,$namad));
 
             return response()->json($result, 200);
         } else {
-            return response()->json('namad not found', 401);
+            return response()->json('Namad not found', 401);
         }
     }
 
     public function getAllNotifications()
     {
-        $data = Namad::GetAllNotifications();
+
+        $member = $this->token(request()->header('Authorization'));
+        if (Cache::has()) {
+            return response()->json(Cache::get("allnotif-$member->id"), 200);
+        }
+        $data = Namad::GetAllNotifications($member);
+        Cache::put("allnotif-$member->id", $data, 60);
         return response()->json($data, 200);
     }
 
@@ -180,7 +190,7 @@ class NamadsController extends Controller
     {
         $namad_id = request()->id;
         $days = request()->days;
-        
+
         $inscode = Namad::find($namad_id)->inscode;
 
         $array=[];
@@ -190,7 +200,7 @@ class NamadsController extends Controller
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_ENCODING, "");
-      $result = curl_exec($ch);
+        $result = curl_exec($ch);
         $day_data = explode(';', $result);
         foreach ($day_data as $key => $value) {
             $data = explode('@', $value);
@@ -213,5 +223,6 @@ class NamadsController extends Controller
         $reversed = array_reverse($array);
 
         return response()->json(['data'=>$reversed],200);
+        return response()->json(['data' => $array], 200);
     }
 }

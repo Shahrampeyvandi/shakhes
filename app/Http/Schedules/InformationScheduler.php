@@ -8,6 +8,7 @@ use App\Models\CapitalIncrease\CapitalIncrease;
 use App\Models\clarification;
 use App\Models\Namad\NamadsDailyReport;
 use App\Models\Namad\Disclosures;
+use App\Models\Notification;
 use Exception;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Cache;
@@ -31,13 +32,11 @@ class InformationScheduler
 
 
         $date=Jalalian::forge('now')->format('%Y/%m/%d');
-        $date="1399/01/01";
+        // $date="1399/01/01";
 
 
         foreach ($namads as $namad) {
             echo 'start namad searching in codal = '.$namad->symbol . PHP_EOL;
-
-
             try {
                 $this->capitalIncrease($namad,$date);
             } catch (Exception $e) {
@@ -76,11 +75,13 @@ class InformationScheduler
             $capitalincrease->publish_date = date('Y-m-d');
             $capitalincrease->link_to_codal = 'https://www.codal.ir/' . $info['Url'];
             $capitalincrease->save();
+           
         }
     }
 
     public function clarification($namad,$date)
     {
+
         $ch = curl_init("https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true&CompanyState=2&CompanyType=1&Consolidatable=true&FromDate=$date&IsNotAudited=false&Isic=322001&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&Symbol=$namad->symbol&TracingNo=-1&search=true");
         curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -99,6 +100,7 @@ class InformationScheduler
             $clarification->link_to_codal = 'https://www.codal.ir/' . $info['Url'];
             $clarification->publish_date = date('Y-m-d');
             $clarification->save();
+            
         }
     }
 
@@ -123,7 +125,10 @@ class InformationScheduler
             $disclosures->link_to_codal = 'https://www.codal.ir/' . $info['Url'];
             $disclosures->group = 'a';
             $disclosures->save();
+            
         }
     }
+
+   
 
 }
