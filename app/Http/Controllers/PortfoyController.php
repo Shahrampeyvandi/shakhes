@@ -40,32 +40,33 @@ class PortfoyController extends Controller
     public function InsertHolding(Request $request)
     {
 
-
         if (is_null($request->name)) {
             $request->session()->flash('Error', 'نام شرکت را وارد نمایید');
             return back();
         }
         $total = 0;
-
         // جمع ارزش مالی شرکت از ضرب تعداد هرسهم شرکت در  آخرین قیمت سهم
         foreach ($request->namads as $key => $id) {
-            $namad = Namad::where('id', $id)->first();
-
+            
             $pl = Cache::get($id)['pl'];
-
             $total += $request->persent[$key] * $pl;
         }
+        if(Holding::where('namad_id',$request->name)->first()) {
+            $request->session()->flash('Error', 'شرکت از قبل ثبت شده است');
+            return back();
+        }
+
         $holding = new Holding();
         $holding->namad_id = $request->name;
-        
         $holding->save();
+
         foreach ($request->namads as $key => $id) {
             if (!is_null($id) &&  DB::table('holdings_namads')
                 ->whereNamad_id($id)
                 ->whereHolding_id($holding->id)
                 ->count() == 0
             ) {
-                $namad = Namad::where('id', $id)->first();
+                
                 $last_price_value =  Cache::get($id)['pl'];
                 $count =  $request->persent[$key] * $last_price_value;
                 $percent = ($count * 100) / $total;
@@ -78,6 +79,7 @@ class PortfoyController extends Controller
             }
         }
 
+        $request->session()->flash('success', 'شرکت سرمایه گذاری با موفقیت ثبت شد');
         return redirect()->route('PortfoyList');
     }
 
@@ -109,8 +111,8 @@ class PortfoyController extends Controller
             $amount_value =  DB::table('holdings_namads')
                 ->whereNamad_id($namad->id)
                 ->whereHolding_id($request->holding)->first()->amount_value;
-            $last_price_value = count($namad->dailyReports) ? $namad->dailyReports()->latest()->first()->last_price_value : 0;
-            $total += $amount_value * $last_price_value;
+            $last_price_value = Cache::get($namad->id)['final_price_value'];
+            $total += (int)$amount_value * (int)$last_price_value;
         }
 
 
@@ -119,7 +121,7 @@ class PortfoyController extends Controller
             $amount_value =  DB::table('holdings_namads')
                 ->whereNamad_id($namad->id)
                 ->whereHolding_id($request->holding)->first()->amount_value;
-            $count =  $amount_value * $last_price_value;
+            $count =  (int)$amount_value * (int)$last_price_value;
             $percent = ($count * 100) / $total;
             DB::table('holdings_namads')
                 ->whereNamad_id($namad->id)

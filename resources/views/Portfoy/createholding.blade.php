@@ -5,21 +5,14 @@
 <div class="row">
     <div class="col-md-12">
         <div class="card p-3">
-            @include('layout.errors')
+            
         <form id="upload-file" method="post" action="{{route('Holding.Create')}}" >
                 @csrf
-                {{-- <div class="form-group ">
-                    <label for=""><span class="text-danger">*</span> نوع : </label>
-                    <select name="slider_type" id="slider-type" class="form-control  custom-select">
-                        <option value="header_slideshow" >header slider</option>
-                        <option value="footer_slideshow" >client slider</option>
-                    </select>
-                </div> --}}
+          
                 <div class="row">
                     <div class="form-group col-md-12">
                         <label for="name" class="col-form-label"><span class="text-danger">*</span> نام شرکت: </label>
-                        <select class="form-control text-right selectpicker" name="name"  data-size="5"
-                        data-live-search="true" data-title="نام شرکت سرمایه گذاری" id="name" data-width="100%">
+                        <select class="form-control js-example-basic-single" name="name"   id="name" >
                         @foreach (\App\Models\Namad\Namad::OrderBy('symbol','ASC')->get() as $item)
                         <option value="{{$item->id}}">{{$item->symbol}}</option>
                         @endforeach
@@ -28,8 +21,7 @@
                 </div>
                 <div class="row wrapper-content">
                    <div class="form-group col-md-8">
-                    <select class="form-control text-right selectpicker" name="namads[]"  data-size="5"
-                    data-live-search="true" data-title="نام سهم" id="namads[]" data-width="100%">
+                    <select class="form-control js-example-basic-single" name="namads[]"   id="namads[]" >
                     @foreach (\App\Models\Namad\Namad::OrderBy('symbol','ASC')->get() as $item)
                     <option value="{{$item->id}}">{{$item->symbol}}</option>
                     @endforeach

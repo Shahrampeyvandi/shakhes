@@ -33,6 +33,7 @@
     @include('Includes.Panel.navbar')
     <!-- begin::main content -->
     <main class="main-content">
+        @include('Includes.Panel.alerts')
         @yield('content')
     </main>
     <!-- end::main content -->
@@ -59,6 +60,7 @@
     <script src="{{asset('assets/js/toastr.min.js')}}"></script>
     <!-- @toastr_render -->
 
+    <script src="{{asset('assets/vendors/select2/js/select2.min.js')}}"></script>
     <script src="{{asset('assets/vendors/dataTable/jquery.dataTables.min.js')}}"></script>
     <script src="{{asset('assets/vendors/dataTable/dataTables.bootstrap4.min.js')}}"></script>
     <script src="{{asset('assets/vendors/dataTable/dataTables.responsive.min.js')}}"></script>

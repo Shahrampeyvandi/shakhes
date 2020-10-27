@@ -33,6 +33,7 @@
     <?php echo $__env->make('Includes.Panel.navbar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     <!-- begin::main content -->
     <main class="main-content">
+        <?php echo $__env->make('Includes.Panel.alerts', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
         <?php echo $__env->yieldContent('content'); ?>
     </main>
     <!-- end::main content -->
@@ -57,8 +58,9 @@
     <script src="<?php echo e(asset('assets/vendors/select2/js/select2.min.js')); ?>"></script>
     <!-- begin::custom scripts -->
     <script src="<?php echo e(asset('assets/js/toastr.min.js')); ?>"></script>
-    @toastr_render
+    <!-- @toastr_render  -->
 
+    <script src="<?php echo e(asset('assets/vendors/select2/js/select2.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/vendors/dataTable/jquery.dataTables.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/vendors/dataTable/dataTables.bootstrap4.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/vendors/dataTable/dataTables.responsive.min.js')); ?>"></script>

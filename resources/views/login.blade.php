@@ -14,12 +14,12 @@
     <link rel="stylesheet" href="{{route('BaseUrl')}}/assets/css/style.css">
 </head>
 <body>
-    <div class=" pt-5" style=" display: flex; justify-content: center; align-items: center;">
+    <div class=" pt-5 mx-3 mx-md-0" style=" display: flex; justify-content: center; align-items: center;">
         <div class="login-wrap">
             <div class="head-login">
             <img src="{{asset('assets/images/logo-shakhes.jpg')}}" style="width: 100px" alt="shakhes-logo">
             </div>
-            <div class="login-html">
+            <div class="login-html px-1 px-md-5 py-0">
                 <div class="login-form">
                     <form action="{{route('login')}}" method="post">
                         {{csrf_field()}}

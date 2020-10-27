@@ -83,21 +83,15 @@
                         // ajax request
                         $.ajax({
                             type: 'POST',
-                            url: '{{url(' / holding / delete ')}}',
+                            url: mainUrl + '/holding/delete',
                             data: {
                                 _token: '{{csrf_token()}}',
                                 id: value
                             },
-
-
-
                             success: function(data) {
-
-
                                 setTimeout(() => {
                                     location.reload()
                                 }, 1000)
-
                             }
                         })
                     } else {

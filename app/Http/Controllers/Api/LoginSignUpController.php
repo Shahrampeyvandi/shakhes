@@ -3,17 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Models\ActivationCode;
 use App\Models\Member\Member;
+use App\Models\ActivationCode;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Mail;
 
 class LoginSignUpController extends Controller
 {
     public function getcode(Request $request)
     {
+       
 
         $code = ActivationCode::createCode($request->phone);
         if ($code == false) {
@@ -22,6 +24,7 @@ class LoginSignUpController extends Controller
                 'message' => 'کد فعال سازی قبلا برای شما ارسال شده است. لطفا بعدا مجددا امتحان فرمایید',
             ], 200);
         }
+        //  Mail::to($request->email)->send(new SendActivationCode($event->mobile , $event->activationCode->v_code));
 
         // $patterncode = "e281gs93os";
         // $data = array("code" => $code->v_code);
@@ -44,10 +47,9 @@ class LoginSignUpController extends Controller
         $mobile = $request->phone;
         $activationCode_OBJ = ActivationCode::where('v_code', $code)->where('mobile', $mobile)->first();
         if ($activationCode_OBJ) {
-
             // check member 
             if ($member = Member::where('phone', $mobile)->first()) {
-                  $token =     Auth::guard('api')->login($member);
+                $token =     Auth::guard('api')->login($member);
                 return response()->json([
                     'code' => 201,
                     'data' => $token,
@@ -57,8 +59,8 @@ class LoginSignUpController extends Controller
                 $member = new Member;
                 $member->phone = $request->phone;
                 if ($member->save()) {
-               $token =     Auth::guard('api')->login($member);
-                   
+                    $token =     Auth::guard('api')->login($member);
+
                     return response()->json([
                         'code' => 201,
                         'data' => $token,

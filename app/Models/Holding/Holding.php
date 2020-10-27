@@ -27,7 +27,7 @@ class Holding extends Model
             // حساب کردن ارزش پرتفوی شرکت
             // today
             $last_price_value = Cache::get($namad->id)['pl'];
-            $portfoy +=   $namad->pivot->amount_value * $last_price_value;
+            $portfoy +=   (int)$namad->pivot->amount_value * $last_price_value;
 
 
             // yesterday
@@ -37,7 +37,7 @@ class Holding extends Model
             } else {
                 $last_price_value_yesterday = 0;
             }
-            $yesterday_portfoy +=  $namad->pivot->amount_value * $last_price_value_yesterday;
+            $yesterday_portfoy +=  (int)$namad->pivot->amount_value * $last_price_value_yesterday;
             $count++;
         }
 
@@ -86,7 +86,7 @@ class Holding extends Model
         $namads = $this->namads;
         $sum_market_value = 0;
         foreach ($namads as $key => $namad) {
-            $sum_market_value += $namad->pivot->amount_value * (int)Cache::get($namad->id)['pc'];
+            $sum_market_value += (int)$namad->pivot->amount_value * (int)Cache::get($namad->id)['pc'];
         }
         return $sum_market_value;
     }

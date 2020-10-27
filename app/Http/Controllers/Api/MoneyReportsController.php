@@ -77,7 +77,6 @@ class MoneyReportsController extends Controller
             $array['id'] = $namad->id;
 
             $array['namad']['symbol'] = $namad->symbol;
-
             $array['namad']['status'] = ((int)$item->getMarketValue() - (int)$item->portfoy)  > 0 ? 'green' : 'red';
             $yesterday_portfoy = $item->portfoy;
             $array['yesterday_portfoy'] = (int)$yesterday_portfoy;
