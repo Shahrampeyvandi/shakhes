@@ -46,7 +46,7 @@ class InformationScheduler
             } catch (Exception $e) {
             }
             try {
-                $this->disclor($namad,$date);
+               // $this->disclor($namad,$date);
             } catch (Exception $e) {
             }
         }
@@ -82,7 +82,8 @@ class InformationScheduler
     public function clarification($namad,$date)
     {
 
-        $ch = curl_init("https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true&CompanyState=2&CompanyType=1&Consolidatable=true&FromDate=$date&IsNotAudited=false&Isic=322001&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&Symbol=$namad->symbol&TracingNo=-1&search=true");
+       // $ch = curl_init("https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true&CompanyState=2&CompanyType=1&Consolidatable=true&FromDate=$date&IsNotAudited=false&Isic=322001&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&Symbol=$namad->symbol&TracingNo=-1&search=true");
+        $ch = curl_init("https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=2&Childs=true&CompanyState=0&CompanyType=1&Consolidatable=true&FromDate=$date&IsNotAudited=false&Isic=210102&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&Symbol=$namad->symbol&TracingNo=-1&search=true");
         curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
