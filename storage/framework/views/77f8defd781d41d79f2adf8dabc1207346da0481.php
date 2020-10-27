@@ -1,241 +1,76 @@
-<?php $sis = session()->get('user');?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
-    <title>شاخص - پنل</title>
-    <link rel="stylesheet" href="<?php echo e(route('BaseUrl')); ?>/vendor/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="<?php echo e(route('BaseUrl')); ?>/vendor/bootstrap/RTL.css">
-    <link rel="stylesheet" href="<?php echo e(route('BaseUrl')); ?>/vendor/bootstrap/bootstrap-select.css">
-    <link rel="stylesheet" href="<?php echo e(route('BaseUrl')); ?>/vendor/FontAwesome/all.css">
-    <link rel="stylesheet" href="<?php echo e(route("BaseUrl")); ?>/datepicker/bootstrap-datepicker.min.css">
-    <link rel="stylesheet" href="<?php echo e(route('BaseUrl')); ?>/vendor/dataTable/responsive.bootstrap.min.css">
-    <link rel="stylesheet" href="<?php echo e(route('BaseUrl')); ?>/assets/css/style.css">
-     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <meta name="_token" content="<?php echo e(csrf_token()); ?>">
+    <title>پنل مدیریت</title>
+
+    <link rel="stylesheet" href="<?php echo e(asset('assets/vendors/bundle.css')); ?>" type="text/css">
+    <link rel="stylesheet" href="<?php echo e(asset('assets/vendors/FontAwesome/all.css')); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('assets/vendors/select2/css/select2.min.css')); ?>" type="text/css">
+    <link rel="stylesheet" href="<?php echo e(asset('assets/vendors/dropify/dropify.css')); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/toastr.css')); ?>">
+    <link href="https://cdn.jsdelivr.net/gh/StephanWagner/jBox@v1.2.0/dist/jBox.all.min.css" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/app.css')); ?>" type="text/css">
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/custom.css')); ?>" type="text/css">
+    <link rel="shortcut icon" href="<?php echo e(asset('assets/media/image/favicon.png')); ?>">
+    <meta name="theme-color" content="#3f51b5" />
     <?php echo $__env->yieldContent('css'); ?>
 </head>
 
-<body>
-
-    <div class="wrapper">
-
-        <div id="sidebarCo" class="sidebar">
-            <div class="content-sidebar">
-
-                <div class="sidebar-user">
-                    <img src="<?php echo e(route('BaseUrl')); ?>/assets/images/avatar.png"
-                    class="img-fluid rounded-circle mb-2" alt="User Image">
-                    <div class="font-weight-bold">کاربر</div>
-
-                </div>
-
-                <ul class="sidebar-nav">
-                   
-                    <li class="sidebar-item active">
-                    <a class="sidebar-link pr-4" href="<?php echo e(route('BaseUrl')); ?>">
-                            <i class="align-middle mr-2 fas fa-fw fa-home ml-1"></i> <span
-                                class="align-middle">داشبورد</span>
-                        </a>
-                    </li>
-
-                    <li class="sidebar-item">
-                    <a class="sidebar-link pr-4" href="<?php echo e(route('Users')); ?>">
-                           
-                            <img width="20px" src="<?php echo e(asset('assets/images/user.png')); ?>" alt=""> <span
-                            class="align-middle">کاربران</span>
-                        </a>
-                    </li>
-
-                     <li class="sidebar-item">
-                        <a href="#proposal" data-toggle="collapse" class="sidebar-link collapsed" style="padding-right: 18px;">
-                            <i class="align-middle mr-2 fas fa-list-alt ml-2"></i> <span
-                                class="align-middle">آموزش</span>
-                        </a>
-                        <ul id="proposal" class="sidebar-dropdown list-unstyled collapse" data-parent="#sidebarCo">
-                            <li class="sidebar-item"><a class="sidebar-link"
-                                    href="<?php echo e(route('Education.List')); ?>">لیست </a>
-                            </li>
-                            <li class="sidebar-item"><a class="sidebar-link" href="<?php echo e(route('Education.Add')); ?>">
-                                    افزودن</a>
-                            </li>
-
-                        </ul>
-                    </li>
-
-
-                   
-
-
-                   
-
-
-                  
-                    <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="<?php echo e(route('MoneyReports')); ?>">
-                           
-                        <img width="20px" src="<?php echo e(asset('assets/images/mali.png')); ?>" alt="">
-                            <span
-                                class="align-middle">
-                                صورت های مالی و گزارشات</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="<?php echo e(route('PortfoyList')); ?>">
-                             <img width="20px" src="<?php echo e(asset('assets/images/portfoy.png')); ?>" alt=""> <span
-                                class="align-middle">
-                                پرتفوی روزانه شرکت ها</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="<?php echo e(route('CapitalIncrease')); ?>">
-                             <img width="20px" src="<?php echo e(asset('assets/images/sarmaye.png')); ?>" alt=""> <span
-                                class="align-middle">
-                                افزایش سرمایه</span>
-                        </a>
-                    </li>
-                     <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="<?php echo e(route('Disclosures')); ?>">
-                             <img width="20px" src="<?php echo e(asset('assets/images/sarmaye.png')); ?>" alt=""> <span
-                                class="align-middle">
-                                افشای اطلاعات با اهمیت</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="<?php echo e(route('Clarifications')); ?>">
-                             <img width="20px" src="<?php echo e(asset('assets/images/shafafsazi.png')); ?>" alt=""> <span
-                                class="align-middle">
-                                شفاف سازی</span>
-                        </a>
-                    </li>
-                    
-                    <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="<?php echo e(route('ContinuingPaterns')); ?>">
-                             <img width="20px" src="<?php echo e(asset('assets/images/mali.png')); ?>" alt=""> <span
-                                class="align-middle">
-                                الگوهای ادامه دهنده و بازگشتی</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="#">
-                             <img width="20px" src="<?php echo e(asset('assets/images/mali.png')); ?>" alt=""> <span
-                                class="align-middle">
-                                سیگنال های اندیکاتوری</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                    <a class="sidebar-link pr-4" href="<?php echo e(route('VolumeTrades')); ?>">
-                             <img width="20px" src="<?php echo e(asset('assets/images/mali.png')); ?>" alt="افزایش حجم معاملات"> <span
-                                class="align-middle">
-                                افزایش حجم معاملات</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="#">
-                             <img width="20px" src="<?php echo e(asset('assets/images/mali.png')); ?>" alt=""> <span
-                                class="align-middle">
-                                نقاط حمایت</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="#">
-                             <img width="20px" src="<?php echo e(asset('assets/images/mali.png')); ?>" alt=""> <span
-                                class="align-middle">
-                                افزایش حجم معاملات</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="#">
-                             <img width="20px" src="<?php echo e(asset('assets/images/setting.png')); ?>" alt=""> <span
-                                class="align-middle">
-                                تنظیمات</span>
-                        </a>
-                    </li>
-                   
-                    <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="#">
-                             <img width="20px" src="<?php echo e(asset('assets/images/user.png')); ?>" alt=""> <span
-                                class="align-middle">ویرایش
-                                پروفایل</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link pr-4" href="#">
-                             <img width="20px" src="<?php echo e(asset('assets/images/out.png')); ?>" alt=""> <span
-                                class="align-middle">
-                                خروج</span>
-                        </a>
-                    </li>
-                </ul>
-
-
-            </div>
-
-        </div>
-
-        <div class="main">
-            <div class="head-main">
-                <a href="#" class="btn-sidebar close-sidebar">
-                    <i class="fa fa-times"></i>
-                </a>
-                <a href="#" class="btn-sidebar hamburger">
-                    <i class="fa fa-bars"></i>
-                </a>
-                <a class="head-sidebar">
-                    شاخص
-                </a>
-                <ul class="navbar-nav nav-custom mr-auto">
-                
-                    <li class="nav-item dropdown mx-3 ml-lg-2 ">
-                        <a class="nav-link dropdown-toggle position-relative" href="#" id="userDropdown"
-                            data-toggle="dropdown" aria-expanded="true">
-                            <i class="align-middle fas fa-cog"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right " aria-labelledby="userDropdown">
-                            <a class="dropdown-item" href="#"><i
-                                    class="align-middle mr-1 fas fa-fw fa-user ml-2"></i>ویرایش پروفایل</a>
-
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="<?php echo e(route('logout')); ?>"><i
-                                    class="align-middle mr-1 fas fa-fw fa-arrow-alt-circle-right ml-2"></i>خروج از
-                                حساب</a>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <div class="content-main mt-5">
-                <?php echo $__env->yieldContent('content'); ?>
-            </div>
-
-        </div>
+<body class="icon-side-menu">
+    <div class="page-loader">
+        <div class="spinner-border"></div>
+        <span>در حال بارگذاری ...</span>
     </div>
-    </div>
-
-    <script src="<?php echo e(route('BaseUrl')); ?>/vendor/jquery/jquery-3.3.1.slim.min.js"></script>
-    <script src="<?php echo e(route('BaseUrl')); ?>/vendor/jquery/jquery-3.4.1.js"></script>
-    <script src="<?php echo e(route('BaseUrl')); ?>/vendor/jquery/popper.min.js"></script>
-    <script src="<?php echo e(route('BaseUrl')); ?>/vendor/bootstrap/bootstrap.min.js"></script>
-    <script src="<?php echo e(route('BaseUrl')); ?>/datepicker/bootstrap-datepicker.min.js"></script>
-    <script src="<?php echo e(route('BaseUrl')); ?>/datepicker/bootstrap-datepicker.fa.min.js"></script>
-    <script src="<?php echo e(route('BaseUrl')); ?>/vendor/bootstrap/bootstrap-select.js"></script>
-    <script src="<?php echo e(route('BaseUrl')); ?>/vendor/dataTable/jquery.dataTables.min.js"></script>
-    <script src="<?php echo e(route('BaseUrl')); ?>/vendor/dataTable/dataTables.bootstrap4.min.js"></script>
-    <script src="<?php echo e(route('BaseUrl')); ?>/vendor/dataTable/dataTables.responsive.min.js"></script>
-    <script src="<?php echo e(route('BaseUrl')); ?>/vendor/dataTable/datatable.js"></script>
-    <script src="<?php echo e(route('BaseUrl')); ?>/assets/js/main.js"></script>
+    <?php echo $__env->make('Includes.Panel.sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    <?php echo $__env->make('Includes.Panel.side-menu', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    <?php echo $__env->make('Includes.Panel.navbar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    <!-- begin::main content -->
+    <main class="main-content">
+        <?php echo $__env->yieldContent('content'); ?>
+    </main>
+    <!-- end::main content -->
     <script>
-        $(document).ready(function() {
-            $(".datepicker-fa").datepicker({
-            changeMonth: true,
-            changeYear: true
-            });
-        });
+        var mainUrl = "<?php echo e(route('BaseUrl')); ?>";
     </script>
+
+
+    <!-- begin::global scripts -->
+    <script src="<?php echo e(asset('assets/vendors/bundle.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/vendors/charts/chart.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/vendors/charts/sparkline.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/vendors/circle-progress/circle-progress.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/js/examples/charts.js')); ?>"></script>
+    <!-- end::chart -->
+    <!-- dropify -->
+    <script src="<?php echo e(asset('assets/vendors/dropify/dropify.min.js')); ?>"></script>
+
+    <!-- end::dropify -->
+    <script src="<?php echo e(asset('assets/vendors/jquery-form/jquery.form.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/vendors/jquery-validate/jquery.validate.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/vendors/select2/js/select2.min.js')); ?>"></script>
+    <!-- begin::custom scripts -->
+    <script src="<?php echo e(asset('assets/js/toastr.min.js')); ?>"></script>
+    @toastr_render
+
+    <script src="<?php echo e(asset('assets/vendors/dataTable/jquery.dataTables.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/vendors/dataTable/dataTables.bootstrap4.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/vendors/dataTable/dataTables.responsive.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/js/datatable.js')); ?>"></script>
+
     <?php echo $__env->yieldContent('js'); ?>
+    <script src="https://cdn.jsdelivr.net/gh/StephanWagner/jBox@v1.2.0/dist/jBox.all.min.js"></script>
+    <script src="<?php echo e(asset('assets/js/custom.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/js/app.js')); ?>"></script>
+    <!-- end::custom scripts -->
+
+
 </body>
 
 </html><?php /**PATH C:\xampp1\htdocs\shakhes\resources\views/layout/temp.blade.php ENDPATH**/ ?>

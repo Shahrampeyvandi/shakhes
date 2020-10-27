@@ -64,6 +64,17 @@ Route::group(['middleware' => ['admin']], function () {
     Route::get('/saveDailyReport', 'RedisController@saveDailyReport');
 
     Route::get('/logout', 'AuthController@Logout')->name('logout');
+
+
+    // plans
+     Route::get('plans/add', 'PlanController@Add')->name('Panel.AddPlan');
+    Route::post('plans/add', 'PlanController@Save')->name('Panel.AddPlan');
+    Route::get('plans/{id}/edit', 'PlanController@Edit')->name('Panel.EditPlan');
+    Route::put('plans/{id}/edit', 'PlanController@SaveEdit')->name('Panel.EditPlan');
+    Route::get('plans/list', 'PlanController@List')->name('Panel.PlanList');
+    Route::delete('plans/delete', 'PlanController@Delete')->name('Panel.DeletePlan');
+
+ Route::get('paymants', 'PayController@list')->name('Panel.Pays');
 });
 
     Route::get('/education/{id}', 'EducationController@Show')->name('Education.Show');

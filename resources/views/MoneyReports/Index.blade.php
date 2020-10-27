@@ -5,10 +5,14 @@
         width: 100px !important;
     }
 </style>
-<div class="container-fluid panel-table mt-5">
-    <div class="head-panel">
-        <h4> صورت های مالی و گزارشات</h4>
-    </div>
+<div class="container-fluid ">
+  <div class="card">
+    <div class="card-body">
+      <div class="card-title">
+        <h5 class="text-center">صورت های مالی و گزارشات</h5>
+        <hr />
+      </div>
+
     <div class="col-md-12 ">
 
         <h6 class="mt-4">انتخاب سهم: </h6>
@@ -118,7 +122,7 @@
                 <div class="d-block">
 
                     <div class="row my-4">
-                        <div class="table-responsive">
+                        <div class="" style="overflow-x: scroll !important;">
                             <table class="table table-bordered  ">
                                 <thead>
                                     <tr>

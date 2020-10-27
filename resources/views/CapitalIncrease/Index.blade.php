@@ -1,165 +1,148 @@
 @extends('layout.temp')
 @section('content')
-<style>
-    td input {
-        width: 50px !important;
-    }
-</style>
+
 <div class="container-fluid panel-table mt-5">
-    <div class="head-panel">
-        <h4> افزایش سرمایه</h4>
-    </div>
-    <div class="col-md-12 ">
-        <form action="{{route('CapitalIncrease')}}" method="post">
-            @csrf
-            <h6 class="mt-4">انتخاب سهم: </h6>
-            <select class="form-control text-right selectpicker" name="namad" required data-size="5"
-                data-live-search="true" data-title="نام سهم" id="namad" data-width="100%">
-                @foreach (\App\Models\Namad\Namad::OrderBy('symbol','ASC')->get() as $item)
-                <option value="{{$item->id}}">{{$item->symbol}}</option>
-                @endforeach
-            </select>
-
-            <h6 class="mt-4">سرمایه فعلی:  </h6>
-            <div class="form-group">
-                <input type="number" class="form-control" name="feli" id="feli"  />
+    <div class="card">
+        <div class="card-body">
+            <div class="head-panel">
+                <h4> افزایش سرمایه</h4>
             </div>
-            <div class="row m-4 ajax-table">
+            <div class="col-md-12 ">
+                <form action="{{route('CapitalIncrease')}}" method="post">
+                    @csrf
+                    <h6 class="mt-4">انتخاب سهم: </h6>
+                    <select class="form-control text-right selectpicker" name="namad" required data-size="5" data-live-search="true" data-title="نام سهم" id="namad" data-width="100%">
+                        @foreach (\App\Models\Namad\Namad::OrderBy('symbol','ASC')->get() as $item)
+                        <option value="{{$item->id}}">{{$item->symbol}}</option>
+                        @endforeach
+                    </select>
 
-            </div>
+                    <h6 class="mt-4">سرمایه فعلی: </h6>
+                    <div class="form-group">
+                        <input type="number" class="form-control" name="feli" id="feli" />
+                    </div>
+                    <div class="row m-4 ajax-table">
 
-            <h6 class="mt-4">نوع افزایش سرمایه</h6>
-            <div class="d-block">
-                <div class="row m-4">
-                    <div class="col-md-3 mb-3">
-                        <div class="custom-control   custom-radio">
-                            <input id="govahi_nano_meghyas_yes" name="type" type="radio" value="assets"
-                                class="custom-control-input" required checked>
-                            <label class="custom-control-label" for="govahi_nano_meghyas_yes">تجدید ارزیابی دارایی
-                                ها</label>
+                    </div>
+
+                    <h6 class="mt-4">نوع افزایش سرمایه</h6>
+                    <div class="d-block">
+                        <div class="row m-4">
+                            <div class="col-md-3 mb-3">
+                                <div class="custom-control   custom-radio">
+                                    <input id="govahi_nano_meghyas_yes" name="type" type="radio" value="assets" class="custom-control-input" required checked>
+                                    <label class="custom-control-label" for="govahi_nano_meghyas_yes">تجدید ارزیابی دارایی
+                                        ها</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="custom-control custom-radio">
+                                    <input id="govahi_nano_meghyas_azmayeshgah" name="type" type="radio" value="stored_gain" class="custom-control-input" required>
+                                    <label class="custom-control-label" for="govahi_nano_meghyas_azmayeshgah">سود
+                                        انباشته</label>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-3 mb-3">
+                                <div class="custom-control   custom-radio">
+                                    <input id="govahi_nano_meghyas_sanat" name="type" type="radio" value="cash" class="custom-control-input" required>
+                                    <label class="custom-control-label" for="govahi_nano_meghyas_sanat">آورده نقدی سهام
+                                        داران</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="custom-control   custom-radio">
+                                    <input id="increase" name="type" type="radio" value="compound" class="custom-control-input" required>
+                                    <label class="custom-control-label" for="increase">افزایش سرمایه ترکیبی</label>
+                                </div>
+                            </div>
+
+
                         </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="custom-control custom-radio">
-                            <input id="govahi_nano_meghyas_azmayeshgah" name="type" type="radio" value="stored_gain"
-                                class="custom-control-input" required>
-                            <label class="custom-control-label" for="govahi_nano_meghyas_azmayeshgah">سود
-                                انباشته</label>
+                        <div class="row percent-wrapper">
+                            <div class="form-group col-md-6">
+
+                                <input type="number" class="form-control" name="percent" id="percent" placeholder="میزان افزایش سرمایه برحسب ریال" />
+                            </div>
                         </div>
-                    </div>
+                        <div class="types-wrapper" style="display: none">
+                            <div class="row wrapper-content">
+                                <div class="form-group col-md-6">
+
+                                    <select name="typearray[]" class="form-control" id="exampleFormControlSelect2">
+                                        <option value="">باز کردن فهرست انتخاب</option>
+                                        <option value="assets">تجدید ارزیابی دارایی ها</option>
+                                        <option value="stored_gain">سود انباشته</option>
+                                        <option value="cash">آورده نقدی سهام داران</option>
 
 
-                    <div class="col-md-3 mb-3">
-                        <div class="custom-control   custom-radio">
-                            <input id="govahi_nano_meghyas_sanat" name="type" type="radio" value="cash"
-                                class="custom-control-input" required>
-                            <label class="custom-control-label" for="govahi_nano_meghyas_sanat">آورده نقدی سهام
-                                داران</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="custom-control   custom-radio">
-                            <input id="increase" name="type" type="radio" value="compound" class="custom-control-input"
-                                required>
-                            <label class="custom-control-label" for="increase">افزایش سرمایه ترکیبی</label>
-                        </div>
-                    </div>
+                                    </select>
+                                </div>
 
+                                <div class="form-group col-md-4">
 
-                </div>
-                <div class="row percent-wrapper">
-                    <div class="form-group col-md-6">
-
-                        <input type="number" class="form-control" name="percent" id="percent"
-                            placeholder="میزان افزایش سرمایه برحسب ریال" />
-                    </div>
-                </div>
-                <div class="types-wrapper" style="display: none">
-                    <div class="row wrapper-content">
-                        <div class="form-group col-md-6">
-
-                            <select name="typearray[]" class="form-control" id="exampleFormControlSelect2">
-                                <option value="">باز کردن فهرست انتخاب</option>
-                                <option value="assets">تجدید ارزیابی دارایی ها</option>
-                                <option value="stored_gain">سود انباشته</option>
-                                <option value="cash">آورده نقدی سهام داران</option>
-
-
-                            </select>
-                        </div>
-
-                        <div class="form-group col-md-4">
-
-                            <input type="number" class="form-control" name="percentarray[]" id=""
-                                placeholder="مبلغ افزایش سرمایه" />
-                        </div>
-
-                    </div>
-
-
-                    <div class="clone ">
-
-                    </div>
-                    <div class="clone-bottom mb-5">
-
-                        <a href="#" class="">
-                            مورد جدید
-                            <i class="fa fa-plus-circle"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="row ">
-                    <div class="form-group col-md-6">
-                        <select name="step" class="form-control" id="exampleFormControlSelect2">
-                            <option value="پیشنهاد هیئت مدیره به مجمع عمومی فوق العاده">پیشنهاد هیئت مدیره به مجمع عمومی
-                                فوق العاده</option>
-                            <option value="اظهار نظر حسابرس و بازرس قانونی">اظهار نظر حسابرس و بازرس قانونی</option>
-                            <option value="مدارک و مستندات درخواست افزایش سرمایه">مدارک و مستندات درخواست افزایش سرمایه
-                            </option>
-                            <option value="تمدید مهلت استفاده از مجوز افزایش سرمایه">تمدید مهلت استفاده از مجوز افزایش
-                                سرمایه</option>
-                            <option value="اصلاحیه">اصلاحیه</option>
-                            <option value="دعوت به مجمع فوق العاده">دعوت به مجمع فوق العاده</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="input-group input-group-sm mb-3">
-                            <div class="input-group-prepend">
-
-                                <span class="input-group-text">تاریخ ثبت: </span>
+                                    <input type="number" class="form-control" name="percentarray[]" id="" placeholder="مبلغ افزایش سرمایه" />
+                                </div>
 
                             </div>
-                            <input type="text" class="form-control datepicker-fa" placeholder="" id="date_mind_1"
-                                aria-label="Small" name="date" aria-describedby="inputGroup-sizing-sm">
+
+
+                            <div class="clone ">
+
+                            </div>
+                            <div class="clone-bottom mb-5">
+
+                                <a href="#" class="">
+                                    مورد جدید
+                                    <i class="fa fa-plus-circle"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row ">
+                            <div class="form-group col-md-6">
+                                <select name="step" class="form-control" id="exampleFormControlSelect2">
+                                    <option value="پیشنهاد هیئت مدیره به مجمع عمومی فوق العاده">پیشنهاد هیئت مدیره به مجمع عمومی
+                                        فوق العاده</option>
+                                    <option value="اظهار نظر حسابرس و بازرس قانونی">اظهار نظر حسابرس و بازرس قانونی</option>
+                                    <option value="مدارک و مستندات درخواست افزایش سرمایه">مدارک و مستندات درخواست افزایش سرمایه
+                                    </option>
+                                    <option value="تمدید مهلت استفاده از مجوز افزایش سرمایه">تمدید مهلت استفاده از مجوز افزایش
+                                        سرمایه</option>
+                                    <option value="اصلاحیه">اصلاحیه</option>
+                                    <option value="دعوت به مجمع فوق العاده">دعوت به مجمع فوق العاده</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group input-group-sm mb-3">
+                                    <div class="input-group-prepend">
+
+                                        <span class="input-group-text">تاریخ ثبت: </span>
+
+                                    </div>
+                                    <input type="text" class="form-control datepicker-fa" placeholder="" id="date_mind_1" aria-label="Small" name="date" aria-describedby="inputGroup-sizing-sm">
+
+                                </div>
+                            </div>
 
                         </div>
-                    </div>
+                        <div class="row ">
 
-                </div>
-                <div class="row ">
-
-                    <div class="form-group col-md-12">
-                        <label for="linkcodal" class="col-form-label">لینک به کدال: </label>
-                        <input type="text" class="form-control" name="linkcodal" id="linkcodal"
-                            placeholder="https://codal.ir">
+                            <div class="form-group col-md-12">
+                                <label for="linkcodal" class="col-form-label">لینک به کدال: </label>
+                                <input type="text" class="form-control" name="linkcodal" id="linkcodal" placeholder="https://codal.ir">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="container text-center">
+                                <button class="btn btn-primary " type="submit">ثبت اطلاعات</button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="container text-center">
-                        <button class="btn btn-primary " type="submit">ثبت اطلاعات</button>
-                    </div>
-                </div>
-
+                </form>
             </div>
-
-
-
-
-        </form>
-
+        </div>
     </div>
-
-
 </div>
 
 
@@ -171,121 +154,127 @@
 
 @section('js')
 <script>
-    $(document).ready(function(){
+    $(document).ready(function() {
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        $(document).on('click','.delete',function(e){
-       
-                e.preventDefault()
-                var value = $(this).data('id');
-                
-           swal({
-            title: "آیا اطمینان دارید؟",
-            text: "",
-            icon: "warning",
-			buttons: {
-				confirm : 'بله',
-				cancel : 'خیر'
-			},
-            dangerMode: true
+        $(document).on('click', '.delete', function(e) {
+
+            e.preventDefault()
+            var value = $(this).data('id');
+
+            swal({
+                    title: "آیا اطمینان دارید؟",
+                    text: "",
+                    icon: "warning",
+                    buttons: {
+                        confirm: 'بله',
+                        cancel: 'خیر'
+                    },
+                    dangerMode: true
+                })
+                .then(function(willDelete) {
+                    if (willDelete) {
+                        // ajax request
+                        $.ajax({
+                            type: 'POST',
+                            url: '{{route("CapitalIncrease.Delete")}}',
+                            data: {
+                                _token: '{{csrf_token()}}',
+                                id: value,
+                            },
+                            success: function(data) {
+                                setTimeout(() => {
+                                    location.reload()
+                                }, 1000)
+                            }
+                        })
+                    } else {
+                        swal("عملیات لغو شد", {
+                            icon: "error",
+                            button: "تایید"
+                        });
+                    }
+                });
+
+
+
         })
-        .then(function(willDelete) {
-            if (willDelete) {
-                // ajax request
-              $.ajax({
-                type:'POST',
-                url:'{{route("CapitalIncrease.Delete")}}',
-                 data:{_token:'{{csrf_token()}}',id:value,},      
-                 success:function(data){
-                       setTimeout(()=>{
-                        location.reload()
-                       },1000)
+        $('#namad').change(function() {
+            // check if namad has in database
+            var value = $(this).val()
+            $.ajax({
+                type: 'post',
+                url: '{{route("getCapitalIncreases")}}',
+                data: {
+                    sahm: value
+                },
+                success: function(data) {
+                    if (data['count'] > 0) {
+                        $('.ajax-table').html(data['list'])
+                    }
                 }
+            })
+
+
         })
-            }
-			else {
-                swal("عملیات لغو شد", {
-					icon: "error",
-					button: "تایید"
-				});
-    		}
-    	});
-    
 
-    
-    })
-$('#namad').change(function(){
-// check if namad has in database
-var value = $(this).val()
-$.ajax({
-type:'post',
-url:'{{route("getCapitalIncreases")}}',
-data:{sahm:value},
-success:function(data){ 
-if(data['count'] > 0 ){
-    $('.ajax-table').html(data['list'])
-}
-}
-})
+        $(document).on('click', '.clone-bottom', function(e) {
+            e.preventDefault()
 
 
-})
+            var originalDiv = $('.wrapper-content').first();
 
-        $(document).on('click','.clone-bottom',function(e){
-  e.preventDefault()
+            var originalSelect = originalDiv.find('.selectpicker');
+            //   originalSelect.selectpicker('destroy').addClass('tmpSelect');
 
+            let cloned = originalDiv.clone()
+            let setval = 100 - cloned.find('input[type=number]').val()
 
-  var originalDiv = $('.wrapper-content').first();
-  
-  var originalSelect = originalDiv.find('.selectpicker');
-//   originalSelect.selectpicker('destroy').addClass('tmpSelect');
-
-  let cloned = originalDiv.clone()
-  let setval =100 - cloned.find('input[type=number]').val()
-  
-cloned.find('.bootstrap-select').replaceWith(function() { return $('select', this); });
-  cloned.prepend(`<div class="col-md-12"><a class="remove-link float-left" href="#" >
+            cloned.find('.bootstrap-select').replaceWith(function() {
+                return $('select', this);
+            });
+            cloned.prepend(`<div class="col-md-12"><a class="remove-link float-left" href="#" >
                                     <i class="fas fa-trash text-danger"></i>
                                 </a></div>`)
-                               
-  $(this).prev('.clone').append(cloned)
- 
- })
 
- 
- $(document).on('click','.remove-link',function(e){
-    e.preventDefault()
-    $(this).parents('.wrapper-content').remove()
-  
- })
+            $(this).prev('.clone').append(cloned)
 
-     
+        })
 
 
-$('input[name=type]').change(function(){
-    var type = $(this).val()
-    if(type == 'compound'){
-        $('.percent-wrapper').find('#percent').val('')  
-        $('.percent-wrapper').hide()
-        $('.types-wrapper').show()
-    }else{
-        $('.clone').html('')  
-        $("input[name='percentarray[]']").val('')
-        $('.percent-wrapper').show()
-        $('.types-wrapper').hide()
-    }
+        $(document).on('click', '.remove-link', function(e) {
+            e.preventDefault()
+            $(this).parents('.wrapper-content').remove()
+
+        })
 
 
-           
-            })
-           
+
+
+        $('input[name=type]').change(function() {
+            var type = $(this).val()
+            if (type == 'compound') {
+                $('.percent-wrapper').find('#percent').val('')
+                $('.percent-wrapper').hide()
+                $('.types-wrapper').show()
+            } else {
+                $('.clone').html('')
+                $("input[name='percentarray[]']").val('')
+                $('.percent-wrapper').show()
+                $('.types-wrapper').hide()
+            }
 
 
 
         })
+
+
+
+
+    })
 </script>
 @endsection
 

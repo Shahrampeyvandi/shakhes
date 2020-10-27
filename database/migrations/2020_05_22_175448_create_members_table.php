@@ -21,6 +21,7 @@ class CreateMembersTable extends Migration
             $table->string('phone')->unique();
             $table->string('avatar')->nullable();
             $table->dateTime('subscribe')->nullable();
+            $table->timestamp('expire_date')->nullable();
             $table->timestamps();
         });
     }

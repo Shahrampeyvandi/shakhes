@@ -638,10 +638,159 @@ class RedisController extends Controller
 
 
     }
+    public function capitalIncrease($namad,$date)
+    {
+
+        $ch = curl_init("https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=7&Childs=true&CompanyState=0&CompanyType=1&Consolidatable=true&FromDate=$date&IsNotAudited=false&Isic=251103&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&Symbol=$namad->symbol&TracingNo=-1&search=true");
+        curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $result = curl_exec($ch);
+        $err = curl_error($ch);
+        $result = json_decode($result, true);
+        curl_close($ch);
+
+        foreach ($result['Letters'] as $info) {
+            echo 'new capital increase for namad = '.$namad->symbol . PHP_EOL;
+            $capitalincrease = new CapitalIncrease;
+            $capitalincrease->namad_id = $namad->id;
+            $capitalincrease->from ='assets';
+            $capitalincrease->description = $info['Title'];
+            $capitalincrease->publish_date = date('Y-m-d');
+            $capitalincrease->link_to_codal = 'https://www.codal.ir/' . $info['Url'];
+            $capitalincrease->save();
+            $this->create_noty($capitalincrease,$namad);
+        }
+    }
+
+    public function clarification($namad,$date)
+    {
+        
+        $ch = curl_init("https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true&CompanyState=2&CompanyType=1&Consolidatable=true&FromDate=$date&IsNotAudited=false&Isic=322001&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&Symbol=$namad->symbol&TracingNo=-1&search=true");
+        curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $result = curl_exec($ch);
+        $err = curl_error($ch);
+        $result = json_decode($result, true);
+        curl_close($ch);
+
+        foreach ($result['Letters'] as $info) {
+            echo 'new clarification for namad = '.$namad->symbol . PHP_EOL;
+            $clarification = new clarification;
+            $clarification->namad_id = $namad->id;
+            $clarification->subject = $info['Title'];
+            $clarification->link_to_codal = 'https://www.codal.ir/' . $info['Url'];
+            $clarification->publish_date = date('Y-m-d');
+            $clarification->save();
+            $this->create_noty($clarification,$namad);
+        }
+    }
+
+    public function disclor($namad,$date)
+    {
+        $ch = curl_init("https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true&CompanyState=0&CompanyType=1&Consolidatable=true&FromDate=$date&IsNotAudited=false&Isic=422007&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&Symbol=$namad->symbol&TracingNo=-1&search=true");
+        curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $result = curl_exec($ch);
+        $err = curl_error($ch);
+        $result = json_decode($result, true);
+        curl_close($ch);
+
+        foreach ($result['Letters'] as $info) {
+            echo 'new disclor for namad = '.$namad->symbol . PHP_EOL;
+            $disclosures = new Disclosures;
+            $disclosures->namad_id = $namad->id;
+            $disclosures->publish_date = date('Y-m-d');
+            $disclosures->subject = $info['Title'];
+            $disclosures->link_to_codal = 'https://www.codal.ir/' . $info['Url'];
+            $disclosures->group = 'a';
+            $disclosures->save();
+            $this->create_noty($disclosures,$namad);
+        }
+    }
+
+    private function create_noty($obj,$namad)
+    {
+        $obj->notifications->create([
+            'namad_id'=>$namad->id
+        ]);
+    }
 
 
     public function shakhes()
     {
+// $key = 'فملی';
+
+//  $end_char = substr($key, -1);
+
+//             if($end_char == ) {
+//                 dd('sdf');
+//                str_replace('ی', 'ي', $end_char);
+//             }
+// dd($key);
+  $namads = [];
+        if (Cache::has('namadlist')) {
+            $namads = Cache::get('namadlist');
+        } else {
+            $namads = Namad::all();
+            Cache::store()->put('namadlist', $namads, 86400); // 10 Minutes
+        }
+
+
+        $date=Jalalian::forge('now')->format('%Y/%m/%d');
+        // $date="1399/01/01";
+
+
+        foreach ($namads as $namad) {
+            echo 'start namad searching in codal = '.$namad->symbol . PHP_EOL;
+            
+                $this->capitalIncrease($namad,$date);
+           
+            
+                $this->clarification($namad,$date);
+            
+           
+                $this->disclor($namad,$date);
+            
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          $ch = curl_init("https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=7&Childs=true&CompanyState=0&CompanyType=1&Consolidatable=true&FromDate=1399/01/01&IsNotAudited=false&Isic=251103&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&Symbol=%D8%AE%D8%B3%D8%A7%D9%BE%D8%A7&TracingNo=-1&search=true");
+        curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $result = curl_exec($ch);
+        $err = curl_error($ch);
+        $result = json_decode($result, true);
+        curl_close($ch);
+        dd($result);
 
         $status = false;
         $ch = curl_init("http://members.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=778253364357513&Top=100&A=0");

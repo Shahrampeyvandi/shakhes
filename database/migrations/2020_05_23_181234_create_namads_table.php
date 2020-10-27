@@ -24,15 +24,7 @@ class CreateNamadsTable extends Migration
             $table->string('inscode')->nullable();
             $table->timestamps();
         });
-        DB::table('namads')->insert(
-            array(
-                'symbol'=>'ذوب',
-                'name'=>'ذوب',
-                'market'=>'بورس',
-                'flow'=>'1',
-                'mahemali'=>'1',
-                )
-        );
+      
     }
 
     /**

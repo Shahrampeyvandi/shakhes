@@ -27,14 +27,13 @@ class MembersDataController extends Controller
     {
         $member = $this->token($request->header('Authorization'));
         // $member=Member::find(2);
-
         $array['fname'] = $member->fname;
         $array['lname'] = $member->lname;
         $array['mobile'] = $member->phone;
-        $array['namads'] = count($member->namads);
-        $namads_array = $member->namads;
-        foreach ($namads_array as $key => $namad) {
+        $member_namads = $member->namads;
+        $array['namads'] = count($member_namads);
 
+        foreach ($member_namads as $key => $namad) {
             $array['count_capital_inc'] = $namad->capital_increases()->where('created_at', '>', Carbon::now()->subDay(3))
                 ->where('new', 1)->count();
             $array['count_clarification'] = $namad->clarifications()->where('created_at', '>', Carbon::now()->subDay(3))
@@ -58,18 +57,17 @@ class MembersDataController extends Controller
         ];
 
         $namads_array = $member->namads;
-
         $array = [];
         foreach ($namads_array as $key => $namad) {
             $information = Cache::get($namad->id);
-
             $data = [];
             $data['symbol'] = $namad->symbol;
             $data['name'] = $namad->name;
             $data['id'] = $namad->id;
             $data['flow'] = $namad->flow;
+            $notif = $namad->getUserNamadNotifications($member, $namad);
+            $array['notifications'] = $notif;
             if (isset($information['pl']) && isset($information['py'])) {
-
                 $data['final_price_value'] = $information['pl'];
                 $data['final_price_percent'] = $information['py'] ?  abs(number_format((float)(($information['pl'] - $information['py']) * 100) / $information['py'], 2, '.', '')) : '';
                 $data['last_price_change'] = abs($information['pl'] - $information['py']);
@@ -104,20 +102,32 @@ class MembersDataController extends Controller
         );
     }
 
+    public function mark_to_read()
+    {
+        $member = $this->token(request()->header('Authorization'));
+        $cname = "App\\Models\\" . ucfirst(request()->type);
+        $obj = $cname::find(request()->id);
+
+        $obj->notification->create([
+            'namad_id' => request()->namad_id,
+            'member_id' => $member->id
+        ]);
+    }
+
+
     public function add(Request $request)
     {
         $member = $this->token($request->header('Authorization'));
         $namad_id = $request->id;
-
         //$namad_daily_report = $namad_obj->dailyReports->first();
         $price = 0;
+        $res =  $member->check_could_add($namad_id);
 
-
-        $member->namads()->attach($namad_id, ['amount' => 0, 'profit_loss_percent' => 0, 'price' => $price]);
+        if ($res['status']) {
+            $member->namads()->attach($namad_id, ['amount' => 0, 'profit_loss_percent' => 0, 'price' => $price]);
+        }
         return response()->json(
-            [
-                'error' => '',
-            ],
+            $res,
             200
         );
     }
@@ -127,11 +137,9 @@ class MembersDataController extends Controller
 
         $member = $this->token($request->header('Authorization'));
         $namad_ids = $request->id;
-
         foreach ($namad_ids as $namad) {
             $member->namads()->detach($namad);
         }
-
         return response()->json(
             [
                 'message' => 'ok',
@@ -208,7 +216,7 @@ class MembersDataController extends Controller
 
     public function namadcapitalincreases($namad_id = null)
     {
-        
+
 
         if ($namad_id) {
             $namad = Namad::where('id', $namad_id)->first();
@@ -286,7 +294,7 @@ class MembersDataController extends Controller
         $member_namads = $member->namads;
         $all = [];
         foreach ($member_namads as $key => $namad) {
-            $sum = array_sum($namad->getNamadNotifications());
+            $sum = array_sum($namad->getUserNamadNotifications());
             $array['namad'] = $namad->symbol;
             $array['notifications'] = $sum;
             $all[] = $array;
@@ -358,17 +366,16 @@ class MembersDataController extends Controller
         if ($selected) {
             $selected->delete();
             $res = 'با موفقیت پاک شد';
-        }else{
+        } else {
             Selected::create([
                 'member_id' => $member->id,
                 'model_id' => $id,
                 'type' => $type,
             ]);
             $res = 'با موفقیت افزوده شد';
-
         }
 
-        return Response::json(array('code' => 200,'message'=>$res), 200);
+        return Response::json(array('code' => 200, 'message' => $res), 200);
     }
 
     public function userSelected($type)

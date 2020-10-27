@@ -23,6 +23,10 @@ class LoginSignUpController extends Controller
             ], 200);
         }
 
+        // $patterncode = "e281gs93os";
+        // $data = array("code" => $code->v_code);
+        // $this->sendSMS($patterncode,$request->phone, $data);
+
 
         return response()->json([
             'code' => 200,

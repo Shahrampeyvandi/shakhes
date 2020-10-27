@@ -43,8 +43,6 @@ class ApiScheduler extends Controller
             }
         } else {
             echo 'cache is empty = ' . PHP_EOL;
-
-
             $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=15');
             $all = [];
             $crawler->filter('table')->each(function ($node) use (&$bstatclose) {

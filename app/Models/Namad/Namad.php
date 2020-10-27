@@ -2,16 +2,17 @@
 
 namespace App\Models\Namad;
 
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Namad\NamadsDailyReport;
-use App\Models\Namad\NamadsMonthlyReport;
-use App\Models\Namad\NamadsYearlyReport;
-use App\Models\Namad\NamadsSeasonalReport;
+use Carbon\Carbon;
+use App\Models\clarification;
 use App\Models\Holding\Holding;
 use App\Models\Accounting\Subscribe;
 use App\Models\Accounting\Transaction;
+use App\Models\Namad\NamadsDailyReport;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\Namad\NamadsYearlyReport;
+use App\Models\Namad\NamadsMonthlyReport;
+use App\Models\Namad\NamadsSeasonalReport;
 use App\Models\CapitalIncrease\CapitalIncrease;
-use App\Models\clarification;
 
 class Namad extends Model
 {
@@ -54,16 +55,24 @@ class Namad extends Model
     }
 
 
-    public static function GetAllNotifications()
+    public static function GetAllNotifications($user)
     {
         $capital_increases = 0;
         $clarifications = 0;
         $disclosures = 0;
 
         foreach (static::all() as $key => $namad) {
-            $capital_increases += $namad->capital_increases()->whereDate('created_at', date('Y-m-d', strtotime("-2 days")))->latest()->count();
-            $clarifications += $namad->clarifications()->whereDate('created_at', date('Y-m-d', strtotime("-2 days")))->latest()->count();
-            $disclosures += $namad->disclosures()->whereDate('created_at', date('Y-m-d', strtotime("-2 days")))->latest()->count();
+            $capital_increases += $namad->capital_increases()->whereDate('created_at', Carbon::today())
+            ->whereDoesntHave('readed_notifications', function ($q) use ($user, $namad) {
+                $q->where(['user_id' => $user->id, 'namad_id' => $namad->id]);
+            })
+            ->count();
+            $clarifications += $namad->clarifications()->whereDate('created_at', Carbon::today())->whereDoesntHave('readed_notifications', function ($q) use ($user, $namad) {
+                $q->where(['user_id' => $user->id, 'namad_id' => $namad->id]);
+            })->count();
+            $disclosures += $namad->disclosures()->whereDate('created_at', Carbon::today())->whereDoesntHave('readed_notifications', function ($q) use ($user, $namad) {
+                $q->where(['user_id' => $user->id, 'namad_id' => $namad->id]);
+            })->count();
         }
 
         $array['capital_increases'] = $capital_increases;
@@ -73,11 +82,20 @@ class Namad extends Model
         return $array;
     }
 
-    public function getNamadNotifications()
+    public function getUserNamadNotifications($user, $namad)
     {
-        $array['capital_increases'] = $this->capital_increases()->whereDate('created_at', date('Y-m-d', strtotime("-2 days")))->latest()->count();
-        $array['clarifications'] = $this->clarifications()->whereDate('created_at', date('Y-m-d', strtotime("-2 days")))->latest()->count();
-        $array['disclosures']  = $this->disclosures()->whereDate('created_at', date('Y-m-d', strtotime("-2 days")))->latest()->count();
+        
+        $array['capital_increases'] = $this->capital_increases()->whereDate('created_at', Carbon::today())
+            ->whereDoesntHave('readed_notifications', function ($q) use ($user, $namad) {
+                $q->where(['user_id' => $user->id, 'namad_id' => $namad->id]);
+            })
+            ->count();
+        $array['clarifications'] = $this->clarifications()->whereDate('created_at', Carbon::today())->whereDoesntHave('readed_notifications', function ($q) use ($user, $namad) {
+                $q->where(['user_id' => $user->id, 'namad_id' => $namad->id]);
+            })->count();
+        $array['disclosures']  = $this->disclosures()->whereDate('created_at', Carbon::today())->whereDoesntHave('readed_notifications', function ($q) use ($user, $namad) {
+                $q->where(['user_id' => $user->id, 'namad_id' => $namad->id]);
+            })->count();
         return $array;
     }
 }

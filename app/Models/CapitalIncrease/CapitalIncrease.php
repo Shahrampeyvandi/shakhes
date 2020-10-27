@@ -11,6 +11,11 @@ class CapitalIncrease extends Model
     {
         return $this->hasMany(CapitalIncreasePercents::class);
     }
+    
+     public function readed_notifications()
+    {
+        return $this->morphMany('App\Models\Notification', 'notificationable');
+    }
 
     public function namad()
     {

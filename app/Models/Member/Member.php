@@ -2,12 +2,15 @@
 
 namespace App\Models\Member;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Plan;
+use App\Models\Discount;
+use App\Models\Namad\Namad;
 use App\Models\Member\Subscribe;
 use App\Models\Accounting\Transaction;
-use App\Models\CapitalIncrease\CapitalIncrease;
-use App\Models\Namad\Namad;
+use Illuminate\Database\Eloquent\Model;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Models\CapitalIncrease\CapitalIncrease;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Member extends  Authenticatable  implements JWTSubject
@@ -40,7 +43,31 @@ class Member extends  Authenticatable  implements JWTSubject
 
     public function namads()
     {
-        return $this->belongsToMany(Namad::class,'members_namads')->withPivot(['amount', 'profit_loss_percent', 'price']);
+        return $this->belongsToMany(Namad::class, 'members_namads')->withPivot(['amount', 'profit_loss_percent', 'price']);
     }
-  
+    public function plans()
+    {
+        return $this->belongsToMany(Plan::class, 'user_plan', 'user_id', 'plan_id')->withPivot('expire_date');
+    }
+
+    public function discounts()
+    {
+        return $this->belongsToMany(Discount::class, 'user_discount', 'user_id', 'discount_id');
+    }
+
+    public function check_could_add($namad_id)
+    {
+        if ($this->namads->contains($namad_id)) {
+            return  ['success' => false, 'message' => 'Namad Already Exist'];
+        }
+        if (count($this->namads) == 0) {
+            return  ['success' => true, 'message' => 'Namad Added Successfuly'];
+        } else {
+            if ($this->expire_date > Carbon::now()) {
+                return  ['success' => true, 'message' => 'Namad Added Successfuly'];
+            } else {
+                return  ['success' => false, 'message' => 'Sorry! You Are Not Active Plan'];
+            }
+        }
+    }
 }
