@@ -13,17 +13,91 @@ class MoneyReportsController extends Controller
 {
     public function Index(Request $request)
     {
-        $new_year = Jalalian::forge('now')->format('%Y');
-        $last_year = Jalalian::forge('now')->subYears(1)->format('%Y');
 
-        return view('MoneyReports.Index', compact([
-            'new_year',
-            'last_year'
-        ]));
+        $data['namads'] = Namad::has('monthlyReports')->orHas('yearlyReports')->orHas('seasonalReports')->orderBy('symbol')->get();
+        return view('MoneyReports.Index', $data);
     }
+    public function add(Request $request)
+    {
+        $data['new_year'] = Jalalian::forge('now')->format('%Y');
+        $data['last_year'] = Jalalian::forge('now')->subYears(1)->format('%Y');
+        if (isset(request()->id)) {
+            $data['namad'] = Namad::find(request()->id);
+        }
+        if (isset(request()->t) && request()->t == 'ماهانه') {
+            $first = $data['namad']->monthlyReports()->where('year', $data['new_year'])->orderBy('month', 'asc')->pluck('value', 'month')->toArray();
+            $last = $data['namad']->monthlyReports()->where('year', $data['last_year'])->orderBy('month', 'asc')->pluck('value', 'month')->toArray();
+            $data['first'] = $this->modify_month($first);
+            $data['last'] = $this->modify_month($last);
+        }
+        if (isset(request()->t) && request()->t == 'فصلی') {
+            $data['first'] = $data['namad']->seasonalReports()->orderBy('number', 'asc')->get();
+        }
+        if (isset(request()->t) && request()->t == 'سالیانه') {
+            $data['new_year'] = Jalalian::forge('now')->format('%Y');
+            $data['fivelast_year'] = Jalalian::forge('now')->subYears(5)->format('%Y');
+            $data['fourlast_year'] = Jalalian::forge('now')->subYears(4)->format('%Y');
+            $data['threelast_year'] = Jalalian::forge('now')->subYears(3)->format('%Y');
+            $data['twolast_year'] = Jalalian::forge('now')->subYears(2)->format('%Y');
+            $data['first'] = $data['namad']->yearlyReports()->orderBy('year', 'asc')->get();
+        }
+
+        //   dd($data);
+        $data['type'] = request()->t;
+        return view('MoneyReports.add', $data);
+    }
+
+    private function modify_month($array)
+    {
+        $keys = [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+        ];
+        $count = 0;
+        foreach ($array as $key => $value) {
+            if (array_key_exists($keys[$count], $array)) {
+            } else {
+                $array[$keys[$count]] = 0;
+            }
+            $count++;
+        }
+
+        return $array;
+    }
+    private function modify_season($array)
+    {
+        $keys = [
+            1,
+            2,
+            3,
+            4
+        ];
+        $count = 0;
+        foreach ($array as $key => $value) {
+            if (array_key_exists($keys[$count], $array)) {
+            } else {
+                $array[$keys[$count]] = 0;
+            }
+            $count++;
+        }
+
+        return $array;
+    }
+
 
     public function SubmitMonthly(Request $request)
     {
+        // dd($request->all());
         if (is_null($request->sahm)) {
             return back();
         }
@@ -36,67 +110,49 @@ class MoneyReportsController extends Controller
 
         if (!is_null($namad_data)) {
 
-            $monthly_data = $namad_data->monthlyReports;
+        
             $seasonal_data = $namad_data->seasonalReports;
 
-            $yearly_data = $namad_data->yearlyReports;
+        
         }
-
-
         if ($request->type == 'ماهانه') {
             $months = $request->all(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']);
-
-
+            $namad_data->monthlyReports()->delete();
             foreach ($months as $key => $value) {
-
                 foreach ($value as $key2 => $value2) {
-
-                        $value2 == null ? $value2=0 : $value2=$value2;
-                        if (NamadsMonthlyReport::where('namad_id', $request->sahm)->where('year', $key2)->where('month', $key)->count()) {
-
-                            NamadsMonthlyReport::where('namad_id', $request->sahm)->where('year', $key2)->where('month', $key)
-                                ->update([
-                                    'value' => $value2
-                                ]);
-                        } else {
-
-                            $monthly_report = new NamadsMonthlyReport();
-                            $monthly_report->namad_id = $request->sahm;
-                            $monthly_report->value = $value2;
-                            $monthly_report->month = $key;
-                            $monthly_report->year = $key2;
-                            $monthly_report->save();
-                        }
-                    
-                }
+                    $value2 == null ? $value2 = 0 : $value2 = $value2;
+                        $monthly_report = new NamadsMonthlyReport();
+                        $monthly_report->namad_id = $request->sahm;
+                        $monthly_report->value = $value2;
+                        $monthly_report->month = $key;
+                        $monthly_report->year = $key2;
+                        $monthly_report->save();
+                    }
+                
             }
             return back();
         }
         if ($request->type == 'سه ماهه') {
             if (count($seasonal_data)) $seasonal_data->each->delete();
             $count = 1;
-            foreach ($request->season as $key => $season) {
-
+            foreach ($request->num as $key => $num) {
                 $seasonal_report = new NamadsSeasonalReport();
                 $seasonal_report->namad_id = $request->sahm;
-                $seasonal_report->profit = !is_null($season['income']) ? $season['income'] : 0;
-                $seasonal_report->loss = !is_null($season['gain']) ? $season['gain'] : 0;
-                $seasonal_report->season = 'فصل ' . $request->num[$count] . ' سال ' . $request->year[$count] . '';
+                $seasonal_report->profit = $num[2];
+                $seasonal_report->loss = $num[3];
+                $seasonal_report->season = $num[0];
+                $seasonal_report->number = $key;
+                $seasonal_report->year = $num[1];
                 $seasonal_report->save();
                 $count++;
             }
             return back();
         }
-        if ($request->type == 'سالیانه') {
-            foreach ($request->year as $key => $year) {
-                if (NamadsYearlyReport::where('namad_id', $request->sahm)->where('year', $key)->count()) {
 
-                    NamadsYearlyReport::where('namad_id', $request->sahm)->where('year', $key)
-                        ->update([
-                            'profit' => !is_null($year['income']) ? $year['income'] : 0,
-                            'loss' => !is_null($year['gain']) ? $year['gain'] : 0
-                        ]);
-                } else {
+        if ($request->type == 'سالیانه') {
+            $namad_data->yearlyReports()->delete();
+            foreach ($request->year as $key => $year) {
+                
                     $seasonal_report = new NamadsYearlyReport();
                     $seasonal_report->namad_id = $request->sahm;
                     $seasonal_report->profit = !is_null($year['income']) ? $year['income'] : 0;
@@ -104,7 +160,7 @@ class MoneyReportsController extends Controller
                     $seasonal_report->year = $key;
                     $seasonal_report->save();
                 }
-            }
+            
             return back();
         }
     }
@@ -239,7 +295,7 @@ class MoneyReportsController extends Controller
 
 
 
-        return view('MoneyReports.show_monthly_chart', compact(['namad','months_label', 'years', 'array_values']));
+        return view('MoneyReports.show_monthly_chart', compact(['namad', 'months_label', 'years', 'array_values']));
     }
 
     public function ShowSeasonalChart($id)
@@ -251,13 +307,12 @@ class MoneyReportsController extends Controller
             $array[$season_data->season]['profit'] = $season_data->profit;
             $array[$season_data->season]['loss'] = $season_data->loss;
         }
-       
-        return view('MoneyReports.show_seasonal_chart', compact(['array','namad']));
 
+        return view('MoneyReports.show_seasonal_chart', compact(['array', 'namad']));
     }
     public function ShowYearlyChart($id)
     {
-       
+
         $namad = Namad::where('id', $id)->first();
         $yearlyreports = $namad->yearlyReports;
         $array = [];
@@ -265,19 +320,15 @@ class MoneyReportsController extends Controller
             $array[$yearlyreport_data->year]['profit'] = $yearlyreport_data->profit;
             $array[$yearlyreport_data->year]['loss'] = $yearlyreport_data->loss;
         }
-       
-        return view('MoneyReports.show_yearly_chart', compact(['array','namad']));
 
+        return view('MoneyReports.show_yearly_chart', compact(['array', 'namad']));
     }
 
-    public function Delete($id)
+    public function Delete()
     {
-        NamadsMonthlyReport::where('namad_id',$id)->delete();
-        NamadsYearlyReport::where('namad_id',$id)->delete();
-        NamadsSeasonalReport::where('namad_id',$id)->delete();
+        NamadsMonthlyReport::where('namad_id', request()->id)->delete();
+        NamadsYearlyReport::where('namad_id', request()->id)->delete();
+        NamadsSeasonalReport::where('namad_id', request()->id)->delete();
         return back();
-
     }
-
-
 }

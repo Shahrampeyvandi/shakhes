@@ -194,3 +194,9 @@ input[type=number] {
 .error-name{
     font-size: 12px;
 }
+
+.back-link{
+    position: absolute;
+    left: 0;
+    top: 0;
+}

@@ -5,6 +5,13 @@
         placeholder: "انتخاب کنید",
     });
 
+    $("#deleteModal").on("shown.bs.modal", function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var recipient = button.data("id"); // Extract info from data-* attributes
+        var modal = $(this);
+        modal.find("#id").attr("value", recipient);
+    });
+
     $(window).on("load", function () {
         if (
             $("body").hasClass("horizontal-side-menu") &&

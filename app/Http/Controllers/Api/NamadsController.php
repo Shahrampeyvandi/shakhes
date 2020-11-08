@@ -22,7 +22,7 @@ class NamadsController extends Controller
     public function search(Request $request)
     {
         $key = $request->search;
-        if($key) {
+        if ($key) {
             // $end_char = substr($key, -1);
             // if($end_char == 'ی') {
             //    str_replace('ی', 'ي', $end_char);
@@ -63,7 +63,7 @@ class NamadsController extends Controller
             }
             $information['holding'] = 0;
 
-            $result =  array_merge($information, $namad->getUserNamadNotifications($member,$namad));
+            $result =  array_merge($information, $namad->getUserNamadNotifications($member, $namad));
 
             return response()->json($result, 200);
         } else {
@@ -186,43 +186,60 @@ class NamadsController extends Controller
         }
     }
 
-    public function chart_data()
+    public function namad_history_data()
     {
         $namad_id = request()->id;
         $days = request()->days;
 
         $inscode = Namad::find($namad_id)->inscode;
 
-        $array=[];
-        $ch = curl_init("http://members.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=$inscode&Top=$days&A=0");
-        curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_ENCODING, "");
-        $result = curl_exec($ch);
-        $day_data = explode(';', $result);
-        foreach ($day_data as $key => $value) {
-            $data = explode('@', $value);
-            if (count($data) == 10) {
-                $pl = substr($data[4],0,-3);
-                $pc = substr($data[3],0,-3);;
-                $year = substr($data[0], 0, 4);
-                $month = substr($data[0], 4, 2);
-                $day = substr($data[0], 6, 2);
-                $timestamp = mktime(0, 0, 0, $month, $day, $year);
-                $shamsi = Jalalian::forge($timestamp)->format('%d/%m/%y');
-                $array[] = [
-                    'pl' => $pl,
-                    'pc' => $pc,
-                    'date' => $shamsi
-                ];
-            }
-        }
+        $array = $this->get_history_data($inscode, $days);
 
         $reversed = array_reverse($array);
 
-        return response()->json(['data'=>$reversed],200);
+        return response()->json(['data' => $reversed], 200);
         return response()->json(['data' => $array], 200);
+    }
+    public function support_resistance()
+    {
+
+        //  $namad_id = request()->id;
+        $days = request()->days;
+        if (isset(request()->namad)) {
+            
+            $namads[]  = Namad::find(request()->namad)->symbol;
+        } else {
+            if (Cache::has('namadlist')) {
+                $namads = Cache::get('namadlist');
+            } else {
+                $namads = Namad::all();
+                Cache::store()->put('namadlist', $namads, 86400); // 10 Minutes
+            }
+        }
+
+        $data = [];
+        foreach ($namads as $key => $namad) {
+            $namad = Namad::where('symbol',$namad)->first();
+
+            $cache = Cache::get($namad->id);
+            $pl = (int)$cache['pl'];
+            $symbol = $cache['symbol'];
+            $array = $this->get_history_data($namad->inscode, $days);
+            $sum = 0;
+            if(count($array)){
+                foreach ($array as $key => $row) {
+                $sum += (int)$row['pl'];
+            }
+            $avg = $sum / count($array);
+            $min_pl = $avg - (($avg * 10) / 100);
+            $max_pl = $avg + (($avg * 10) / 100);
+            if ($pl > $min_pl && $pl < $max_pl) {
+                $data[] = ['symbol'=>$symbol,'pl'=> $pl,'avg'=>$avg];
+            }
+            }
+        }
+
+
+        return response()->json($data,200);
     }
 }

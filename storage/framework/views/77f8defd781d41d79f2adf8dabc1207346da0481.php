@@ -37,10 +37,7 @@
         <?php echo $__env->yieldContent('content'); ?>
     </main>
     <!-- end::main content -->
-    <script>
-        var mainUrl = "<?php echo e(route('BaseUrl')); ?>";
-    </script>
-
+  
 
     <!-- begin::global scripts -->
     <script src="<?php echo e(asset('assets/vendors/bundle.js')); ?>"></script>
@@ -49,18 +46,23 @@
     <script src="<?php echo e(asset('assets/vendors/circle-progress/circle-progress.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/examples/charts.js')); ?>"></script>
     <!-- end::chart -->
+      <script>
+        var mainUrl = "<?php echo e(route('BaseUrl')); ?>";
+        var token = $('meta[name="_token"]').attr("content");
+    </script>
+
     <!-- dropify -->
     <script src="<?php echo e(asset('assets/vendors/dropify/dropify.min.js')); ?>"></script>
 
     <!-- end::dropify -->
     <script src="<?php echo e(asset('assets/vendors/jquery-form/jquery.form.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/vendors/jquery-validate/jquery.validate.js')); ?>"></script>
-    <script src="<?php echo e(asset('assets/vendors/select2/js/select2.min.js')); ?>"></script>
     <!-- begin::custom scripts -->
     <script src="<?php echo e(asset('assets/js/toastr.min.js')); ?>"></script>
     <!-- @toastr_render  -->
 
     <script src="<?php echo e(asset('assets/vendors/select2/js/select2.min.js')); ?>"></script>
+
     <script src="<?php echo e(asset('assets/vendors/dataTable/jquery.dataTables.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/vendors/dataTable/dataTables.bootstrap4.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/vendors/dataTable/dataTables.responsive.min.js')); ?>"></script>

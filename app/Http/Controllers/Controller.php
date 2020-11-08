@@ -95,4 +95,38 @@ class Controller extends BaseController
         $response = curl_exec($handler);
         return $response;
     }
+
+    public function get_history_data($inscode,$days)
+    {
+         $array=[];
+        $ch = curl_init("http://members.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=$inscode&Top=$days&A=0");
+        curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_ENCODING, "");
+        $result = curl_exec($ch);
+        $day_data = explode(';', $result);
+        foreach ($day_data as $key => $value) {
+           $data = explode('@', $value);
+
+            if (count($data) == 10) {
+                $pl = substr($data[4],0,-3);
+                $pc = substr($data[3],0,-3);;
+                $year = substr($data[0], 0, 4);
+                $month = substr($data[0], 4, 2);
+                $day = substr($data[0], 6, 2);
+                $timestamp = mktime(0, 0, 0, $month, $day, $year);
+                $shamsi = Jalalian::forge($timestamp)->format('%d/%m/%y');
+                $array[] = [
+                    'pl' => $pl,
+                    'pc' => $pc,
+                    'date' => $shamsi
+                ];
+            }
+        }
+        return $array;
+    }
+
+  
 }

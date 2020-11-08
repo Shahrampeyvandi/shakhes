@@ -38,25 +38,23 @@ class RedisController extends Controller
 
         $namad = Namad::find(61);
 
-        //$ch = curl_init("http://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=2&Childs=true&CompanyState=0&CompanyType=1&Consolidatable=true&FromDate=$date&IsNotAudited=false&Isic=210102&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&Symbol=$namad->symbol&TracingNo=-1&search=true");
-        $ch = curl_init("https://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=$namad->inscode&c=57");
-        $user_agent = 'Mozilla/5.0 (Windows NT 6.1; rv:8.0) Gecko/20100101 Firefox/8.0';
-        curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
-        curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_ENCODING, "");
-        $result = curl_exec($ch);
+    //     $ch = curl_init("http://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=2&Childs=true&CompanyState=0&CompanyType=1&Consolidatable=true&FromDate=1399/01/01&IsNotAudited=false&Isic=210102&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&Symbol=وبملت&TracingNo=-1&search=true");
+    //     // $ch = curl_init("https://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=$namad->inscode&c=57");
+    //    curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
+    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    //     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    //     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    //     curl_setopt($ch, CURLOPT_ENCODING, "");
+    //     $result = curl_exec($ch);
 
-        $err = curl_error($ch);
-        $result = json_decode($result, true);
-        curl_close($ch);
+    //     $err = curl_error($ch);
+    //     $result = json_decode($result, true);
+    //     curl_close($ch);
+        $client = new \GuzzleHttp\Client();
+        $response = $client->request('GET', "http://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=2&Childs=true&CompanyState=0&CompanyType=1&Consolidatable=true&FromDate=$date&IsNotAudited=false&Isic=210102&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&Symbol=$namad->symbol&TracingNo=-1&search=true");
 
-        dd($result);
+
+        dd($response);
         dd($namad);
         foreach ($namads as $namad) {
             echo 'start namad searching in codal = ' . $namad->symbol;
@@ -135,7 +133,11 @@ class RedisController extends Controller
     public function shakhes()
     {
 
-        $status = false;
+        // $inscode = $namad->inscode;
+        $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i='.request()->i.'&c=57');
+        $all = \strip_tags($crawler->html());
+        dd($all);
+        // $status = false;
         $ch = curl_init("http://members.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=778253364357513&Top=100&A=0");
         curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

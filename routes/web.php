@@ -20,12 +20,13 @@ Route::get('/shakhes', 'RedisController@shakhes');
 Route::group(['middleware' => ['admin']], function () {
     Route::get('/', 'MainController@Index')->name('BaseUrl');
     Route::get('/moneyreports', 'MoneyReportsController@Index')->name('MoneyReports');
+    Route::get('/moneyreports/add', 'MoneyReportsController@add')->name('MoneyReports.Add');
     Route::post('/moneyreports/monthly', 'MoneyReportsController@SubmitMonthly')->name('MonyReport.Monthly');
     Route::post('/moneyreports/seasonly', 'MoneyReportsController@SubmitSeasonly')->name('MonyReport.Seasonly');
     Route::get('/moneyreports/showchart/{id}', 'MoneyReportsController@ShowMonthlyChart')->name('ShowMonthlyChart');
     Route::get('/yearlyreports/showchart/{id}', 'MoneyReportsController@ShowYearlyChart')->name('ShowYearlyChart');
     Route::get('/seasonalreports/showchart/{id}', 'MoneyReportsController@ShowSeasonalChart')->name('ShowSeasonalChart');
-    Route::get('/namadreports/delete/{id}', 'MoneyReportsController@Delete')->name('Reports.Delete');
+    Route::post('/namadreports/delete', 'MoneyReportsController@Delete')->name('Reports.Delete');
     Route::get('/users', 'UsersController@Index')->name('Users');
     Route::post('/user/delete', 'UsersController@Delete')->name('Users.Delete');
     Route::get('/portfoy', 'PortfoyController@Index')->name('PortfoyList');

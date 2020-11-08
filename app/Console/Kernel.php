@@ -8,6 +8,7 @@ use App\Http\Schedules\ApiScheduler;
 use App\Http\Schedules\DailyReportScheduler;
 use App\Http\Schedules\FastScheduler;
 use App\Http\Schedules\InformationScheduler;
+use App\Http\Schedules\SupportResistance;
 
 class Kernel extends ConsoleKernel
 {
@@ -30,19 +31,19 @@ class Kernel extends ConsoleKernel
     {
 
         $schedule->call(new InformationScheduler)->dailyAt('20:50');
-        $schedule->call(new InformationScheduler)->everyMinute();
+        // $schedule->call(new InformationScheduler)->everyMinute();
 
 
         $schedule->call(new DailyReportScheduler)->daily();
         //$schedule->call(new DailyReportScheduler)->everyMinute();
         //$schedule->call(new DailyReportScheduler)->dailyAt('11:55');
 
-        $schedule->call(new ApiScheduler)->everyFiveMinutes();
+        // $schedule->call(new ApiScheduler)->everyFiveMinutes();
         //$schedule->call(new ApiScheduler)->everyMinute();
 
         
         // $schedule->call(new FastScheduler)->everyMinute();
-        // $schedule->call(new FastScheduler)->everyMinute();
+        $schedule->call(new SupportResistance)->everyMinute();
 
 
 

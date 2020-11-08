@@ -14,5 +14,9 @@ class NamadsSeasonalReport extends Model
     {
         return $this->morphMany('App\Models\Notification', 'notificationable');
     }
+    public function get_label()
+    {
+        return 'سه ماهه ' . $this->season . ' سال ' . $this->year;
+    }
 
 }

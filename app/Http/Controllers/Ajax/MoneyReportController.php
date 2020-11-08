@@ -11,27 +11,25 @@ class MoneyReportController extends Controller
 {
     public function getmoneyreportsdata(Request $request)
     {
+        // dd($request->all());
+        
+        $namad_data = Namad::find($request->sahm);
 
-
-        $namad_data = Namad::where('id', $request->sahm)->first();
         if (!is_null($namad_data)) {
-
             $monthly_data = $namad_data->monthlyReports;
-            $seasonal_data = $namad_data->seasonalReports;
+            $seasonal_data = $namad_data->seasonalReports()->orderBy('number','asc')->get();
             $yearly_data = $namad_data->yearlyReports;
         } else {
-
             $monthly_data = [];
             $seasonal_data = [];
             $yearly_data = [];
         }
+       
         if (count($monthly_data)) {
             $status = 'exist';
         } else {
             $status = 'not exist';
         }
-
-
         $months_array = [
             'فروردین',
             'اردیبهشت',
@@ -87,15 +85,7 @@ class MoneyReportController extends Controller
 
         ];
 
-
-
         $key = array_search('فروردین', $months_array);
-
-
-
-
-
-
         $months =   array_slice($months_array, $key, 12);
         $num_months = array_slice($num_arrays, $key, 12);
         $new_year = Jalalian::forge('now')->format('%Y');
@@ -107,17 +97,13 @@ class MoneyReportController extends Controller
         $last_year = Jalalian::forge('now')->subYears(1)->format('%Y');
         $next_year = Jalalian::forge('now')->addYears(1)->format('%Y');
         if ($request->type == "ماهانه") {
-
-
-
-
             $table = '<form id="monthly-table" class="needs-validation" action="' . route('MonyReport.Monthly') . '" method="post" enctype="multipart/form-data">
-        ' . csrf_field() . '
-        <input type="hidden" name="type" id="type" value="' . $request->type . '">
-        <input type="hidden" name="sahm" id="sahm" value="' . $request->sahm . '">
-        <input type="hidden" name="begin_month" id="" value="' . $request->month . '">
-        <input type="hidden" name="begin_year" id="" value="' . $request->year . '">
-        <div class="d-block">
+            ' . csrf_field() . '
+            <input type="hidden" name="type" id="type" value="' . $request->type . '">
+            <input type="hidden" name="sahm" id="sahm" value="' . $request->sahm . '">
+            <input type="hidden" name="begin_month" id="" value="' . $request->month . '">
+            <input type="hidden" name="begin_year" id="" value="' . $request->year . '">
+            <div class="d-block">
 
             <div class="row my-4">
                 <div class="table-responsive">
@@ -183,25 +169,22 @@ class MoneyReportController extends Controller
                 </div>
 
             </div>
-        </div>
-        <hr>
-        <div class="container text-center">
-            <button class="btn btn-primary " type="submit">ثبت اطلاعات</button>
-        </div>
-    </form>';
+            </div>
+            <hr>
+            <div class="container text-center">
+                <button class="btn btn-primary " type="submit">ثبت اطلاعات</button>
+            </div>
+          </form>';
         }
         if ($request->type == "سه ماهه") {
 
-
-
-
             $table = '<form id="monthly-table" class="needs-validation" action="' . route('MonyReport.Monthly') . '" method="post" enctype="multipart/form-data">
-        ' . csrf_field() . '
-        <input type="hidden" name="type" id="type" value="' . $request->type . '">
-        <input type="hidden" name="sahm" id="sahm" value="' . $request->sahm . '">
-        <input type="hidden" name="begin_month" id="" value="' . $request->month . '">
-        <input type="hidden" name="begin_year" id="" value="' . $request->year . '">
-        <div class="d-block">
+            ' . csrf_field() . '
+            <input type="hidden" name="type" id="type" value="' . $request->type . '">
+            <input type="hidden" name="sahm" id="sahm" value="' . $request->sahm . '">
+            <input type="hidden" name="begin_month" id="" value="' . $request->month . '">
+            <input type="hidden" name="begin_year" id="" value="' . $request->year . '">
+            <div class="d-block">
 
             <div class="row my-4">
                 <div class="table-responsive">
@@ -209,8 +192,8 @@ class MoneyReportController extends Controller
                         <thead>
                             <tr>';
             if (count($seasonal_data)) {
-                foreach ($seasonal_data->take(4) as $key => $data) {
-                    $table .= '<th scope="col" colspan="2">' . $data->season . '</th>';
+                foreach ($seasonal_data as $key => $data) {
+                    $table .= '<th scope="col" colspan="2">سه ماه ' . $data->season . ' سال '.$data->year.'</th>';
                 }
             } else {
                 $table .= '<th scope="col" colspan="2">سه ماه ابتدا</th>
@@ -222,12 +205,12 @@ class MoneyReportController extends Controller
             $table .= ' </thead>
                         <tbody>
                         <tr>';
-                        $count = 1;
-                        for ($i=0; $i < 4 ; $i++) { 
-                            $table.=' <td scope="col" colspan="2">
+            $count = 1;
+            for ($i = 0; $i < 4; $i++) {
+                $table .= ' <td scope="col" colspan="2">
                             فصل 
                             <select style="display: inline;
-                            width: 70px;" name="num['.$count.']" class="form-control" id="exampleFormControlSelect2">
+                            width: 70px;" name="num[' . $count . '][]" class="form-control" id="exampleFormControlSelect2">
                             <option value="اول">اول</option>
                             <option value="دوم">دوم</option>
                             <option value="سوم">سوم</option>
@@ -235,49 +218,66 @@ class MoneyReportController extends Controller
                         </select>
                         سال
                         <select style="display: inline;
-                        width: 90px;" name="year['.$count.']" class="form-control" id="exampleFormControlSelect2">
+                        width: 90px;" name="num[' . $count . '][]" class="form-control" id="exampleFormControlSelect2">
                         <option value="' . $new_year . '">' . $new_year . '</option>
                         <option value="' . $last_year . '">' . $last_year . '</option>
                     </select>
                             </td>';
-                            $count++;
-                        }
-                      
-                               
-                      $table.='  </tr>
-                        <tr>
-                               
-                        <td> درآمد</td>
-                        <td>سود</td>
-                        <td> درآمد</td>
-                        <td>سود</td>
-                        <td> درآمد</td>
-                        <td>سود</td>
-                        <td> درآمد</td>
-                        <td>سود</td>
-                       
+                $count++;
+                }
+
+
+                $table .= '  </tr>
+                            <tr>
+                                
+                            <td> درآمد</td>
+                            <td>سود</td>
+                            <td> درآمد</td>
+                            <td>سود</td>
+                            <td> درآمد</td>
+                            <td>سود</td>
+                            <td> درآمد</td>
+                            <td>سود</td>
                         
-                    </tr>
+                            
+                        </tr>
                             <tr>';
             if (count($seasonal_data)) {
-                foreach ($seasonal_data->take(4) as $key => $data) {
+                $count = 1;
+                foreach ($seasonal_data as $key => $data) {
+
                     $table .= ' <td>
-                                    <input type="text" value="' . $data->profit . '" name="season[' . $data->season . '][income]">
+                                    <input type="text" value="' . $data->profit . '" name="num[' . $count . '][]">
                                 </td>
-                                <td><input type="text" value="' . $data->loss . '" name="season[' . $data->season . '][gain]"></td>';
+                                <td><input type="text" value="' . $data->loss . '" name="num[' . $count . '][]"></td>';
+                    $count++;
                 }
             } else {
 
-                $table .= '<td>
-                                    <input type="text" name="season[1][income]">
-                                </td>
-                                <td><input type="text" name="season[1][gain]"></td>
-                                <td><input type="text" name="season[2][income]"></td>
-                                <td><input type="text" name="season[2][gain]"></td>
-                                <td><input type="text" name="season[3][income]"></td>
-                                <td><input type="text" name="season[3][gain]"></td>
-                                <td><input type="text" name="season[4][income]"></td>
-                                <td><input type="text" name="season[4][gain]"></td>';
+                $table .= '  <td>
+                                                    <input type="text" value=""
+                                                        name="num[1][]">
+                                                </td>
+                                                <td><input type="text" value="" name="num[1][]">
+                                                </td>
+                                                <td>
+                                                    <input type="text" value="0"
+                                                        name="num[2][]">
+                                                </td>
+                                                <td><input type="text" value="0" name="num[2][]">
+                                                </td>
+                                                <td>
+                                                    <input type="text" value="0"
+                                                        name="num[3][]">
+                                                </td>
+                                                <td><input type="text" value="0" name="num[3][]">
+                                                </td>
+                                                <td>
+                                                    <input type="text" value="0"
+                                                        name="num[4][]">
+                                                </td>
+                                                <td><input type="text" value="0" name="num[4][]">
+                                                </td>';
             }
 
 
@@ -288,12 +288,12 @@ class MoneyReportController extends Controller
                 </div>
 
             </div>
-        </div>
-        <hr>
-        <div class="container text-center">
-            <button class="btn btn-primary " type="submit">ثبت اطلاعات</button>
-        </div>
-    </form>';
+            </div>
+            <hr>
+            <div class="container text-center">
+                <button class="btn btn-primary " type="submit">ثبت اطلاعات</button>
+            </div>
+          </form>';
         }
         if ($request->type == "سالیانه") {
             $table = '<form id="monthly-table" class="needs-validation" action="' . route('MonyReport.Monthly') . '" method="post" enctype="multipart/form-data">
@@ -379,6 +379,7 @@ class MoneyReportController extends Controller
         </div>
     </form>';
         }
+        // return view('MoneyReports.add',['table'=>$table]);
         return response()->json(['table' => $table, 'status' => $status], 200);
     }
 }
