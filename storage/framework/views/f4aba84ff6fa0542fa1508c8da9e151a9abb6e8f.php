@@ -15,4 +15,7 @@
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
+<?php endif; ?>
+<?php if($errors->has('errors')): ?>
+<div class="error"><?php echo e($errors->first('errors')); ?></div>
 <?php endif; ?><?php /**PATH C:\xampp1\htdocs\shakhes\resources\views/Includes/Panel/alerts.blade.php ENDPATH**/ ?>

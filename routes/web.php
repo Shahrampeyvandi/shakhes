@@ -29,6 +29,10 @@ Route::group(['middleware' => ['admin']], function () {
     Route::post('/namadreports/delete', 'MoneyReportsController@Delete')->name('Reports.Delete');
     Route::get('/users', 'UsersController@Index')->name('Users');
     Route::post('/user/delete', 'UsersController@Delete')->name('Users.Delete');
+    Route::post('/user/insert', 'UsersController@Save')->name('User.Insert');
+    Route::put('/user/insert', 'UsersController@Edit')->name('User.Insert');
+    Route::post('/user/get-data', 'UsersController@get_data');
+
     Route::get('/portfoy', 'PortfoyController@Index')->name('PortfoyList');
     Route::get('/holding/create', 'PortfoyController@CreateHolding')->name('Holding.Create');
     Route::post('/holding/create', 'PortfoyController@InsertHolding')->name('Holding.Create');

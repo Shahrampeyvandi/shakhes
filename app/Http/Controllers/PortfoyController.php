@@ -15,16 +15,12 @@ class PortfoyController extends Controller
     {
 
         $holdings = Holding::latest()->get();
-
-
         $array = [];
         foreach ($holdings as $key => $holding_obj) {
             $name = Namad::where('id', $holding_obj->namad_id)->first()->name;
             $getportfoy = Holding::GetPortfoyAndYesterdayPortfoy($holding_obj);
-            // پرتفوی لحظه ای شرکت
-            $array[$name]['portfoy'] = $getportfoy[0];
-            // درصد تغییر پرتفوی
-            $array[$name]['percent_change_porftoy'] = $getportfoy[1] == 0 ? 0 : ($getportfoy[0] - $getportfoy[1]) / $getportfoy[1];
+            $array[$name]['portfoy'] = $this->format($holding_obj->getMarketValue());
+            $array[$name]['percent_change_porftoy'] = $holding_obj->change_percent();
             $array[$name]['namad_counts'] = count($holding_obj->namads);
             $array[$name]['id'] = $holding_obj->id;
         }

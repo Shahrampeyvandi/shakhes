@@ -130,7 +130,7 @@ class MoneyReportsController extends Controller
                     }
                 
             }
-            return back();
+            return back()->with('success','اطلاعات ماهیانه با موفقیت ثبت شد');
         }
         if ($request->type == 'سه ماهه') {
             if (count($seasonal_data)) $seasonal_data->each->delete();
@@ -146,7 +146,7 @@ class MoneyReportsController extends Controller
                 $seasonal_report->save();
                 $count++;
             }
-            return back();
+           return back()->with('success','اطلاعات فصلی با موفقیت ثبت شد');
         }
 
         if ($request->type == 'سالیانه') {
@@ -161,7 +161,7 @@ class MoneyReportsController extends Controller
                     $seasonal_report->save();
                 }
             
-            return back();
+           return back()->with('success','اطلاعات سالیانه با موفقیت ثبت شد');
         }
     }
     public function SubmitSeasonly(Request $request)

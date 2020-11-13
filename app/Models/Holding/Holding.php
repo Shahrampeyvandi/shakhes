@@ -98,4 +98,10 @@ class Holding extends Model
             'portfoy' => $portfoy
         ]);
     }
+
+    public function change_percent()
+    {
+        $yesterday_portfoy = $this->portfoy;
+        return (int)$yesterday_portfoy !== 0 ? number_format((((int)$this->getMarketValue() - (int)$yesterday_portfoy) / (int)$yesterday_portfoy) * 100, 2) : 0;
+    }
 }

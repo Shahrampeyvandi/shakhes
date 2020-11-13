@@ -70,4 +70,17 @@ class Member extends  Authenticatable  implements JWTSubject
             }
         }
     }
+
+    public function get_notifications()
+    {
+        $my_namads = $this->namads;
+        $all_notif = 0;
+        foreach ($my_namads as $key => $namad) {
+            $dd = $namad->getUserNamadNotifications($this);
+            $array['my_namads'][] = $dd;
+            $all_notif += $dd['count'];
+        }
+        $array['my_namads']['all_notif'] = $all_notif;
+        return $array;
+    }
 }

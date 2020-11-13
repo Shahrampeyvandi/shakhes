@@ -13,12 +13,14 @@
     <link rel="stylesheet" href="{{route('BaseUrl')}}/vendor/bootstrap/css/mdb.min.css">
     <link rel="stylesheet" href="{{route('BaseUrl')}}/assets/css/style.css">
 </head>
+
 <body>
     <div class=" pt-5 mx-3 mx-md-0" style=" display: flex; justify-content: center; align-items: center;">
         <div class="login-wrap">
             <div class="head-login">
-            <img src="{{asset('assets/images/logo-shakhes.jpg')}}" style="width: 100px" alt="shakhes-logo">
+                <img src="{{asset('assets/images/logo-shakhes.jpg')}}" style="width: 100px" alt="shakhes-logo">
             </div>
+            @include('Includes.Panel.alerts')
             <div class="login-html px-1 px-md-5 py-0">
                 <div class="login-form">
                     <form action="{{route('login')}}" method="post">
@@ -33,6 +35,12 @@
                                 <label for="address_email" class="label my-3">رمز عبور</label>
                                 <input id="address_email" type="password" name="password" class="input mb-3">
                             </div>
+
+
+                            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+                            <div class="g-recaptcha" id="feedback-recaptcha"
+                                data-sitekey="6LebSuIZAAAAAP29yo9Or_53eG4TnMgnPKC4fy1m"></div>
+
                             <div class="group mt-5">
                                 <input type="submit" class="button p-2" value="تایید">
                             </div>

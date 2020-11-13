@@ -24,35 +24,46 @@ class RedisController extends Controller
     {
 
 
-        $namads = [];
-        if (Cache::has('namadlist')) {
-            $namads = Cache::get('namadlist');
-        } else {
-            $namads = Namad::all();
-            Cache::store()->put('namadlist', $namads, 86400); // 10 Minutes
-        }
+        // $namads = [];
+        // if (Cache::has('namadlist')) {
+        //     $namads = Cache::get('namadlist');
+        // } else {
+        //     $namads = Namad::all();
+        //     Cache::store()->put('namadlist', $namads, 86400); // 10 Minutes
+        // }
 
 
         $date = Jalalian::forge('now')->format('%Y/%m/%d');
         //$date="1399/01/01";
 
         $namad = Namad::find(61);
+        $url = "http://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=2&Childs=true&CompanyState=0&CompanyType=1&Consolidatable=true&FromDate=1399/08/20&IsNotAudited=false&Isic=210102&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&Symbol=شرنگی&TracingNo=-1&search=true";
+            // dd($url); 
+            // $url = "http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=$namad->inscode&c=57";
+        $ch = curl_init($url); 
+        // $ch = curl_init("https://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=$namad->inscode&c=57");
+       $userAgent = 'Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0';
 
-    //     $ch = curl_init("http://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=2&Childs=true&CompanyState=0&CompanyType=1&Consolidatable=true&FromDate=1399/01/01&IsNotAudited=false&Isic=210102&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&Symbol=وبملت&TracingNo=-1&search=true");
-    //     // $ch = curl_init("https://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=$namad->inscode&c=57");
-    //    curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
-    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    //     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    //     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    //     curl_setopt($ch, CURLOPT_ENCODING, "");
-    //     $result = curl_exec($ch);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 5.1; rv:12.0) Gecko/20100101 Firefox/12.0');
 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_ENCODING, "");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Content-Type: text/xml'
+));
+        $result = curl_exec($ch);
+        var_dump($result);
+        echo curl_error($ch);
+            
     //     $err = curl_error($ch);
     //     $result = json_decode($result, true);
     //     curl_close($ch);
         $client = new \GuzzleHttp\Client();
-        $response = $client->request('GET', "http://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=2&Childs=true&CompanyState=0&CompanyType=1&Consolidatable=true&FromDate=$date&IsNotAudited=false&Isic=210102&Length=-1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&Symbol=$namad->symbol&TracingNo=-1&search=true");
-
+        // dd($url);
+        $response = $client->request('GET', $url);
+            
 
         dd($response);
         dd($namad);

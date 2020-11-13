@@ -169,7 +169,7 @@ class MoneyReportsController extends Controller
         $array = [];
         $count = 0;
         foreach (array_unique($monthly_reports_years) as $keys => $year) {
-            $monthly_reports = $namad->monthlyReports()->where('year', $year)->get();
+            $monthly_reports = $namad->monthlyReports()->where('year', $year)->orderBy('month')->get();
             foreach ($monthly_reports as $key => $item) {
                 switch ($item->month) {
                     case '1':

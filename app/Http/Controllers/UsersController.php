@@ -20,7 +20,33 @@ class UsersController extends Controller
         $user = Member::find($request->id);
         $user->namads()->detach();
         $user->delete();
-        return back();
 
+        return back()->with('success', 'کاربر با موفقیت حذف شد!');
+    }
+      public function Edit(Request $request)
+    {
+    
+        $user = Member::find($request->user_id);
+        $user->phone = $request->user_mobile;
+        $user->fname = $request->user_name;
+        $user->lname = $request->user_family;
+        $user->subscribe = $request->date;
+        $user->update();
+
+        return back()->with('success', 'کاربر با موفقیت ویرایش شد');
+    }
+
+    public function get_data()
+    {
+        $user = Member::find(request()->user_id);
+        $resources = [
+            'id' => $user->id,
+            'phone' => $user->phone,
+            'fname' => $user->fname,
+            'lname' => $user->lname,
+            'date' => \Morilog\Jalali\Jalalian::forge($user->subscribe)->format('Y/m/d') 
+        ];
+        
+        return response()->json($resources,200);
     }
 }

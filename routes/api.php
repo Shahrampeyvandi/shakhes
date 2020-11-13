@@ -4,6 +4,8 @@ Route::post('getcode', 'Api\LoginSignUpController@getcode');
 Route::post('verify', 'Api\LoginSignUpController@verify');
 Route::post('register', 'Api\LoginSignUpController@register');
 Route::post('login', 'Api\LoginSignUpController@login');
+ Route::get('/me', 'Api\LoginSignUpController@me');
+
 
 Route::group(['middleware' => ['jwt.verify']], function () {
     Route::get('/member/notifications', 'Api\MembersDataController@notifications');
@@ -15,6 +17,9 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('/member/namads/add', 'Api\MembersDataController@add');
     Route::post('/member/namads/remove', 'Api\MembersDataController@remove');
     Route::get('/namads/search', 'Api\NamadsController@search');
+    Route::get('/getnotifications', 'Api\NamadsController@getHomeNotifications');
+    Route::get('/read', 'Api\MembersDataController@mark_to_read');
+
 });
 
 
@@ -26,9 +31,6 @@ Route::get('/getalldata/{id}', 'Api\NamadsController@getalldata'); // افشای
 
 
 
-
-// notification routes
-Route::get('/getnotifications', 'Api\NamadsController@GetAllNotifications');
 // Route::get('/getnotifications/{id}', 'Api\NamadsController@getNamadNotifications');
 
 

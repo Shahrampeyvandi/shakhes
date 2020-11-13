@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Redis;
 
 class NamadsController extends Controller
 {
+    public $cache_time = 60;
 
     public function getalldata($id)
     {
@@ -63,7 +64,7 @@ class NamadsController extends Controller
             }
             $information['holding'] = 0;
 
-            $result =  array_merge($information, $namad->getUserNamadNotifications($member, $namad));
+            $result =  array_merge($information, $namad->getUserNamadNotifications($member));
 
             return response()->json($result, 200);
         } else {
@@ -71,16 +72,17 @@ class NamadsController extends Controller
         }
     }
 
-    public function getAllNotifications()
+    public function getHomeNotifications()
     {
 
         $member = $this->token(request()->header('Authorization'));
-        if (Cache::has()) {
-            return response()->json(Cache::get("allnotif-$member->id"), 200);
-        }
-        $data = Namad::GetAllNotifications($member);
-        Cache::put("allnotif-$member->id", $data, 60);
-        return response()->json($data, 200);
+      
+        $my_notif =$member->get_notifications();
+        $common_notif =$this->get_home_notifications($member);
+
+        $all_notif = array_merge($my_notif,$common_notif);
+
+        return response()->json($all_notif, 200);
     }
 
     public function show($id)

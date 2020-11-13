@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use Morilog\Jalali\Jalalian;
 use App\Models\Member\Member;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Models\CapitalIncrease\CapitalIncrease;
+use App\Models\clarification;
+use App\Models\Namad\Disclosures;
+use App\Models\VolumeTrade;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Morilog\Jalali\Jalalian;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class Controller extends BaseController
 {
@@ -96,9 +101,9 @@ class Controller extends BaseController
         return $response;
     }
 
-    public function get_history_data($inscode,$days)
+    public function get_history_data($inscode, $days)
     {
-         $array=[];
+        $array = [];
         $ch = curl_init("http://members.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=$inscode&Top=$days&A=0");
         curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -108,11 +113,11 @@ class Controller extends BaseController
         $result = curl_exec($ch);
         $day_data = explode(';', $result);
         foreach ($day_data as $key => $value) {
-           $data = explode('@', $value);
+            $data = explode('@', $value);
 
             if (count($data) == 10) {
-                $pl = substr($data[4],0,-3);
-                $pc = substr($data[3],0,-3);;
+                $pl = substr($data[4], 0, -3);
+                $pc = substr($data[3], 0, -3);;
                 $year = substr($data[0], 0, 4);
                 $month = substr($data[0], 4, 2);
                 $day = substr($data[0], 6, 2);
@@ -128,5 +133,36 @@ class Controller extends BaseController
         return $array;
     }
 
-  
+    public function get_home_notifications($user)
+    {
+        $capital_increases = 0;
+        $clarifications = 0;
+        $disclosures = 0;
+        $volume_trades_report = 0;
+        $date = Carbon::today();
+
+
+        $capital_increases += CapitalIncrease::whereDate('updated_at', $date)
+            ->whereDoesntHave('readed_notifications', function ($q) use ($user) {
+                $q->where(['member_id' => $user->id]);
+            })
+            ->count();
+        $clarifications += clarification::whereDate('updated_at', $date)->whereDoesntHave('readed_notifications', function ($q) use ($user) {
+            $q->where(['member_id' => $user->id]);
+        })->count();
+        $disclosures += Disclosures::whereDate('updated_at', $date)->whereDoesntHave('readed_notifications', function ($q) use ($user) {
+            $q->where(['member_id' => $user->id]);
+        })->count();
+        $volume_trades_report += VolumeTrade::whereDate('updated_at', $date)->whereDoesntHave('readed_notifications', function ($q) use ($user) {
+            $q->where(['member_id' => $user->id]);
+        })->count();
+
+
+        $array['capital_increases'] = $capital_increases;
+        $array['clarifications'] = $clarifications;
+        $array['disclosures'] = $disclosures;
+        $array['volume_trades'] = $volume_trades_report;
+
+        return $array;
+    }
 }

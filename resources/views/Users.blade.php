@@ -1,6 +1,7 @@
 @extends('layout.temp')
 @section('content')
-
+@include('Includes.Panel.Modal',['url'=>url('/user/delete')])
+@include('Includes.Panel.Modals.user',['edit'=>true])
 <div class="container-fluid ">
   <div class="card">
     <div class="card-body">
@@ -12,19 +13,13 @@
         <table id="example1" class="table table-striped table-bordered">
           <thead>
             <tr>
-             
               <th>ردیف</th>
               <th>
-                
-                  نام
-                
+                نام
               </th>
               <th>
-                
-                  نام خانوادگی
-                 
+                نام خانوادگی
               </th>
-             
               <th>شماره موبایل</th>
               <th>تعداد سهام</th>
               <th>پروفایل عکس</th>
@@ -32,15 +27,13 @@
             </tr>
           </thead>
           <tbody class="tbody">
-
             @foreach ($users as $key=>$user)
             <tr>
-              
               <td> {{$key+1}} </td>
               <td>{{$user->fname}}</td>
               <td>{{$user->lname}}</td>
               <td>{{$user->phone}}</td>
-            <td>{{$user->namads->count()}}</td>
+              <td>{{$user->namads->count()}}</td>
               <td>
                 @if ($user->avatar !== null )
                 <img width="75px" class="img-fluid " src=" {{asset("uploads/brokers/$user->avatar")}} " />
@@ -50,14 +43,15 @@
               </td>
               <td>
                 <div class="btn-group" role="group" aria-label="">
-                {{-- <a href="#"
-                            class=" btn btn-rounded btn-info btn-sm m-0">مشاهده</a> --}}
-                <a data-id="{{$user->id}}"
-                            class="delete text-white btn btn-rounded btn-danger btn-sm m-0"
-                            
-                            >حذف</a>
-                    </div>
-            </td>
+                  <a href="#" data-id="{{$user->id}}" title="حذف" data-toggle="modal" data-target="#userModal"
+                    class="btn btn-sm btn-primary  ">
+                    <i class="fa fa-calendar-day"></i>
+                  </a>
+                  <a href="#" data-id="{{$user->id}}" title="حذف" data-toggle="modal" data-target="#deleteModal"
+                    class="btn btn-sm btn-danger  ">
+                    <i class="fa fa-trash"></i>
+                  </a> </div>
+              </td>
             </tr>
             @endforeach
 
@@ -67,57 +61,33 @@
     </div>
   </div>
 
-    </div>
+</div>
 </div>
 @endsection
 
 @section('js')
 <script>
   $(document).ready(function(){
-      $.ajaxSetup({
-
-          headers: {
-              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-          }
-      });
-      $('.delete').click(function(e){
-              e.preventDefault()
-              var value = $(this).data('id');
-         swal({
-          title: "آیا اطمینان دارید؟",
-          text: "",
-          icon: "warning",
-    buttons: {
-      confirm : 'بله',
-      cancel : 'خیر'
-    },
-          dangerMode: true
-      })
-      .then(function(willDelete) {
-          if (willDelete) {
-              // ajax request
-            $.ajax({
-              type:'POST',
-              url:'{{url('/user/delete')}}',
-               data:{_token:'{{csrf_token()}}',id:value},
-               success:function(data){
-                     setTimeout(()=>{
-                      location.reload()
-                     },1000)
-             
-              }
-      })
-          }
-    else {
-              swal("عملیات لغو شد", {
-        icon: "error",
-        button: "تایید"
-      });
-      }
-    });
-
+    $('.user-modal').on('shown.bs.modal', function (event) {
+    var button = $(event.relatedTarget); // Button that triggered the modal
+    var user_id = button.data("id"); // Extract info from data-* attributes
+    $.ajax({
+    type:'post',
+    url:mainUrl + '/user/get-data',
+    cache: false,
+    async: true,
+    data:{user_id:user_id,_token:token},
+    success:function(data){
+      // console.log(data)
+      $('#user_mobile').val(data.phone)
+      $('#user_id').val(data.id)
+      $('#date').val(data.date)
+      $('#first_name').val(data.fname)
+      $('#last_name').val(data.lname)
+    }
   })
-
+})
+ 
 })
 </script>
 @endsection

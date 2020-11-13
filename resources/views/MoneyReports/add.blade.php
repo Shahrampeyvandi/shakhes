@@ -14,6 +14,7 @@
                 @if (!isset($namad))
                 <h6 class="mt-4">انتخاب سهم: </h6>
                 <select class="form-control js-example-basic-single" name="namad" id="namad" required dir="rtl">
+                    <option value="">انتخاب سهم</option>
                     @foreach (\App\Models\Namad\Namad::OrderBy('symbol','ASC')->get() as $item)
                     <option value="{{$item->id}}">{{$item->symbol}}</option>
                     @endforeach

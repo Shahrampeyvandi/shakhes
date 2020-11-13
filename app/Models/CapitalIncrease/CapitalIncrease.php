@@ -2,20 +2,20 @@
 
 namespace App\Models\CapitalIncrease;
 
+use App\Http\Traits\CommonRelations;
 use App\Models\Namad\Namad;
 use Illuminate\Database\Eloquent\Model;
 
 class CapitalIncrease extends Model
 {
+    use CommonRelations;
+
     public function amounts()
     {
         return $this->hasMany(CapitalIncreasePercents::class);
     }
     
-     public function readed_notifications()
-    {
-        return $this->morphMany('App\Models\Notification', 'notificationable');
-    }
+    
 
     public function namad()
     {
@@ -24,7 +24,6 @@ class CapitalIncrease extends Model
 
     public function get_percent($from)
     {
-
         $item = $this->amounts()->where('type', $from)->first();
         if ($item) {
             return $item->percent;

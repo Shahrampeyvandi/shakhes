@@ -146,7 +146,7 @@ class DailyReportScheduler
             } else {
                 $namad->flow = 'فرابورس';
             }
-            if ($this->checksymbol($namad->symbol)) {
+            if ($this->checksymbol($namad->symbol) && $this->checkname($namad->symbol)) {
                 $namad->save();
             } else {
             }
@@ -157,6 +157,14 @@ class DailyReportScheduler
         $dailyReport->save();
     }
 
+    public function checkname($symbol)
+    {
+        if(!preg_match('/^\d{2}\d*$/',$symbol)){
+            return true;
+        }else{
+            return false;
+        }
+    }
 
     public function checksymbol($symbol)
     {

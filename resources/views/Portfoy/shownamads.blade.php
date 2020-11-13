@@ -25,7 +25,6 @@
                                 <th> درصد پرتفوی</th>
                                 <th>وضعیت</th>
                                 <th>عملیات</th>
-
                             </tr>
                         </thead>
                         <tbody>
@@ -39,21 +38,21 @@
                                 <td>{{$namad->symbol}}</td>
                                 <td>{{$namad->market}}</td>
                                 <td>
-                                    <span class="btn btn-info">%
+                                    <span class="btn btn-sm btn-info">%
                                         {{\DB::table('holdings_namads')
-                        ->whereNamad_id($namad->id)
-                        ->whereHolding_id($holding->id)
-                        ->first()->amount_percent}}
+                                    ->whereNamad_id($namad->id)
+                                    ->whereHolding_id($holding->id)
+                                    ->first()->amount_percent}}
                                     </span>
                                 </td>
                                 <td>
                                     @if (Illuminate\Support\Facades\Cache::get($namad->id)['last_price_status'])
                                     <span
-                                        class="btn btn-success">{{Illuminate\Support\Facades\Cache::get($namad->id)['final_price_percent']}}
+                                        class="text-success">{{Illuminate\Support\Facades\Cache::get($namad->id)['final_price_percent']}}
                                         %</span>
                                     @else
                                     <span
-                                        class="btn btn-danger">{{Illuminate\Support\Facades\Cache::get($namad->id)['final_price_percent']}}
+                                        class="text-danger">{{Illuminate\Support\Facades\Cache::get($namad->id)['final_price_percent']}}
                                         %</span>
 
                                     @endif
@@ -115,12 +114,7 @@
                 type:'POST',
                 url:'{{url('/holding/namad/delete')}}',
                  data:{_token:'{{csrf_token()}}',id:value,holding:holding},
-        
-                      
-                 
                  success:function(data){
-
-
                        setTimeout(()=>{
                         location.reload()
                        },1000)
@@ -136,8 +130,6 @@
     		}
     	});
     
-
-    
     })
 
         
@@ -148,57 +140,7 @@ $('#exampleModal').on('shown.bs.modal', function (event) {
   modal.find('#id').attr('value',recipient)
 })
 
-     
-
-
-
-
-
-
         })
 </script>
 @endsection
 
-
-@section('css')
-<style>
-    .edit__profile__left {
-        margin-top: 50px;
-    }
-
-    .fa__links {
-        font-size: 20px;
-        background: blue;
-        color: white;
-        padding: 5px;
-        border-radius: 5px;
-    }
-
-    .fa-instagram {
-        background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
-
-    }
-
-    .fa-telegram {
-        background: #285AEB;
-    }
-
-    .fa-whatsapp {
-        background: #075e54;
-    }
-
-    .fa-linkedin {
-        background: gray;
-    }
-
-    @media (min-width: 992px) {
-        .modal-lg {
-            width: 1000px !important;
-        }
-    }
-
-    .badge {
-        background-color: #74a1d0 !important;
-    }
-</style>
-@endsection

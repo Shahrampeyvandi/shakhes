@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use App\Models\Admin;
+use App\Rules\Recaptcha;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +27,11 @@ class AuthController extends Controller
 
     public function Verify(Request $request)
     {
+
+        $this->validate($request, [
+            'g-recaptcha-response' => ['required', new Recaptcha()]
+        ]);
+
 
 
         $admin = Admin::where('mobile', $request->mobile)->first();

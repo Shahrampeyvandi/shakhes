@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Response;
 use App\Models\CapitalIncrease\CapitalIncrease;
+use App\Models\Notification;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class MembersDataController extends Controller
@@ -65,31 +66,25 @@ class MembersDataController extends Controller
             $data['name'] = $namad->name;
             $data['id'] = $namad->id;
             $data['flow'] = $namad->flow;
-            $notif = $namad->getUserNamadNotifications($member, $namad);
-            $array['notifications'] = $notif;
-            if (isset($information['pl']) && isset($information['py'])) {
-                $data['final_price_value'] = $information['pl'];
-                $data['final_price_percent'] = $information['py'] ?  abs(number_format((float)(($information['pl'] - $information['py']) * 100) / $information['py'], 2, '.', '')) : '';
-                $data['last_price_change'] = abs($information['pl'] - $information['py']);
-                $data['last_price_status'] = ($information['pl'] - $information['py']) > 0 ? '1' : '0';
-                if (isset($information['pl'])) {
-                    $data['status'] = $information['status'];
-                } else {
-                    $data['status'] = 'red';
-                }
-                if (isset($information['namad_status'])) {
-                    $data['namad_status'] = $information['namad_status'];
-                } else {
-                    $data['namad_status'] = 'A';
-                }
+            $notif = $namad->getUserNamadNotifications($member);
+            $data['notifications'] = $notif;
+            $data['pl'] = $information['pl'];
+            $data['pl_change_percent'] = $information['final_price_percent'];
+            $data['last_price_change'] = $information['last_price_change'];
+            $data['pc'] = $information['pc'];
+            $data['pc_change_percent'] = $information['pc_change_percent'];
+
+            if (isset($information['pl'])) {
+                $data['status'] = $information['status'];
             } else {
-                $data['final_price_value'] = '0';
-                $data['final_price_percent'] = '0';
-                $data['last_price_change'] = '0';
-                $data['last_price_status'] = '0';
                 $data['status'] = 'red';
+            }
+            if (isset($information['namad_status'])) {
+                $data['namad_status'] = $information['namad_status'];
+            } else {
                 $data['namad_status'] = 'A';
             }
+
 
             $array[] = $data;
         }
@@ -105,13 +100,30 @@ class MembersDataController extends Controller
     public function mark_to_read()
     {
         $member = $this->token(request()->header('Authorization'));
-        $cname = "App\\Models\\" . ucfirst(request()->type);
-        $obj = $cname::find(request()->id);
+        if (request()->type == 'capitalincrease') {
+            $type = 'App\Models\CapitalIncrease\CapitalIncrease';
+        }
+        if (request()->type == 'clarification') {
+            $type = 'App\Models\clarification';
+        }
+        if (request()->type == 'disclosure') {
+            $type = 'App\Models\Namad\Disclosures';
+        }
+        if (request()->type == 'volumetrade') {
+            $type = 'App\Models\VolumeTrade';
+        }
 
-        $obj->notification->create([
-            'namad_id' => request()->namad_id,
-            'member_id' => $member->id
-        ]);
+
+        $n = new Notification();
+        $n->member_id = $member->id;
+        $n->namad_id = request()->namad_id;
+        $n->notificationable_id    = request()->id;
+        $n->notificationable_type = $type;
+        $n->text = '';
+        $n->save();
+
+
+        return response()->json('success', 200);
     }
 
 
@@ -128,21 +140,26 @@ class MembersDataController extends Controller
         }
         return response()->json(
             $res,
-            200
+            201
         );
     }
 
     public function remove(Request $request)
     {
-
         $member = $this->token($request->header('Authorization'));
-        $namad_ids = $request->id;
-        foreach ($namad_ids as $namad) {
-            $member->namads()->detach($namad);
+        if (is_array($request->id)) {
+            $namad_ids = $request->id;
+            foreach ($namad_ids as $namad) {
+                $member->namads()->detach($namad);
+            }
+            $count = count($request->id);
+        } else {
+            $member->namads()->detach($request->id);
+             $count = 1;
         }
         return response()->json(
             [
-                'message' => 'ok',
+                'message' => $count . ' نماد با موفقیت حذف شدند',
             ],
             200
         );

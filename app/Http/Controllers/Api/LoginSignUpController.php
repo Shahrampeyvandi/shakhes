@@ -98,6 +98,12 @@ class LoginSignUpController extends Controller
         }
     }
 
+    public function me()
+    {
+        return $member = $this->token(request()->header('Authorization'));
+
+    }
+
 
     // public function login(Request $request)
     // {

@@ -14,3 +14,6 @@
     </button>
 </div>
 @endif
+@if($errors->has('errors'))
+<div class="error">{{ $errors->first('errors') }}</div>
+@endif
