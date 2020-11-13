@@ -22,6 +22,7 @@
               <th>شماره موبایل</th>
               <th>تعداد سهام</th>
               <th>پروفایل عکس</th>
+              <th>اشتراک</th>
               <th>عملیات</th>
             </tr>
           </thead>
@@ -40,6 +41,7 @@
                 <img width="75px" class="img-fluid " src=" <?php echo e(asset("assets/images/avatar.png")); ?> " />
                 <?php endif; ?>
               </td>
+              <td><?php echo e($user->get_plan() ? $user->get_plan() : 'ندارد'); ?></td>
               <td>
                 <div class="btn-group" role="group" aria-label="">
                   <a href="#" data-id="<?php echo e($user->id); ?>" title="حذف" data-toggle="modal" data-target="#userModal"

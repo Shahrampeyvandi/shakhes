@@ -12,6 +12,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Models\CapitalIncrease\CapitalIncrease;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Morilog\Jalali\Jalalian;
 
 class Member extends  Authenticatable  implements JWTSubject
 {
@@ -53,6 +54,14 @@ class Member extends  Authenticatable  implements JWTSubject
     public function discounts()
     {
         return $this->belongsToMany(Discount::class, 'user_discount', 'user_id', 'discount_id');
+    }
+
+    public function get_plan()
+    {
+        if($this->subscribe < Carbon::now() || !$this->subscribe){
+            return false;   
+        }
+        return Jalalian::forge($this->subscribe)->format('%Y-%m-%d');
     }
 
     public function check_could_add($namad_id)

@@ -33,9 +33,9 @@ class Controller extends BaseController
     {
 
         $date_array = explode('/', $date);
-        $year = $date_array[2];
+        $day = $date_array[2];
         $month = $date_array[1];
-        $day = $date_array[0];
+        $year = $date_array[0];
         if (strlen($month) == 1) {
             $month = '0' . $month;
         }

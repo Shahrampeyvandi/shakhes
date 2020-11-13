@@ -55,8 +55,11 @@ Route::group(['middleware' => ['admin']], function () {
     Route::post('/disclosures/create', 'DisclosuresController@Insert')->name('Disclosures.Create');
     Route::post('/disclosures/delete', 'DisclosuresController@Delete')->name('Disclosures.Delete');
     Route::get('/volumetrades', 'VolumeTradesController@Index')->name('VolumeTrades');
+     Route::post('/volumetrades/delete', 'VolumeTradesController@Delete')->name('VolumeTrades.Delete');
     Route::get('/education/add', 'EducationController@Add')->name('Education.Add');
     Route::post('/education/add', 'EducationController@Save')->name('Education.Add');
+    // Route::get('/education/edit', 'EducationController@Edit')->name('Education.Edit');
+    // Route::post('/education/edit', 'EducationController@SaveEdit')->name('Education.Edit');
     Route::post('/education/delete', 'EducationController@Delete');
     Route::get('/education/list', 'EducationController@List')->name('Education.List');
     // ajax routes

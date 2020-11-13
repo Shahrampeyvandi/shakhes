@@ -17,13 +17,14 @@
     }
 </style>
 
+
 <body>
     <div class="container-fluid panel-table mt-5">
     <div class="card">
         <div class="card-body">
            <?php if($education->image): ?>
             <div>
-                <img width="100%" src="<?php echo e(asset("pictures/$education->image")); ?>" alt="">
+                <img width="100%" src="<?php echo e(asset("$education->image")); ?>" alt="">
             </div>
            <?php endif; ?>
             <div class="desciption">

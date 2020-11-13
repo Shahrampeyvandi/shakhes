@@ -23,6 +23,7 @@
               <th>شماره موبایل</th>
               <th>تعداد سهام</th>
               <th>پروفایل عکس</th>
+              <th>اشتراک</th>
               <th>عملیات</th>
             </tr>
           </thead>
@@ -41,6 +42,7 @@
                 <img width="75px" class="img-fluid " src=" {{asset("assets/images/avatar.png")}} " />
                 @endif
               </td>
+              <td>{{$user->get_plan() ? $user->get_plan() : 'ندارد'}}</td>
               <td>
                 <div class="btn-group" role="group" aria-label="">
                   <a href="#" data-id="{{$user->id}}" title="حذف" data-toggle="modal" data-target="#userModal"

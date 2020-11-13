@@ -30,7 +30,7 @@ class UsersController extends Controller
         $user->phone = $request->user_mobile;
         $user->fname = $request->user_name;
         $user->lname = $request->user_family;
-        $user->subscribe = $request->date;
+        $user->subscribe = $this->convertDate($request->date);
         $user->update();
 
         return back()->with('success', 'کاربر با موفقیت ویرایش شد');

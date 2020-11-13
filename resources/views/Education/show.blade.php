@@ -24,7 +24,7 @@
         <div class="card-body">
            @if($education->image)
             <div>
-                <img width="100%" src="{{asset("pictures/$education->image")}}" alt="">
+                <img width="100%" src="{{asset("$education->image")}}" alt="">
             </div>
            @endif
             <div class="desciption">

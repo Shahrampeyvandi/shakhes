@@ -11,54 +11,54 @@
       <div style="overflow-x: auto;">
         <table id="example1" class="table table-striped table-bordered">
           <thead>
-                            <tr>
-                                <th>ردیف</th>
-                                <th>
-                                    نام
-                                </th>
-                                <th>
-                                    دسته بندی
-                                </th>
-                                <th>
-                                    تعداد بازدید
-                                </th>
-                                <th>عملیات</th>
-                            </tr>
-                        </thead>
-                        <tbody class="tbody">
+            <tr>
+              <th>ردیف</th>
+              <th>
+                نام
+              </th>
+              <th>
+                دسته بندی
+              </th>
+              <th>
+                تعداد بازدید
+              </th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody class="tbody">
 
-                            @foreach ($educations as $key=>$education)
-                            <tr>
+            @foreach ($educations as $key=>$education)
+            <tr>
+              <td> {{$key+1}} </td>
+              <td>{{$education->title}}</td>
+              <td>{{$education->category->name}}</td>
+              <td>{{$education->views}}</td>
+              <td>
 
-                                <td> {{$key+1}} </td>
-                                <td>{{$education->title}}</td>
-                                <td>{{$education->category->name}}</td>
+                <a href="{{route('Education.Show',$education->id)}}" class=" btn  btn-primary btn-sm m-0"><i
+                    class="fa fa-eye"></i></a>
+                <a href="{{route('Education.Add')}}?edit={{$education->id}}" class=" btn  btn-info btn-sm m-0"><i
+                    class="fa fa-edit"></i></a>
+                <a data-id="{{$education->id}}" class="delete text-white btn  btn-danger btn-sm m-0"><i
+                    class="fa fa-trash"></i></a>
 
-                                <td>{{$education->views}}</td>
-                                <td>
-                                    <div class="btn-group" role="group" aria-label="">
-                                    <a href="{{route('Education.Show',$education->id)}}"
-                            class=" btn btn-rounded btn-info btn-sm m-0">مشاهده</a>
-                                        <a data-id="{{$education->id}}"
-                                            class="delete text-white btn btn-rounded btn-danger btn-sm m-0">حذف</a>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
+              </td>
+            </tr>
+            @endforeach
 
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
+          </tbody>
+        </table>
+      </div>
     </div>
+  </div>
+
+</div>
 </div>
 @endsection
 
 @section('js')
 <script>
-    $(document).ready(function(){
+  $(document).ready(function(){
       $.ajaxSetup({
 
           headers: {

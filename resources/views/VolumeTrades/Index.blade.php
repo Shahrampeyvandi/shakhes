@@ -1,27 +1,58 @@
 @extends('layout.temp')
 @section('content')
+@include('Includes.Panel.Modal',['url'=>url('/volumetrades/delete')])
+@include('Includes.Panel.Modals.user',['edit'=>true])
+<div class="container-fluid ">
+    <div class="card">
+        <div class="card-body">
+            <div class="card-title">
+                <h5 class="text-center">لیست حجم معاملات مشکوک</h5>
+                <hr />
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="example1" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th> نماد</th>
+                            <th> قیمت </th>
+                            <th>حجم معاملات </th>
+                            <th>حجم معاملات ماهانه</th>
+                            <th>ضریب</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody class="tbody">
+                        @foreach ($volumetrades as $key=>$vol)
+                        <tr>
+                            <td> {{$key+1}} </td>
+                            <td>{{$vol->namad->symbol}}</td>
+                            <td>{{\Illuminate\Support\Facades\Cache::get($vol->namad->id)['pl']}}</td>
+                            <td>{{\Illuminate\Support\Facades\Cache::get($vol->namad->id)['tradevol']}}</td>
+                            <td>{{\Illuminate\Support\Facades\Cache::get($vol->namad->id)['monthAVG']}}</td>
+                            <td>{{$vol->volume_ratio}}</td>
+                           
+                            <td>
+                                <div class="btn-group" role="group" aria-label="">
+                                    <a href="#" data-id="{{$vol->id}}" title="حذف" data-toggle="modal"
+                                        data-target="#userModal" class="btn btn-sm btn-primary  ">
+                                        <i class="fa fa-calendar-day"></i>
+                                    </a>
+                                    <a href="#" data-id="{{$vol->id}}" title="حذف" data-toggle="modal"
+                                        data-target="#deleteModal" class="btn btn-sm btn-danger  ">
+                                        <i class="fa fa-trash"></i>
+                                    </a> </div>
+                            </td>
+                        </tr>
+                        @endforeach
 
-<div class="container-fluid panel-table mt-5">
-    <div class="head-panel">
-        <h4> افزایش حجم معاملات</h4>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-    <div class="col-md-12 ">
-        <form action="{{route('CapitalIncrease')}}" method="post">
-            @csrf
-            <div class="form-group col-md-6">
-                <h6 class="mt-4">تعیین میزان ضریب :  </h6>
-            <input type="number" class="form-control" required>
-           </div>
-           <div class="form-group col-md-6">
-        <button type="submit" class="btn btn-primary" >ذخیره</button>
-       </div>
-        </form>
-    </div>
+
 </div>
 </div>
 @endsection
-
-
-
-
 
