@@ -424,7 +424,7 @@ class ApiScheduler extends Controller
 
         echo 'pomad = ' . $namad->symbol . PHP_EOL;
 
-        //$dailyReport->save();
+        //$dailyReport->();
 
     }
 }

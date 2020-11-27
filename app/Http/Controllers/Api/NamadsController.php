@@ -22,18 +22,33 @@ class NamadsController extends Controller
     }
     public function search(Request $request)
     {
+        $member = $this->token(request()->header('Authorization'));
         $key = $request->search;
-        if ($key) {
-            // $end_char = substr($key, -1);
-            // if($end_char == 'ی') {
-            //    str_replace('ی', 'ي', $end_char);
-            // }
-            $namads = Namad::where('symbol', 'like', '%' . $key . '%')
-                ->take(5)->get();
-            return response()->json([
-                'data' => $namads
-            ], 200);
+        $res = [];
+        try {
+            if ($key) {
+
+                $namads = Namad::where('symbol', 'like', '%' . $key . '%')
+                    ->take(5)->get();
+                if (count($namads) == 0) {
+                    $error = 'موردی یافت نشد';
+                } else {
+                    foreach ($namads as $key => $namad) {
+                        $res[] = [
+                            'id' => $namad->id,
+                            'symbol' => $namad->symbol,
+                            'name' => $namad->name,
+                            'isSelected' => $member->check_if_has_namad($namad->id)
+                        ];
+                    }
+                    $error = null;
+                }
+            }
+            $status = 200;
+        } catch (\Throwable $th) {
+            $error = 'خطا در دریافت اطلاعات از سرور';
         }
+         return $this->JsonResponse($res,$error,$status);
     }
 
     public function getnamad(Request $request)
@@ -74,15 +89,19 @@ class NamadsController extends Controller
 
     public function getHomeNotifications()
     {
-
         $member = $this->token(request()->header('Authorization'));
-      
-        $my_notif =$member->get_notifications();
-        $common_notif =$this->get_home_notifications($member);
 
-        $all_notif = array_merge($my_notif,$common_notif);
+        $my_notif = $member->get_notifications();
+        $common_notif = $this->get_home_notifications($member);
+        $common_notif['notifications'][] = [
+            "pk" => 1,
+            "title" => "mynamads",
+            "count" => $my_notif['count']
+        ];
 
-        return response()->json($all_notif, 200);
+        $all_notif = array_merge(["my_namad" => $my_notif['my_namads']], $common_notif);
+        return $this->JsonResponse($all_notif,null,200);
+        // return response()->json($all_notif, 200);
     }
 
     public function show($id)
@@ -208,7 +227,7 @@ class NamadsController extends Controller
         //  $namad_id = request()->id;
         $days = request()->days;
         if (isset(request()->namad)) {
-            
+
             $namads[]  = Namad::find(request()->namad)->symbol;
         } else {
             if (Cache::has('namadlist')) {
@@ -221,27 +240,27 @@ class NamadsController extends Controller
 
         $data = [];
         foreach ($namads as $key => $namad) {
-            $namad = Namad::where('symbol',$namad)->first();
+            $namad = Namad::where('symbol', $namad)->first();
 
             $cache = Cache::get($namad->id);
             $pl = (int)$cache['pl'];
             $symbol = $cache['symbol'];
             $array = $this->get_history_data($namad->inscode, $days);
             $sum = 0;
-            if(count($array)){
+            if (count($array)) {
                 foreach ($array as $key => $row) {
-                $sum += (int)$row['pl'];
-            }
-            $avg = $sum / count($array);
-            $min_pl = $avg - (($avg * 10) / 100);
-            $max_pl = $avg + (($avg * 10) / 100);
-            if ($pl > $min_pl && $pl < $max_pl) {
-                $data[] = ['symbol'=>$symbol,'pl'=> $pl,'avg'=>$avg];
-            }
+                    $sum += (int)$row['pl'];
+                }
+                $avg = $sum / count($array);
+                $min_pl = $avg - (($avg * 10) / 100);
+                $max_pl = $avg + (($avg * 10) / 100);
+                if ($pl > $min_pl && $pl < $max_pl) {
+                    $data[] = ['symbol' => $symbol, 'pl' => $pl, 'avg' => $avg];
+                }
             }
         }
 
 
-        return response()->json($data,200);
+        return response()->json($data, 200);
     }
 }

@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        
     }
 
     /**
@@ -25,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+           date_default_timezone_set('Asia/Tehran');
         /*
          * use Illuminate\Support\Collection;
          * use Illuminate\Pagination\LengthAwarePaginator;

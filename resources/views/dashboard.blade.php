@@ -6,18 +6,31 @@
     <div class="row justify-content-around mt-5">
         <div class="col-lg-3 col-sm-6 my-3">
             <!-- small box -->
-
-
             <a href="">
-
                 <div class="small-box"
-                    style="  padding: 21px;   box-shadow: 0 6px 20px 0 rgba(255,202,40,.5)!important; background: linear-gradient(-45deg,#ff6f00,#ffca28)!important;color: #fff;border-radius: 7px;">
+                    style="  padding: 21px;   box-shadow: 0 6px 20px 0 #09b0af80!important; background: linear-gradient(-45deg,#09b0af,#1df067)!important;color: #fff;border-radius: 7px;">
                     <div class="inner ">
-                        <h3 class="text-white">5</h3>
-                        <p class="text-white fs-1-5">کاربران </p>
+                        <h3 class="text-white">{{$members}}</h3>
+                        <p class="text-white fs-1-5">کاربران</p>
                     </div>
                     <div class="fs-2">
-                        <i class="fas fa-video"></i>
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+        <div class="col-lg-3 col-sm-6 my-3">
+            <!-- small box -->
+            <a href="">
+                <div class="small-box"
+                    style="  padding: 21px;box-shadow: 0 6px 20px 0 rgba(255,202,40,.5)!important; background: linear-gradient(-45deg,#ff6f00,#ffca28)!important;color: #fff;border-radius: 7px;">
+                    <div class="inner ">
+                        <h3 class="text-white">{{$subscribers}}</h3>
+                        <p class="text-white fs-1-5">مشترکین</p>
+                    </div>
+                    <div class="fs-2">
+                        <i class="fas fa-tag"></i>
                     </div>
                 </div>
             </a>
@@ -35,11 +48,11 @@
                      color: #fff;
                      border-radius: 7px;">
                     <div class="inner ">
-                        <h3 class="text-white">200000</h3>
+                        <h3 class="text-white">0</h3>
                         <p class="text-white fs-1-5">پرداختی ها</p>
                     </div>
                     <div class="fs-2">
-                        <i class="fas fa-video"></i>
+                        <i class="fa fa-money"></i>
                     </div>
                 </div>
             </a>

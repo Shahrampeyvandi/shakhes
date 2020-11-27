@@ -8,40 +8,70 @@ use App\Models\Namad\Namad;
 use App\Models\VolumeTrade;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\VolumeTradeResource;
 use Illuminate\Support\Facades\Cache;
+use Morilog\Jalali\Jalalian;
 
 class VolumeTradesController extends Controller
 {
     public function get($id = null)
     {
-        if ($id) {
-            $volume_trades = VolumeTrade::whereNamad_id($id)->paginate(20);
-        } else {
-           if (Cache::has('bazarstatus') && Cache::get('bazarstatus') == 'close') {
-                $orderby = 'volume_ratio';
+        // VolumeTrade::whereDate('created_at','<',Carbon::now()->subMonth())->delete();
+
+        try {
+            if ($id) {
+                $volume_trades = VolumeTrade::whereNamad_id($id)->paginate(20);
             } else {
-                $orderby = 'updated_at';
+
+                if (Cache::has('volume-trades')) {
+                    return $this->JsonResponse(Cache::get('volume-trades'), null, 200);
+                }
+
+                if (Cache::has('bazarstatus') && Cache::get('bazarstatus') == 'close') {
+                    $orderby = 'volume_ratio';
+                } else {
+                    $orderby = 'updated_at';
+                }
+
+                if (isset(request()->ratio)) {
+                    if (VolumeTrade::whereDate('created_at', Carbon::today())->count()) {
+                        $volume_trades = VolumeTrade::whereDate('created_at', Carbon::today())->orderBy($orderby, 'desc')
+                            ->where('volume_ratio', '>=', request()->ratio)
+                            ->get();
+                    } else {
+                        $volume_trades = VolumeTrade::orderBy($orderby, 'desc')
+                            ->where('volume_ratio', '>=', request()->ratio)
+                            ->take(40)->get();
+                    }
+                } else {
+                    if (VolumeTrade::whereDate('created_at', Carbon::today())->count()) {
+                       
+                        $volume_trades = VolumeTrade::whereDate('created_at', Carbon::today())->orderBy($orderby, 'desc')->get();
+                    } else {
+                       
+                        $volume_trades = VolumeTrade::orderBy($orderby, 'desc')->take(40)->get();
+                    }
+                }
             }
-            $volume_trades = VolumeTrade::whereDate('created_at', Carbon::today())->orderBy($orderby, 'desc')->paginate(20);
+
+
+
+            $all = VolumeTradeResource::collection($volume_trades);
+            if (!$id) {
+
+                Cache::put('volume-trades', $all, 60);
+            }
+
+            $status = 200;
+            $error = null;
+        } catch (\Exception $th) {
+            $all = [];
+            $error = 'خطا در دریافت اطلاعات';
+            $status = 200;
         }
 
-        $all = [];
-        foreach ($volume_trades as $key => $volume) {
-            $array['symbol'] = $volume->namad->symbol;
-            $array['name'] = $volume->namad->name;
-            $array['price'] = $volume->namad->dailyReports()->latest()->first()->last_price_value;
-            $array['trades_volume'] =  $volume->namad->dailyReports()->latest()->first()->trades_volume;
-            $array['base_zarib'] = Setting::first()->trading_volume_ratio;
-            $array['current_zarib'] = $volume->volume_ratio;
-            $array['publish_date'] = $volume->created_at;
-            $all[] = $array;
-        }
 
-
-        return response()->json(
-            ['data' => $all],
-            200
-        );
+        return $this->JsonResponse($all, $error, $status);
     }
 
     public function VolumeTradeIncease($id = null)

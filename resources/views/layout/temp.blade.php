@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="{{asset('assets/vendors/select2/css/select2.min.css')}}" type="text/css">
     <link rel="stylesheet" href="{{asset('assets/vendors/dropify/dropify.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/toastr.css')}}">
-    <link href="https://cdn.jsdelivr.net/gh/StephanWagner/jBox@v1.2.0/dist/jBox.all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{asset('assets/vendors/datepicker-jalali/bootstrap-datepicker.min.css')}}">
 
     <link rel="stylesheet" href="{{asset('assets/css/app.css')}}" type="text/css">
@@ -66,15 +65,15 @@
     <script src="{{asset('assets/vendors/dataTable/jquery.dataTables.min.js')}}"></script>
     <script src="{{asset('assets/vendors/dataTable/dataTables.bootstrap4.min.js')}}"></script>
     <script src="{{asset('assets/vendors/dataTable/dataTables.responsive.min.js')}}"></script>
+
     <script src="{{asset('assets/js/datatable.js')}}"></script>
 
     <script src="{{asset('assets/vendors/datepicker-jalali/bootstrap-datepicker.min.js')}}"></script>
     <script src="{{asset('assets/vendors/datepicker-jalali/bootstrap-datepicker.fa.min.js')}}"></script>
 
-    @yield('js')
-    <script src="https://cdn.jsdelivr.net/gh/StephanWagner/jBox@v1.2.0/dist/jBox.all.min.js"></script>
     <script src="{{asset('assets/js/custom.js')}}"></script>
     <script src="{{asset('assets/js/app.js')}}"></script>
+    @yield('js')
     <!-- end::custom scripts -->
     <script>
         $('.date-picker-shamsi').datepicker({
@@ -82,6 +81,8 @@
     showOtherMonths: true,
     selectOtherMonths: false
     });
+
+
     </script>
 
 </body>

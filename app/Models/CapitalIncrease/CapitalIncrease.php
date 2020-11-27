@@ -4,7 +4,9 @@ namespace App\Models\CapitalIncrease;
 
 use App\Http\Traits\CommonRelations;
 use App\Models\Namad\Namad;
+use App\Models\Selected;
 use Illuminate\Database\Eloquent\Model;
+
 
 class CapitalIncrease extends Model
 {
@@ -14,7 +16,10 @@ class CapitalIncrease extends Model
     {
         return $this->hasMany(CapitalIncreasePercents::class);
     }
-    
+    public function bookmarks()
+    {
+        return $this->morphMany(Selected::class,'bookmarkable');
+    }
     
 
     public function namad()
@@ -31,10 +36,6 @@ class CapitalIncrease extends Model
         return null;
     }
 
-    public function member_selected()
-    {
-        # code...
-    }
 
     public function showPercents()
     {

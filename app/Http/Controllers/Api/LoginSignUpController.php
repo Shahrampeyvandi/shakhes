@@ -15,27 +15,21 @@ class LoginSignUpController extends Controller
 {
     public function getcode(Request $request)
     {
-       
+
 
         $code = ActivationCode::createCode($request->phone);
         if ($code == false) {
-            return response()->json([
-                'code' => 400,
-                'message' => 'کد فعال سازی قبلا برای شما ارسال شده است. لطفا بعدا مجددا امتحان فرمایید',
-            ], 200);
+            $error = 'کد فعال سازی قبلا برای شما ارسال شده است. لطفا بعدا مجددا امتحان فرمایید';
+            $data = null;
+            $status = 200;
+        } else {
+            $data = $code->v_code;
+            $error = null;
+            $status = 200;
         }
-        //  Mail::to($request->email)->send(new SendActivationCode($event->mobile , $event->activationCode->v_code));
-
-        // $patterncode = "e281gs93os";
-        // $data = array("code" => $code->v_code);
-        // $this->sendSMS($patterncode,$request->phone, $data);
 
 
-        return response()->json([
-            'code' => 200,
-            'data' => $code->v_code,
-            'error' => '',
-        ], 200);
+        return $this->JsonResponse($data, $error, $status);
     }
 
 
@@ -50,29 +44,18 @@ class LoginSignUpController extends Controller
             // check member 
             if ($member = Member::where('phone', $mobile)->first()) {
                 $token =     Auth::guard('api')->login($member);
-                return response()->json([
-                    'code' => 201,
-                    'data' => $token,
-                    'error' => '',
-                ], 200);
+                return $this->JsonResponse($token, null, 200);
             } else {
                 $member = new Member;
                 $member->phone = $request->phone;
                 if ($member->save()) {
                     $token =     Auth::guard('api')->login($member);
-
-                    return response()->json([
-                        'code' => 201,
-                        'data' => $token,
-                        'error' => '',
-                    ], 200);
+                    return $this->JsonResponse($token, null, 201);
                 }
             }
         } else {
-            return response()->json([
-                'code' => 400,
-                'message' => 'کد وارد شده اشتباه است',
-            ], 200);
+            $error = 'کد وارد شده اشتباه است';
+            return $this->JsonResponse(null, $error, 200);
         }
     }
 
@@ -85,23 +68,16 @@ class LoginSignUpController extends Controller
         $member->phone = $request->phone;
         if ($member->save()) {
             $token =     Auth::guard('api')->login($member);
-            return response()->json([
-                'code' => 200,
-                'data' => $token,
-                'error' => '',
-            ], 200);
+            return $this->JsonResponse($token, null, 201);
         } else {
-            return response()->json([
-                'code' => 400,
-                'message' => 'خطا در ثبت نام',
-            ], 401);
+            $error = 'خطا در ثبت نام';
+           return $this->JsonResponse(null, $error, 200);
         }
     }
 
     public function me()
     {
         return $member = $this->token(request()->header('Authorization'));
-
     }
 
 

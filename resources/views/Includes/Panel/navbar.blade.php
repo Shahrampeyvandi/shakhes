@@ -17,6 +17,25 @@
                             <i class="fa fa-search"></i>
                         </a>
                     </li>
+                    <li class="nav-item datetime d-none d-md-block">
+                        <a href="#" class="nav-link">
+                            تاریخ
+                    
+                            <span class="date">
+                    
+                                {{\Morilog\Jalali\Jalalian::forge('today')->format('%A, %d %B %y')}}
+                            </span>
+                    
+                            ساعت
+                            <span class="date" id='server_time' style="width:75px;margin-left:10px">
+                    
+                            </span>
+                            <span >
+                                وضعیت بازار : 
+                                {{Cache::get('bazarstatus')}}
+                            </span>
+                        </a>
+                    </li>
 
                     <li class="nav-item">
                         

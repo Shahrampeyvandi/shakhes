@@ -66,7 +66,7 @@ class EducationController extends Controller
             $tmpName = $_FILES['upload']['tmp_name'];
 
             $size = $_FILES['upload']['size'];
-            $filePath = "pictures/educations/" . date('d-m-Y-H-i-s');
+            $filePath = "pictures/educations/" . uniqid();
             $filename = request()->file('upload')->getClientOriginalName();
 
             if (!file_exists($filePath)) {

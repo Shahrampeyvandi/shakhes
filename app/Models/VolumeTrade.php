@@ -17,6 +17,19 @@ class VolumeTrade extends Model
     {
         return $this->belongsTo(Namad::class, 'namad_id');
     }
+
+     public function format($number)
+    {
+        if ($number > 0 &&  $number < 1000000) {
+            return number_format($number, 0);
+        } elseif ($number > 1000000 &&  $number < 1000000000) {
+            return $number = number_format($number / 1000000, 2) . "M";
+        } elseif ($number > 1000000000) {
+            return  $number = number_format($number / 1000000000, 2) . "B";
+        }
+    }
+
+   
    
 
     public static function check($id)

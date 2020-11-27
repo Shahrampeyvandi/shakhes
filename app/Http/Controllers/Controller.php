@@ -139,6 +139,7 @@ class Controller extends BaseController
         $clarifications = 0;
         $disclosures = 0;
         $volume_trades_report = 0;
+        $count = 2;
         $date = Carbon::today();
 
 
@@ -147,22 +148,50 @@ class Controller extends BaseController
                 $q->where(['member_id' => $user->id]);
             })
             ->count();
+        $array['notifications'][] = [
+            "pk" => 2,
+            "title" => "capital_increases",
+            "count" => $capital_increases
+        ];
         $clarifications += clarification::whereDate('updated_at', $date)->whereDoesntHave('readed_notifications', function ($q) use ($user) {
             $q->where(['member_id' => $user->id]);
         })->count();
+        $array['notifications'][] = [
+            "pk" => 3,
+            "title" => "clarifications",
+            "count" => $clarifications
+        ];
         $disclosures += Disclosures::whereDate('updated_at', $date)->whereDoesntHave('readed_notifications', function ($q) use ($user) {
             $q->where(['member_id' => $user->id]);
         })->count();
+        $array['notifications'][] = [
+            "pk" => 4,
+            "title" => "disclosures",
+            "count" => $disclosures
+        ];
         $volume_trades_report += VolumeTrade::whereDate('updated_at', $date)->whereDoesntHave('readed_notifications', function ($q) use ($user) {
             $q->where(['member_id' => $user->id]);
         })->count();
+        $array['notifications'][] = [
+            "pk" => 5,
+            "title" => "volume_trades",
+            "count" => $volume_trades_report
+        ];
 
-
-        $array['capital_increases'] = $capital_increases;
-        $array['clarifications'] = $clarifications;
-        $array['disclosures'] = $disclosures;
-        $array['volume_trades'] = $volume_trades_report;
 
         return $array;
+    }
+
+    public function JsonResponse($data,$error,$status = 200)
+    {
+            return response()->json(
+            [
+                'data' => $data,
+                'responseDate' => Jalalian::forge('now')->format('Y/m/d'),
+                'responseTime' => Jalalian::forge('now')->format('H:m'),
+                'errorMessage' => $error
+            ],
+            $status
+        );
     }
 }

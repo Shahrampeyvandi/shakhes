@@ -16,8 +16,8 @@ class Selected extends Migration
         Schema::create('selected', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('member_id');
-            $table->unsignedBigInteger('model_id');
-            $table->enum('type',['capital_increase','clarification','disclosure','continuning_pattern','support_resistance_line']);
+            $table->unsignedBigInteger('bookmarkable_id');
+            $table->string('bookmarkable_type');
             $table->timestamps();
         });
     }

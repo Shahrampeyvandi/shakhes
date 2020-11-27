@@ -17,8 +17,12 @@ class PortfoyController extends Controller
         $holdings = Holding::latest()->get();
         $array = [];
         foreach ($holdings as $key => $holding_obj) {
-            $name = Namad::where('id', $holding_obj->namad_id)->first()->name;
-            $getportfoy = Holding::GetPortfoyAndYesterdayPortfoy($holding_obj);
+
+            $namad = Namad::where('id', $holding_obj->namad_id)->first();
+         
+            $name = $namad->name;
+            
+            // $getportfoy = Holding::GetPortfoyAndYesterdayPortfoy($holding_obj);
             $array[$name]['portfoy'] = $this->format($holding_obj->getMarketValue());
             $array[$name]['percent_change_porftoy'] = $holding_obj->change_percent();
             $array[$name]['namad_counts'] = count($holding_obj->namads);
@@ -43,11 +47,11 @@ class PortfoyController extends Controller
         $total = 0;
         // جمع ارزش مالی شرکت از ضرب تعداد هرسهم شرکت در  آخرین قیمت سهم
         foreach ($request->namads as $key => $id) {
-            
+
             $pl = Cache::get($id)['pl'];
             $total += $request->persent[$key] * $pl;
         }
-        if(Holding::where('namad_id',$request->name)->first()) {
+        if (Holding::where('namad_id', $request->name)->first()) {
             $request->session()->flash('Error', 'شرکت از قبل ثبت شده است');
             return back();
         }
@@ -62,7 +66,7 @@ class PortfoyController extends Controller
                 ->whereHolding_id($holding->id)
                 ->count() == 0
             ) {
-                
+
                 $last_price_value =  Cache::get($id)['pl'];
                 $count =  $request->persent[$key] * $last_price_value;
                 $percent = ($count * 100) / $total;
@@ -102,34 +106,57 @@ class PortfoyController extends Controller
         Holding::where('id', $request->holding)->first()->namads()->detach($request->id);
         $holding = Holding::where('id', $request->holding)->first();
         // بررسی دوباره درصد پرتفوی سهم ها
-        $total = 0;
-        foreach ($holding->namads as $key => $namad) {
-            $amount_value =  DB::table('holdings_namads')
-                ->whereNamad_id($namad->id)
-                ->whereHolding_id($request->holding)->first()->amount_value;
+        $this->calculate($holding);
+         return redirect()->route('Holding.Namads',$holding->id);
+     
+    }
+
+    public function calculate($holding)
+    {
+        // dd($holding->namads()->get());
+          $total = 0;
+        foreach ($holding->namads()->get() as $key => $namad) {
+            $amount_value =  $namad->pivot->amount_value;
+           
             $last_price_value = Cache::get($namad->id)['final_price_value'];
             $total += (int)$amount_value * (int)$last_price_value;
+
         }
+        // dd($total);
+        
 
 
 
-        foreach ($holding->namads as $key => $namad) {
-            $amount_value =  DB::table('holdings_namads')
-                ->whereNamad_id($namad->id)
-                ->whereHolding_id($request->holding)->first()->amount_value;
+        foreach ($holding->namads()->get() as $key => $namad) {
+            $amount_value = $namad->pivot->amount_value;
+            $last_price_value = Cache::get($namad->id)['final_price_value'];
             $count =  (int)$amount_value * (int)$last_price_value;
             $percent = ($count * 100) / $total;
-            DB::table('holdings_namads')
-                ->whereNamad_id($namad->id)
-                ->whereHolding_id($request->holding)
-                ->update([
-                    'amount_percent' => $percent,
-                ]);
+          $namad->pivot->amount_percent = $percent;
+          $namad->pivot->save();
+           
         }
 
 
+    }
 
 
-        return back();
+    function AddNewNamad()
+    {
+        // dd(request()->all());
+        $last_price_value =  Cache::get(request()->namad)['pl'];
+
+        $holding = Holding::find(request()->id);
+        $holding->namads()->attach(request()->namad, [
+            'amount_percent' => 0,
+            'amount_value' =>  request()->persent,
+            'change' => 0
+
+        ]);
+
+    
+
+        $this->calculate($holding);
+         return redirect()->route('Holding.Namads',$holding->id);
     }
 }

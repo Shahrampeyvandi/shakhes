@@ -1,15 +1,5 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
 Route::get('/login', 'AuthController@Login')->name('login');
 Route::post('/login', 'AuthController@Verify')->name('login')->middleware("throttle:10,2");
@@ -18,6 +8,7 @@ Route::get('/getdata', 'RedisController@getmain');
 Route::get('/shakhes', 'RedisController@shakhes');
 
 Route::group(['middleware' => ['admin']], function () {
+
     Route::get('/', 'MainController@Index')->name('BaseUrl');
     Route::get('/moneyreports', 'MoneyReportsController@Index')->name('MoneyReports');
     Route::get('/moneyreports/add', 'MoneyReportsController@add')->name('MoneyReports.Add');
@@ -33,7 +24,11 @@ Route::group(['middleware' => ['admin']], function () {
     Route::put('/user/insert', 'UsersController@Edit')->name('User.Insert');
     Route::post('/user/get-data', 'UsersController@get_data');
 
+    Route::get('/gettime', 'MainController@getTime');
+
+
     Route::get('/portfoy', 'PortfoyController@Index')->name('PortfoyList');
+     Route::post('/portfoy/add-new-namad', 'PortfoyController@AddNewNamad')->name('Portfoy.AddNamad');
     Route::get('/holding/create', 'PortfoyController@CreateHolding')->name('Holding.Create');
     Route::post('/holding/create', 'PortfoyController@InsertHolding')->name('Holding.Create');
     Route::post('/holding/delete', 'PortfoyController@DeleteHolding')->name('Holding.Delete');

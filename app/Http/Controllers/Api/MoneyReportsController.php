@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\HoldingResource;
 use App\Models\Holding\Holding;
 use App\Models\Namad\Namad;
 use Illuminate\Support\Facades\Cache;
@@ -31,7 +32,7 @@ class MoneyReportsController extends Controller
         }
 
         $array['namad']['status'] = ((int)$holding_obj->getMarketValue() - (int)$holding_obj->portfoy)  > 0 ? 'green' : 'red';
-        
+
         if (is_null($holding_obj)) {
             return response()->json(
                 [
@@ -63,39 +64,41 @@ class MoneyReportsController extends Controller
 
     public function getHoldings()
     {
-        $all = [
-            'time' => $this->get_current_date_shamsi() . '_' . date('H:i'),
-        ];
 
-        $collection = Holding::get()->sortBy(function ($item, $key) {
-            return $item->symbol;
-        });
-        foreach ($collection as $key => $item) {
-            $array = [];
-            $cache =  Cache::get($item->namad_id);
-            $namad = Namad::where('id', $item->namad_id)->first();
-            $array['id'] = $namad->id;
+        // return Cache::get(856);
 
-            $array['namad']['symbol'] = $namad->symbol;
-            $array['namad']['status'] = ((int)$item->getMarketValue() - (int)$item->portfoy)  > 0 ? 'green' : 'red';
-            $yesterday_portfoy = $item->portfoy;
-            $array['yesterday_portfoy'] = (int)$yesterday_portfoy;
-            $array['portfoy'] = (int)$item->getMarketValue();
-            $array['marketvalue'] = $this->format($item->getMarketValue());
-            $array['percent_change_porftoy'] = (int)$yesterday_portfoy !== 0 ?  number_format((((int)$item->getMarketValue() - (int)$yesterday_portfoy) / (int)$yesterday_portfoy) * 100, 2) : 0;
-            $array['color_status']  =  $array['percent_change_porftoy'] > 0 ? 'green' : 'red';
-            $array['countnamad'] = count($item->namads);
-            $all['data'][] = $array;
+        $all = [];
+        if (Cache::has('holding-data')) {
+         
+            $all = Cache::get('holding-data');
+
+            return $this->JsonResponse($all, null, 200);
+
         }
 
-        // return $all['data'];
-         usort($all['data'], function($a, $b) {return $a['portfoy']< $b['portfoy'];});
-       
+            if (isset(request()->id)) {
+                $collection = Holding::whereId(request()->id)->get()->sortByDesc(function ($item, $key) {
+                    return $item->portfoy;
+                });
+                //  Cache::put('holding-data-'.request()->id, $all, 60 * 10);
+            } else {
 
-        return response()->json(
-            $all,
-            200
-        );
+                $collection = Holding::get()->sortByDesc(function ($item, $key) {
+                    return $item->portfoy;
+                });
+            }
+
+            //  usort($collection, function ($a, $b) {
+            //     return $a['realPortfoy'] < $b['realPortfoy'];
+            // });
+
+            $all = HoldingResource::collection($collection);
+           
+            Cache::put('holding-data', $all, 60 * 10);
+            $error = null;
+
+        
+        return $this->JsonResponse($all, $error, 200);
     }
 
     public function getfinancial($id)
@@ -231,7 +234,7 @@ class MoneyReportsController extends Controller
 
 
         $namad = Namad::find($request->id);
-        $seasonal_reports = $namad->seasonalReports()->orderBy('number','desc')->take(4)->get();
+        $seasonal_reports = $namad->seasonalReports()->orderBy('number', 'desc')->take(4)->get();
         $array = [];
         $count = 0;
         foreach ($seasonal_reports as $key => $season_data) {
@@ -252,7 +255,7 @@ class MoneyReportsController extends Controller
     {
 
         $namad = Namad::find($request->id);
-        $yearlyreports = $namad->yearlyReports()->orderBy('year','desc')->get();
+        $yearlyreports = $namad->yearlyReports()->orderBy('year', 'desc')->get();
         $array = [];
         $count = 0;
         foreach ($yearlyreports as $key => $yearlyreport_data) {

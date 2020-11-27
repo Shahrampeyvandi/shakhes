@@ -2,9 +2,10 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\Namad\Namad;
+use Morilog\Jalali\Jalalian;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class ClarificationResource extends JsonResource
 {
@@ -16,15 +17,23 @@ class ClarificationResource extends JsonResource
      */
     public function toArray($request)
     {
-        $namad = Namad::where('id', $this->id)->first();
+
         return [
-            'namad' =>Cache::get($this->namad->id),
-            'id'=>$this->id,
-            'subject' => $this->subject,
-            'publish_date' => $this->publish_date,
-            'selected'=>true,
-            'link_to_codal' => $this->link_to_codal,
-            'new' => $this->new,
+
+            'namad' => [
+                'id' => $this->namad->id,
+                'symbol' => Cache::get($this->namad->id)['symbol'],
+                'name' => Cache::get($this->namad->id)['name'],
+                'final_price_value' => Cache::get($this->namad->id)['final_price_value'],
+                'final_price_percent' => Cache::get($this->namad->id)['final_price_percent'],
+                'final_price_change' => Cache::get($this->namad->id)['last_price_change'],
+                'final_price_status' => Cache::get($this->namad->id)['last_price_status'] ? '+' : '-',
+            ],
+            'newsId' => $this->id,
+            'newsDate' => Jalalian::forge($this->publish_date)->format('Y/m/d'),
+            'newsLink' => $this->link_to_codal,
+            'newsText' => $this->description,
+            'isBookmarked' => false,
         ];
     }
 }

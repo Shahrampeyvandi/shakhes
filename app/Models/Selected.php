@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Selected extends Model
 {
     protected $table = 'selected';
-    protected $fillable = ['member_id','model_id','type'];
+    protected $guarded = ['id'];
+
+    public function bookmarkable()
+    {
+        return $this->morphTo();
+    }
 
 }

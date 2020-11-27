@@ -30,11 +30,11 @@
                             <div class="group">
                                 <label for="address_email" class="label my-3">موبایل</label>
                                 <input id="address_email" type="number" name="mobile" value="<?php echo e(old('mobile')); ?>"
-                                    class="input mb-3">
+                                    class="input mb-3" required>
                             </div>
                             <div class="group">
                                 <label for="address_email" class="label my-3">رمز عبور</label>
-                                <input id="address_email" type="password" name="password" class="input mb-3">
+                                <input id="address_email" type="password" name="password" class="input mb-3" required>
                             </div>
 
 

@@ -10,6 +10,7 @@ use App\Models\Accounting\Transaction;
 use Illuminate\Database\Eloquent\Model;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Models\CapitalIncrease\CapitalIncrease;
+use App\Models\Selected;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Morilog\Jalali\Jalalian;
@@ -35,6 +36,10 @@ class Member extends  Authenticatable  implements JWTSubject
     public function transactions()
     {
         return $this->hasMany(Subscribe::class);
+    }
+      public function bookmarks()
+    {
+        return $this->hasMany(Selected::class);
     }
 
     public function subscribes()
@@ -67,15 +72,18 @@ class Member extends  Authenticatable  implements JWTSubject
     public function check_could_add($namad_id)
     {
         if ($this->namads->contains($namad_id)) {
-            return  ['success' => false, 'message' => 'Namad Already Exist'];
+            return  ['status' => 200, 'message' => 'نماد مورد نظر از قبل انتخاب شده است'];
+        }
+        if (count($this->namads) >= 15) {
+            return  ['status' => 200, 'message' => "حداکثر میتوانید 15 سهام انتخاب کنید"];
         }
         if (count($this->namads) == 0) {
-            return  ['success' => true, 'message' => 'Namad Added Successfuly'];
+            return  ['status' => 201, 'message' => 'با موفقیت اضافه شد'];
         } else {
-            if ($this->expire_date > Carbon::now()) {
-                return  ['success' => true, 'message' => 'Namad Added Successfuly'];
+            if ($this->subscribe > Carbon::now()) {
+                return  ['status' => 201, 'message' => 'با موفقیت اضافه شد'];
             } else {
-                return  ['success' => false, 'message' => 'Sorry! You Are Not Active Plan'];
+                return  ['status' => 200, 'message' => 'برای افزودن نماد باید اشتراک خریداری کنید'];
             }
         }
     }
@@ -89,7 +97,16 @@ class Member extends  Authenticatable  implements JWTSubject
             $array['my_namads'][] = $dd;
             $all_notif += $dd['count'];
         }
-        $array['my_namads']['all_notif'] = $all_notif;
+        $array['count'] = $all_notif;
+        
         return $array;
+    }
+
+   
+
+    public function check_if_has_namad($id)
+    {
+        return $this->namads->contains($id) ? true : false;
+
     }
 }

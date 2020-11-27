@@ -8,18 +8,20 @@ use Carbon\Carbon;
 use App\Models\Selected;
 use App\Models\Namad\Namad;
 use App\Models\VolumeTrade;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\clarification;
 use App\Models\Namad\Disclosures;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CapitalIncreaseResource;
-use App\Http\Resources\ClarificationResource;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Response;
+use App\Http\Resources\VolumeTradeResource;
+use App\Http\Resources\ClarificationResource;
+use App\Http\Resources\CapitalIncreaseResource;
+use App\Http\Resources\NamadResource;
 use App\Models\CapitalIncrease\CapitalIncrease;
-use App\Models\Notification;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class MembersDataController extends Controller
 {
@@ -53,48 +55,15 @@ class MembersDataController extends Controller
     {
         $member = $this->token($request->header('Authorization'));
         // $member=Member::find(2);
-        $all = [
-            'time' => $this->get_current_date_shamsi() . '_' . date('H:i'),
-        ];
-
+       
         $namads_array = $member->namads;
         $array = [];
-        foreach ($namads_array as $key => $namad) {
-            $information = Cache::get($namad->id);
-            $data = [];
-            $data['symbol'] = $namad->symbol;
-            $data['name'] = $namad->name;
-            $data['id'] = $namad->id;
-            $data['flow'] = $namad->flow;
-            $notif = $namad->getUserNamadNotifications($member);
-            $data['notifications'] = $notif;
-            $data['pl'] = $information['pl'];
-            $data['pl_change_percent'] = $information['final_price_percent'];
-            $data['last_price_change'] = $information['last_price_change'];
-            $data['pc'] = $information['pc'];
-            $data['pc_change_percent'] = $information['pc_change_percent'];
 
-            if (isset($information['pl'])) {
-                $data['status'] = $information['status'];
-            } else {
-                $data['status'] = 'red';
-            }
-            if (isset($information['namad_status'])) {
-                $data['namad_status'] = $information['namad_status'];
-            } else {
-                $data['namad_status'] = 'A';
-            }
-
-
-            $array[] = $data;
-        }
-
-        $all['data'] = $array;
-
-        return response()->json(
-            $all,
-            200
-        );
+        $array = NamadResource::collection($namads_array);
+        $error = null;
+      
+        return $this->JsonResponse($array,$error,200);
+       
     }
 
     public function mark_to_read()
@@ -135,13 +104,13 @@ class MembersDataController extends Controller
         $price = 0;
         $res =  $member->check_could_add($namad_id);
 
-        if ($res['status']) {
+        if ($res['status'] == 201) {
             $member->namads()->attach($namad_id, ['amount' => 0, 'profit_loss_percent' => 0, 'price' => $price]);
+            return $this->JsonResponse($res['message'],null,201);
         }
-        return response()->json(
-            $res,
-            201
-        );
+
+        return $this->JsonResponse(null,$res['message'],200);
+        
     }
 
     public function remove(Request $request)
@@ -155,14 +124,11 @@ class MembersDataController extends Controller
             $count = count($request->id);
         } else {
             $member->namads()->detach($request->id);
-             $count = 1;
+            $count = 1;
         }
-        return response()->json(
-            [
-                'message' => $count . ' نماد با موفقیت حذف شدند',
-            ],
-            200
-        );
+        $data = $count . ' نماد با موفقیت حذف شدند';
+        return $this->JsonResponse($data,null,200);
+      
     }
 
 
@@ -371,46 +337,88 @@ class MembersDataController extends Controller
         );
     }
 
-    public function addToSelected($type, $id)
+    public function addToSelected()
     {
         $member = $this->token(request()->header('Authorization'));
 
-        $selected = Selected::where([
-            'member_id' => $member->id,
-            'model_id' => $id,
-            'type' => $type
-        ])->first();
-        if ($selected) {
-            $selected->delete();
-            $res = 'با موفقیت پاک شد';
+        if (request()->type == 'capital_increase') {
+            $m = CapitalIncrease::find(request()->id);
+        }
+        if (request()->type == 'clarification') {
+            $m = clarification::find(request()->id);
+        }
+        if (request()->type == 'volume_trade') {
+            $m = VolumeTrade::find(request()->id);
+        }
+
+        if ($exist = $m->bookmarks()->where('member_id', $member->id)->first()) {
+            $exist->delete();
+            $res = 'با موفقیت حذف شد';
         } else {
-            Selected::create([
-                'member_id' => $member->id,
-                'model_id' => $id,
-                'type' => $type,
+
+            $m->bookmarks()->create([
+                'member_id' => $member->id
             ]);
             $res = 'با موفقیت افزوده شد';
         }
 
-        return Response::json(array('code' => 200, 'message' => $res), 200);
+        return $this->JsonResponse($res, null, 200);
     }
 
-    public function userSelected($type)
+    public function userSelected()
     {
+
         $member = $this->token(request()->header('Authorization'));
-        $all = Selected::where(['member_id' => $member->id, 'type' => $type])->pluck('model_id')->toArray();
-        if ($type == 'capital_increase') {
-            $data = CapitalIncreaseResource::collection(CapitalIncrease::whereIn('id', $all)->get());
+
+
+        if (isset(request()->type)) {
+            if (request()->type == 'capital_increase') {
+                $c =  CapitalIncrease::whereHas('bookmarks', function ($q) use ($member) {
+                    $q->where([
+                        'member_id' => $member->id
+                    ]);
+                })->get();
+                $data = CapitalIncreaseResource::collection($c);
+            }
+            if (request()->type == 'clarification') {
+                $c =  clarification::whereHas('bookmarks', function ($q) use ($member) {
+                    $q->where([
+                        'member_id' => $member->id
+                    ]);
+                })->get();
+                $data = ClarificationResource::collection($c);
+            }
+            if (request()->type == 'volume_trade') {
+                $c =  VolumeTrade::whereHas('bookmarks', function ($q) use ($member) {
+                    $q->where([
+                        'member_id' => $member->id
+                    ]);
+                })->get();
+                $data = VolumeTradeResource::collection($c);
+            }
+        } else {
+            $c =  CapitalIncrease::whereHas('bookmarks', function ($q) use ($member) {
+                $q->where([
+                    'member_id' => $member->id
+                ]);
+            })->get();
+            $data['capitalIncreases'] = CapitalIncreaseResource::collection($c);
+            $c =  clarification::whereHas('bookmarks', function ($q) use ($member) {
+                $q->where([
+                    'member_id' => $member->id
+                ]);
+            })->get();
+            $data['clarifications'] = ClarificationResource::collection($c);
+            $c =  VolumeTrade::whereHas('bookmarks', function ($q) use ($member) {
+                $q->where([
+                    'member_id' => $member->id
+                ]);
+            })->get();
+            $data['volumeTrades'] = VolumeTradeResource::collection($c);
         }
 
-        if ($type == 'clarification') {
-            $data = ClarificationResource::collection(clarification::whereIn('id', $all)->get());
-        }
 
-        // if ($type == 'disclosure') {
-        //     $data = ClarificationResource::collection(clarification::whereIn('id', $all)->get());
-        // }
 
-        return Response::json(array('data' => $data), 200);
+        return $this->JsonResponse($data, null, 200);
     }
 }

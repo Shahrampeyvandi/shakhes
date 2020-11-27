@@ -14,6 +14,16 @@ class Holding extends Model
     {
         return $this->belongsToMany(Namad::class, 'holdings_namads')->withPivot(['amount_percent', 'amount_value', 'change']);
     }
+    public function format($number)
+    {
+        if ($number > 0 &&  $number < 1000000) {
+            return number_format($number, 0);
+        } elseif ($number > 1000000 &&  $number < 1000000000) {
+            return $number = number_format($number / 1000000, 2) . "M";
+        } elseif ($number > 1000000000) {
+            return  $number = number_format($number / 1000000000, 2) . "B";
+        }
+    }
 
     public static function GetPortfoyAndYesterdayPortfoy($holding_obj)
     {
@@ -83,7 +93,7 @@ class Holding extends Model
 
     public function getMarketValue()
     {
-        $namads = $this->namads;
+        $namads = $this->namads()->get();
         $sum_market_value = 0;
         foreach ($namads as $key => $namad) {
             $sum_market_value += (int)$namad->pivot->amount_value * (int)Cache::get($namad->id)['pc'];
@@ -94,6 +104,7 @@ class Holding extends Model
     public function save_portfoy()
     {
         $portfoy = $this->getMarketValue();
+
         static::whereId($this->id)->update([
             'portfoy' => $portfoy
         ]);
@@ -101,7 +112,18 @@ class Holding extends Model
 
     public function change_percent()
     {
+        if (Cache::has('bazarstatus') && Cache::get('bazarstatus') == 'close') {
+            return   Cache::get('portfoy-' . $this->id);
+        }
+        
         $yesterday_portfoy = $this->portfoy;
-        return (int)$yesterday_portfoy !== 0 ? number_format((((int)$this->getMarketValue() - (int)$yesterday_portfoy) / (int)$yesterday_portfoy) * 100, 2) : 0;
+
+        if ((int)$this->getMarketValue() == (int)$yesterday_portfoy && Cache::has('portfoy-' . $this->id)) {
+            return   Cache::get('portfoy-' . $this->id);
+        } else {
+            $number = (int)$yesterday_portfoy !== 0 ? number_format((((int)$this->getMarketValue() - (int)$yesterday_portfoy) / (int)$yesterday_portfoy) * 100, 2) : 0;
+            Cache::put('portfoy-' . $this->id, $number);
+            return $number;
+        }
     }
 }
