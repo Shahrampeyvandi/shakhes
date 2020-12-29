@@ -13,12 +13,13 @@
     <link rel="stylesheet" href="<?php echo e(asset('assets/vendors/select2/css/select2.min.css')); ?>" type="text/css">
     <link rel="stylesheet" href="<?php echo e(asset('assets/vendors/dropify/dropify.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/toastr.css')); ?>">
-    <link href="https://cdn.jsdelivr.net/gh/StephanWagner/jBox@v1.2.0/dist/jBox.all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo e(asset('assets/vendors/datepicker-jalali/bootstrap-datepicker.min.css')); ?>">
 
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/app.css')); ?>" type="text/css">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/custom.css')); ?>" type="text/css">
-    <link rel="shortcut icon" href="<?php echo e(asset('assets/media/image/favicon.png')); ?>">
+<link rel="shortcut icon" type="image/png" href="<?php echo e(asset('assets/images/fav-icon.png')); ?>">
+    <link rel="shortcut icon" sizes="192x192" href="<?php echo e(asset('assets/images/fav-icon.png')); ?>">
+    <link rel="apple-touch-icon" href="<?php echo e(asset('assets/images/fav-icon.png')); ?>">
     <meta name="theme-color" content="#3f51b5" />
     <?php echo $__env->yieldContent('css'); ?>
 </head>
@@ -66,15 +67,15 @@
     <script src="<?php echo e(asset('assets/vendors/dataTable/jquery.dataTables.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/vendors/dataTable/dataTables.bootstrap4.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/vendors/dataTable/dataTables.responsive.min.js')); ?>"></script>
+
     <script src="<?php echo e(asset('assets/js/datatable.js')); ?>"></script>
 
     <script src="<?php echo e(asset('assets/vendors/datepicker-jalali/bootstrap-datepicker.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/vendors/datepicker-jalali/bootstrap-datepicker.fa.min.js')); ?>"></script>
 
-    <?php echo $__env->yieldContent('js'); ?>
-    <script src="https://cdn.jsdelivr.net/gh/StephanWagner/jBox@v1.2.0/dist/jBox.all.min.js"></script>
     <script src="<?php echo e(asset('assets/js/custom.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/app.js')); ?>"></script>
+    <?php echo $__env->yieldContent('js'); ?>
     <!-- end::custom scripts -->
     <script>
         $('.date-picker-shamsi').datepicker({
@@ -82,6 +83,8 @@
     showOtherMonths: true,
     selectOtherMonths: false
     });
+
+
     </script>
 
 </body>

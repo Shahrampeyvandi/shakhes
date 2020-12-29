@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Morilog\Jalali\Jalalian;
 use App\Models\Holding\Holding;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\NamadResource;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 
@@ -56,34 +57,21 @@ class NamadsController extends Controller
         $member = $this->token(request()->header('Authorization'));
         $namad = Namad::find($request->id);
         if ($namad) {
-            $information = Cache::get($namad->id);
+           
             $information['symbol'] = $namad->symbol;
-            $information['name'] = $namad->name;
-            $information['id'] = $namad->id;
-            $information['flow'] = $namad->flow;
-            if (isset($information['pl'])) {
-                $information['status'] = $information['status'];
-            } else {
-                $information['status'] = 'red';
-            }
-            if (isset($information['namad_status'])) {
-                $information['namad_status'] = $information['namad_status'];
-            } else {
-                $information['namad_status'] = 'A';
-            }
+            $information['name'] = Cache::get($namad->id)['name'];
+                $information['final_price_value'] = Cache::get($namad->id)['final_price_value'];
+                $information['final_price_percent'] = Cache::get($namad->id)['final_price_percent'];
+                $information['final_price_change'] = Cache::get($namad->id)['last_price_change'];
+                $information['final_price_status'] = Cache::get($namad->id)['last_price_status'] ? '+' : '-';
+                $information['namad_status'] = Cache::get($namad->id)['namad_status'];
+             $information['notifications_count'] = $namad->getUserNamadNotifications($member)['count'];
 
-            if (Holding::where('namad_id', $namad->id)->first()) {
-                $information['holding'] = 1;
-            } else {
-                $information['holding'] = 0;
-            }
-            $information['holding'] = 0;
-
-            $result =  array_merge($information, $namad->getUserNamadNotifications($member));
-
-            return response()->json($result, 200);
+            return $this->JsonResponse($information,null,200);
         } else {
-            return response()->json('Namad not found', 401);
+            $error = 'نماد مورد نظر یافت نشد';
+            return $this->JsonResponse([],$error,200);
+           
         }
     }
 

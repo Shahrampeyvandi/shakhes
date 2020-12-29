@@ -25,6 +25,9 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     
     Route::get('addbookmark', 'Api\MembersDataController@addToSelected');
     Route::get('userbookmarks', 'Api\MembersDataController@userSelected');
+
+    Route::post('ticket/submit', 'Api\TicketController@add');
+
     
 //---------- بخش بازار------------------
 Route::group(['prefix'=>'market'], function(){
@@ -40,6 +43,14 @@ Route::get('/1/most-price-decreases', 'Api\MarketController@bourseMostPriceDecre
 Route::get('/2/most-price-decreases', 'Api\MarketController@farabourseMostPriceDecreases');
 Route::get('/namad', 'Api\MarketController@getNamad');
 Route::get('/bnamads/search', 'Api\MarketController@search');
+
+//-----------بخش آموزشی------------------
+Route::get('/education/list', 'Api\EducationController@list');
+Route::get('/education/addview/{id}', 'Api\EducationController@addViewCount');
+Route::get('/education/{id}', 'Api\EducationController@view');
+//----------------------------------------------------------------
+
+
 });
 //----------------------------------------------------------------
     
@@ -65,12 +76,6 @@ Route::get('/getalldata/{id}', 'Api\NamadsController@getalldata'); // افشای
 Route::get('/continuingpaterns', 'Api\PaternsController@getContinuingPaterns'); // get all capitalincreases
 
 
-//-----------بخش آموزشی------------------
-Route::get('/education/list', 'Api\EducationController@list');
-Route::get('/education/addview/{id}', 'Api\EducationController@addViewCount');
-Route::get('/education/{id}', 'Api\EducationController@view');
-//----------------------------------------------------------------
-
 
 
 
@@ -87,6 +92,8 @@ Route::get('clarifications/{id?}', 'Api\MembersDataController@namadclarification
 Route::get('getfinancial/{id}', 'Api\MoneyReportsController@getfinancial');
 Route::get('/getholdingdata/{id}', 'Api\MoneyReportsController@get_holding_data');
 Route::get('/getholdings', 'Api\MoneyReportsController@getHoldings');
+Route::get('/holding-namads', 'Api\MoneyReportsController@showHolding');
+
 //------------------------
 
 

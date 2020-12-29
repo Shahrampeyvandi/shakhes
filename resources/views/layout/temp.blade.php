@@ -17,7 +17,9 @@
 
     <link rel="stylesheet" href="{{asset('assets/css/app.css')}}" type="text/css">
     <link rel="stylesheet" href="{{asset('assets/css/custom.css')}}" type="text/css">
-    <link rel="shortcut icon" href="{{asset('assets/media/image/favicon.png')}}">
+<link rel="shortcut icon" type="image/png" href="{{asset('assets/images/fav-icon.png')}}">
+    <link rel="shortcut icon" sizes="192x192" href="{{asset('assets/images/fav-icon.png')}}">
+    <link rel="apple-touch-icon" href="{{asset('assets/images/fav-icon.png')}}">
     <meta name="theme-color" content="#3f51b5" />
     @yield('css')
 </head>

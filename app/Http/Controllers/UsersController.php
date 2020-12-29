@@ -11,8 +11,32 @@ class UsersController extends Controller
     public function Index(Request $request)
     {
       
-       $users = Member::latest()->get();
-        return view('Users',compact('users'));
+       
+         if (\request()->ajax()) {
+             $res = [];
+        
+            $items = Member::orderBy('created_at','desc')->paginate(10);
+           foreach ($items as $key => $item) {
+               $res [] = [
+                   'id' => $item->id,
+                   'fname' => $item->fname,
+                   'lname' => $item->lname,
+                   'mobile' => $item->phone,
+                   'namads' => $item->namads->count(),
+                   'avatar' => $item->avatar ?  asset("uploads/brokers/$item->avatar") : asset("assets/images/avatar.png"),
+                   'has_plan' => $item->get_plan() ? $item->get_plan() : 'ندارد',
+               ];
+           }
+            
+            return response()->json([
+                'recordsTotal' => $items->total(),
+                'recordsFiltered' => $items->total(),
+                'draw' => request()->input('draw'),
+                'data' => $res,
+            ]);
+          
+        }
+        return view('Users');
     }
 
     public function Delete(Request $request)

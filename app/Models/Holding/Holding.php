@@ -14,14 +14,17 @@ class Holding extends Model
     {
         return $this->belongsToMany(Namad::class, 'holdings_namads')->withPivot(['amount_percent', 'amount_value', 'change']);
     }
-    public function format($number)
+   public function format($number)
     {
         if ($number > 0 &&  $number < 1000000) {
-            return number_format($number, 0);
+            return number_format($number);
         } elseif ($number > 1000000 &&  $number < 1000000000) {
-            return $number = number_format($number / 1000000, 2) . "M";
+           $number = number_format($number / 1000000,2,'.','') + 0;
+            return $number = number_format($number, 2) . "M";
         } elseif ($number > 1000000000) {
-            return  $number = number_format($number / 1000000000, 2) . "B";
+           $number =  number_format($number / 1000000000,2,'.','') + 0;
+            return  $number = number_format($number, 2) . "B";
+            
         }
     }
 
@@ -91,19 +94,45 @@ class Holding extends Model
         return $all;
     }
 
-    public function getMarketValue()
+    public function namadsResource()
     {
-        $namads = $this->namads()->get();
-        $sum_market_value = 0;
-        foreach ($namads as $key => $namad) {
-            $sum_market_value += (int)$namad->pivot->amount_value * (int)Cache::get($namad->id)['pc'];
+        $res = [];
+        foreach ($this->namads()->get() as $key => $namad) {
+            $res[] =  [
+                'id' => $namad->id,
+                'symbol' => Cache::get($namad->id)['symbol'],
+                'name' => Cache::get($namad->id)['name'],
+                'final_price_value' => Cache::get($namad->id)['final_price_value'],
+                'final_price_percent' => Cache::get($namad->id)['final_price_percent'],
+                'final_price_change' => Cache::get($namad->id)['last_price_change'],
+                'final_price_status' => Cache::get($namad->id)['last_price_status'] ? '+' : '-',
+                'namad_status' => Cache::get($namad->id)['namad_status'],
+                'amount_value' => $this->format($namad->pivot->amount_value),
+                'amount_percent' => $namad->pivot->amount_percent ? strval($namad->pivot->amount_percent) : 0
+            ];
         }
-        return $sum_market_value;
+
+        return $res;
+    }
+
+    public function getMarketValue($index='pc')
+    {
+        // if (Cache::has('holding-' . $this->id)) {
+        //     return   (int)Cache::get('holding-' . $this->id)['marketvalue'];
+        // }
+
+        $namads = $this->namads()->get();
+        $sum_market_value = [];
+        foreach ($namads as $key => $namad) {
+            $sum_market_value[] = (int)$namad->pivot->amount_value * (int)Cache::get($namad->id)[$index];
+        }
+        return array_sum($sum_market_value);
     }
 
     public function save_portfoy()
     {
         $portfoy = $this->getMarketValue();
+
 
         static::whereId($this->id)->update([
             'portfoy' => $portfoy
@@ -112,18 +141,39 @@ class Holding extends Model
 
     public function change_percent()
     {
-        if (Cache::has('bazarstatus') && Cache::get('bazarstatus') == 'close') {
-            return   Cache::get('portfoy-' . $this->id);
-        }
-        
-        $yesterday_portfoy = $this->portfoy;
 
-        if ((int)$this->getMarketValue() == (int)$yesterday_portfoy && Cache::has('portfoy-' . $this->id)) {
-            return   Cache::get('portfoy-' . $this->id);
-        } else {
-            $number = (int)$yesterday_portfoy !== 0 ? number_format((((int)$this->getMarketValue() - (int)$yesterday_portfoy) / (int)$yesterday_portfoy) * 100, 2) : 0;
-            Cache::put('portfoy-' . $this->id, $number);
-            return $number;
+        $portfoy = $this->getMarketValue();
+        $yesterday_portfoy = $this->getMarketValue('py');
+
+       return $percent = number_format((($portfoy - $yesterday_portfoy) / $yesterday_portfoy) * 100, 1);
+    }
+
+    public function get_history_data($inscode, $days)
+    {
+        $array = [];
+        $ch = curl_init("https://members.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=$inscode&Top=$days&A=0");
+        curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_ENCODING, "");
+        $result = curl_exec($ch);
+        $day_data = explode(';', $result);
+        foreach ($day_data as $key => $value) {
+            $data = explode('@', $value);
+
+            if (count($data) == 10) {
+                $pl = substr($data[4], 0, -3);
+                $pc = substr($data[3], 0, -3);
+
+
+                $array[] = [
+                    'pl' => $pl,
+                    'pc' => $pc,
+
+                ];
+            }
         }
+        return $array;
     }
 }

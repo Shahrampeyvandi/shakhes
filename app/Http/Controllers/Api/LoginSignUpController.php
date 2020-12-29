@@ -23,6 +23,8 @@ class LoginSignUpController extends Controller
             $data = null;
             $status = 200;
         } else {
+            $data = array('code' => $code->v_code);
+            $this->sendSMS('e281gs93os', $request->phone, $data);
             $data = $code->v_code;
             $error = null;
             $status = 200;

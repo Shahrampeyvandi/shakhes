@@ -20,38 +20,37 @@ class MarketController extends Controller
     public function getNamad(Request $request)
     {
 
-
+        $member = $this->token(request()->header('Authorization'));
         $namad = Namad::find($request->id);
-
         if ($namad) {
-
             $information = Cache::get($namad->id);
-            $information['symbol'] = $namad->symbol;
-            $information['name'] = $namad->name;
-            $information['id'] = $namad->id;
-            $information['flow'] = $namad->flow;
+            $information['notifications_count'] = $namad->getUserNamadNotifications($member)['count'];
             $information['time'] = date('g:i', strtotime($information['time']));
+            $information['namad_status'] = $information['namad_status'];
 
-            if ($information['pl'] && $information['py']) {
-                $information['final_price_value'] = $information['pl'];
-                $information['final_price_percent'] = $information['py'] ?  abs(number_format((float)(($information['pl'] - $information['py']) * 100) / $information['py'], 2, '.', '')) : '';
-                $information['last_price_change'] = abs($information['pl'] - $information['py']);
-                $information['last_price_status'] = ($information['pl'] - $information['py']) > 0 ? '1' : '0';
-            } else {
-                $information['final_price_value'] = '';
-                $information['final_price_percent'] = '';
-                $information['last_price_change'] = '';
-                $information['last_price_status'] = '';
-            }
-            if (isset($information['namad_status'])) {
-                $information['namad_status'] = $information['namad_status'];
-            } else {
-                $information['namad_status'] = 'A';
-            }
+           
+            $information['personbuycount'] = strval($information['personbuycount']);
+            $information['legalbuycount'] = strval($information['legalbuycount']);
+            $information['personsellcount'] = strval($information['personsellcount']);
+            $information['legalsellcount'] = strval($information['legalsellcount']);
+            $information['person_buy_power'] = strval($information['person_buy_power']);
+            $information['pc_change_percent'] = strval($information['pc_change_percent']);
+            $information['pc_status'] = (int)$information['pc'] > (int)$information['py'] ? '+' : '-';
+            $information['pf_change_percent'] = strval($information['pf_change_percent']);
+            $information['pf_status'] = (int)$information['pc'] > (int)$information['py'] ? '+' : '-';
+            $information['pl_change_percent'] = strval($information['final_price_percent']);
+            $information['pl_change_val'] = strval($information['last_price_change']);
+            $information['pl_status'] = (int)$information['pl'] > (int)$information['py'] ? '+' : '-';
+            $information['pmin_status'] = (int)$information['pmin'] > (int)$information['py'] ? '+' : '-';
+            $information['pmax_status'] = (int)$information['pmax'] > (int)$information['py'] ? '+' : '-';
 
+            unset($information['last_price_change']);
+            unset($information['last_price_status']);
+            unset($information['final_price_percent']);
             unset($information['lastsells']);
             unset($information['lastbuys']);
             unset($information['filter']);
+
             if (Cache::has('order' . $namad->id)) {
                 $sefareshat = Cache::get('order' . $namad->id);
             } else {
@@ -77,25 +76,23 @@ class MarketController extends Controller
                 if ($orders) {
                     $explode_orders = explode('@', $orders);
                     $explode_orders[1] = $this->format((int) $explode_orders[1]);
-                    $sefareshat['lastbuys'][] = array('tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2], 'color' => $explode_orders[2] < $information['minrange'] ? 'gray' : 'black');
+                    $sefareshat['lastbuys'][] = array('tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2], 'color' => $explode_orders[2] < $information['minRange'] ? 'gray' : 'black');
                     $explode_orders[6] = $this->format((int) $explode_orders[6]);
-                    $sefareshat['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7], 'color' => $explode_orders[7] < $information['minrange'] ? 'gray' : 'black');
+                    $sefareshat['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7], 'color' => $explode_orders[7] < $information['minRange'] ? 'gray' : 'black');
                     $explode_orders[11] = $this->format((int) $explode_orders[11]);
-                    $sefareshat['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12], 'color' => $explode_orders[12] < $information['minrange'] ? 'gray' : 'black');
+                    $sefareshat['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12], 'color' => $explode_orders[12] < $information['minRange'] ? 'gray' : 'black');
 
                     $explode_orders[4] = $this->format((int) $explode_orders[4]);
-                    $sefareshat['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3], 'color' => $explode_orders[3] > $information['maxrange'] ? 'gray' : 'black');
+                    $sefareshat['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3], 'color' => $explode_orders[3] > $information['maxRange'] ? 'gray' : 'black');
                     $explode_orders[9] = $this->format((int) $explode_orders[9]);
-                    $sefareshat['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8], 'color' => $explode_orders[8] > $information['maxrange'] ? 'gray' : 'black');
+                    $sefareshat['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8], 'color' => $explode_orders[8] > $information['maxRange'] ? 'gray' : 'black');
                     $explode_orders[14] = $this->format((int) $explode_orders[14]);
-                    $sefareshat['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13], 'color' => $explode_orders[13] > $information['maxrange'] ? 'gray' : 'black');
+                    $sefareshat['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13], 'color' => $explode_orders[13] > $information['maxRange'] ? 'gray' : 'black');
                 }
 
                 Cache::store()->put('order' . $namad->id, $sefareshat, 12);
             }
-
             $result = array_merge($information, $sefareshat);
-
             return $this->JsonResponse($result, null, 200);
         }
     }
@@ -229,7 +226,7 @@ class MarketController extends Controller
                 $all[] = $array;
             });
 
-            Cache::put('bshakhes', $all, 60 * 2);
+            Cache::put('bshakhes', $all, 60 * 5);
             $error = null;
         } catch (\Throwable $th) {
             $error = 'در حال حاضر سرور با مشکل مواجه است';
@@ -314,7 +311,7 @@ class MarketController extends Controller
                 }
                 $all[] = $array;
 
-                
+
                 $array['title'] = $node->filter('tr:nth-of-type(4) td')->text();
                 $array['time'] =  $node->filter('tr:nth-of-type(4) td:nth-of-type(2)')->text();
                 $array['last_val'] =  $node->filter('tr:nth-of-type(4) td:nth-of-type(3)')->text();
@@ -332,7 +329,7 @@ class MarketController extends Controller
                 $all[] = $array;
             });
 
-            Cache::put('fshakhes', $all, 5000);
+            Cache::put('fshakhes', $all, 60 * 5);
             $error = null;
         } catch (\Throwable $th) {
             $error = 'در حال حاضر سرور با مشکل مواجه است';
@@ -451,8 +448,9 @@ class MarketController extends Controller
 
         $information = Cache::get($idd);
         if ($information) {
-            $collect = collect($information);
-            return $result = $collect->paginate(20);
+
+            return $collect = collect($information);
+            //  $result = $collect->paginate(20);
         }
 
 
@@ -500,32 +498,8 @@ class MarketController extends Controller
                 // return $information;
                 if (!is_null($information)) {
                     if (array_key_exists('pl', $information) && array_key_exists('py', $information)) {
-                        $pl = $information['pl'];
-                        $py = $information['py'];
-                        $dd['id'] = $namad->id;
-                        if ($pl && $py) {
-                            $dd['symbol'] = $namad->symbol;
-                            $dd['name'] = $namad->name;
-                            $dd['final_price_value'] = $pl;
-                            $percent = (($pl - $py) * 100) / $py;
-                            $percent =  number_format((float)$percent, 2, '.', '');
-                            $dd['final_price_percent'] = $percent;
-                            $dd['last_price_change'] = $pl - $py;
-                            $dd['last_price_status'] = ($pl - $py) > 0 ? '1' : '0';
-                        } else {
-                            $dd['symbol'] = $namad->symbol;
-                            $dd['name'] = $namad->name;
-                            $dd['final_price_value'] = '';
-                            $dd['final_price_percent'] = '';
-                            $dd['last_price_change'] = '';
-                            $dd['last_price_status'] = '';
-                        }
-                        if (isset($information['namad_status'])) {
-                            $dd['namad_status'] = $information['namad_status'];
-                        } else {
-                            $dd['namad_status'] = 'A';
-                        }
-                        $dd['effect'] = $value;
+                        $dd['namad'] = new NamadResource($namad);
+                        $dd['effect'] = (int)$value;
 
                         $ff[] = $dd;
                     }
@@ -533,12 +507,12 @@ class MarketController extends Controller
             }
         }
 
-        Cache::store()->put($idd, $ff, 1000); // 10 Minutes
+        Cache::store()->put($idd, $ff, 60 * 5); // 10 Minutes
         $collect = collect($ff);
-        $result = $collect->paginate(20);
-        return $result;
+        // $result = $collect->paginate(20);
+        return $collect;
 
-        return response()->json(['data' => $ff], 200);
+        // return response()->json(['data' => $ff], 200);
     }
 
 
@@ -546,10 +520,9 @@ class MarketController extends Controller
     {
         $information = Cache::get($idd);
         if ($information) {
-
             $collect = collect($information);
-            $result = $collect->paginate(20);
-            return $result;
+            // $result = $collect->paginate(20);
+            return $collect;
         }
 
         $crawler = Goutte::request('GET', $url);
@@ -590,10 +563,10 @@ class MarketController extends Controller
             }
         }
 
-        Cache::store()->put($idd, $all, 60 * 3); // 3 Minutes
+        Cache::store()->put($idd, $all, 60 * 5); // 5 Minutes
         $collect = collect($all);
-        $result = $collect->paginate(20);
-        return $result;
+        // $result = $collect->paginate(20);
+        return $collect;
     }
 
     public function search(Request $request)

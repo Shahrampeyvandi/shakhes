@@ -8,17 +8,17 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>شاخص - ورود</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
-    <link rel="stylesheet" href="<?php echo e(route('BaseUrl')); ?>/vendor/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="<?php echo e(route('BaseUrl')); ?>/vendor/bootstrap/bootstrap-rtl.min.css">
-    <link rel="stylesheet" href="<?php echo e(route('BaseUrl')); ?>/vendor/bootstrap/css/mdb.min.css">
-    <link rel="stylesheet" href="<?php echo e(route('BaseUrl')); ?>/assets/css/style.css">
+    <link rel="stylesheet" href="<?php echo e(asset('vendor/bootstrap/bootstrap.min.css')); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('vendor/bootstrap/bootstrap-rtl.min.css')); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('vendor/bootstrap/css/mdb.min.css')); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/style.css')); ?>">
 </head>
 
 <body>
     <div class=" pt-5 mx-3 mx-md-0" style=" display: flex; justify-content: center; align-items: center;">
         <div class="login-wrap">
             <div class="head-login">
-                <img src="<?php echo e(asset('assets/images/logo-shakhes.jpg')); ?>" style="width: 100px" alt="shakhes-logo">
+                <img src="<?php echo e(asset('assets/images/logo.svg')); ?>" style="width: 100px" alt="shakhes-logo">
             </div>
             <?php echo $__env->make('Includes.Panel.alerts', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
             <div class="login-html px-1 px-md-5 py-0">
@@ -28,7 +28,7 @@
 
                         <div class="sign-up-htm">
                             <div class="group">
-                                <label for="address_email" class="label my-3">موبایل</label>
+                                <label for="address_email" class="label my-3">نام کاربری</label>
                                 <input id="address_email" type="number" name="mobile" value="<?php echo e(old('mobile')); ?>"
                                     class="input mb-3" required>
                             </div>
@@ -41,11 +41,9 @@
                             <script src="https://www.google.com/recaptcha/api.js" async defer></script>
                             <div class="g-recaptcha" id="feedback-recaptcha"
                                 data-sitekey="6LebSuIZAAAAAP29yo9Or_53eG4TnMgnPKC4fy1m"></div>
-
                             <div class="group mt-5">
                                 <input type="submit" class="button p-2" value="تایید">
                             </div>
-
                         </div>
                     </form>
                 </div>

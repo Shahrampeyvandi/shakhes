@@ -17,7 +17,7 @@
                 </div>
 
                 <div style="overflow-x: auto;">
-                    <table id="example1" class="table table-striped  table-bordered w-100">
+                    <table id="clarifications" class="table table-striped  table-bordered w-100">
                         <thead>
                             <tr>
                                 <th>ردیف</th>
@@ -29,32 +29,7 @@
 
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach ($clarifications as $key=>$clarification)
-                            <tr>
-                                <td>{{$key+1}}</td>
-                                <td>
-                                    {{$clarification->subject}}
-                                </td>
-                                <td>{{$clarification->namad->name}}</td>
-                                <td>{{\Morilog\Jalali\Jalalian::forge($clarification->publish_date)->format('%B %d، %Y')}}
-                                </td>
-                                <td>
-                                    <a href="{{$clarification->link_to_codal}}" class="text-primary">لینک </a>
-                                </td>
-                                <td>
-                                    <div class="btn-group" role="group" aria-label="">
-                                        {{-- <a href="#"
-                                    class=" btn btn-rounded btn-info btn-sm m-0">مشاهده</a> --}}
-                                        <a href="#" data-id="{{$clarification->id}}" title="حذف" data-toggle="modal"
-                                            data-target="#deleteModal" class="btn btn-sm btn-danger  ">
-                                            <i class="fa fa-trash"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
+                        <tfoot></tfoot>
                     </table>
                 </div>
             </div>
@@ -67,4 +42,93 @@
 
 
 </div>
+@endsection
+
+@section('js')
+<script src="{{asset('assets/vendors/dataTable/defaultConfig.js')}}"></script>
+    <script>
+        $(document).ready(function () {
+        let users_table = $('#clarifications').DataTable({
+        "columnDefs": [{
+        "defaultContent": "-",
+        "targets": "_all"
+        }],
+        "pageLength": 10,
+        'ajax': {
+        'url': '{{route('Clarifications')}}',
+        'type': 'GET',
+        "data": function (d, settings) {
+        var api = new $.fn.dataTable.Api(settings);
+        d.page = Math.min(
+        Math.max(0, Math.round(d.start / api.page.len())),
+        api.page.info().pages
+        ) + 1;
+        }
+        },
+        'columns': [
+        
+        {
+        "data": null,
+        "sortable": false,
+        render: function (data, type, row, meta) {
+        return meta.row + meta.settings._iDisplayStart + 1;
+        }
+        },
+        {
+        "data": "subject",
+        'orderable': true,
+        'searchable': true,
+        },
+        {
+        "data": "symbol",
+        'orderable': true,
+        'searchable': true,
+        },
+        
+        {
+        "data": "date",
+        'orderable': true,
+        'searchable': true,
+        },
+        {
+        'data': null,
+        'orderable': false,
+        'searchable': false,
+        'render': function (data, type, row, meta) {
+        
+        let links = ` 
+        
+            <a href="${data.link}"  
+                class="text-primary ">
+                لینک به کدال
+            </a>
+       `
+        
+        return ` ${links}`;
+        }
+        },
+       
+        
+        {
+        'data': null,
+        'orderable': false,
+        'searchable': false,
+        'render': function (data, type, row, meta) {
+        
+        let links = ` <div class="btn-group" role="group" aria-label="">
+   
+            <a href="#" data-id="${data.id}" title="حذف" data-toggle="modal" data-target="#deleteModal"
+                class="btn btn-sm btn-danger  ">
+                <i class="fa fa-trash"></i>
+            </a>
+        </div>`
+        
+        return ` ${links}`;
+        }
+        }
+        ],
+        });
+
+        })
+    </script>
 @endsection

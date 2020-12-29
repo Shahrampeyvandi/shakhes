@@ -37,8 +37,10 @@
              <li><a href="{{route('Clarifications')}}"><i class="fas fa-file-medical"></i> <span
                         class="pr-4">افشای اطلاعات و شفاف سازی</span> </a>
             </li>
-            <li><a href="{{route('VolumeTrades')}}"><i class="fas fa-comment"></i> <span
+            <li><a href="{{route('VolumeTrades')}}"><i class="fas fa-list"></i> <span
                         class="pr-4">افزایش حجم معاملات</span> </a>
+            </li>
+            <li><a href="{{route('Panel.Tickets')}}"><i class="fas fa-comment"></i> <span class="pr-4">پیام های کاربران</span> </a>
             </li>
             <li><a href="#"><i class="fas fa-cog"></i> <span class="pr-4">تنظیمات</span> </a>
             </li>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Schedules;
 
+use App\Models\Member\Member;
 use Illuminate\Http\Request;
 use Exception;
 use App\Models\Namad\Namad;
@@ -17,7 +18,12 @@ class FastScheduler
     {
        // if (date('H') >= 8 && date('H') <= 12) {
             try {
-                $this->get_data();
+                
+              $this->get_data();
+                   if(strtotime('08:30') < strtotime(date('H:i')) &&  strtotime('13:00') > strtotime(date('H:i'))){
+                    $this->get_data();
+                }
+                   
             } catch (Exception $e) {
             }
      //   }
@@ -60,10 +66,10 @@ class FastScheduler
                     $newdata = [
                         'symbol' =>  $dd[2],
                         'name' => $dd[3],
-                        'pf' => number_format($dd[5]),
-                        'pc' => number_format($dd[6]),
-                        'pl' => number_format($dd[7]),
-                        'py' => number_format($dd[13]),
+                        'pf' => $dd[5],
+                        'pc' => $dd[6],
+                        'pl' => $dd[7],
+                        'py' => $dd[13],
                         'tradecount' => $dd[8],
                         'N_tradeVol' => $dd[9],
                         'N_tradecash' => $dd[10],
@@ -78,6 +84,7 @@ class FastScheduler
                         'last_price_status' => ($dd[7] - $dd[13]) > 0 ? '1' : '0',
                         'pc_change_percent' => isset($dd[13]) && $dd[13] !== 0 ?  abs(number_format((float)(($dd[6] - $dd[13]) * 100) / $dd[13], 2, '.', '')) : '',
                         'pf_change_percent' => isset($dd[5]) && $dd[13] !== 0 ?  abs(number_format((float)(($dd[5] - $dd[13]) * 100) / $dd[13], 2, '.', '')) : '',
+                        
                     ];
 
                     $resultmerge = array_merge($cachedata, $newdata);

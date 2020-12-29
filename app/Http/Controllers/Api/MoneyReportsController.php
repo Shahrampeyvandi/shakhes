@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\HoldingResource;
-use App\Models\Holding\Holding;
 use App\Models\Namad\Namad;
+use Illuminate\Http\Request;
+use App\Models\Holding\Holding;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\NamadResource;
 use Illuminate\Support\Facades\Cache;
+use App\Http\Resources\HoldingResource;
 
 class MoneyReportsController extends Controller
 {
@@ -69,36 +70,60 @@ class MoneyReportsController extends Controller
 
         $all = [];
         if (Cache::has('holding-data')) {
-         
+
             $all = Cache::get('holding-data');
-
             return $this->JsonResponse($all, null, 200);
-
         }
 
-            if (isset(request()->id)) {
-                $collection = Holding::whereId(request()->id)->get()->sortByDesc(function ($item, $key) {
-                    return $item->portfoy;
-                });
-                //  Cache::put('holding-data-'.request()->id, $all, 60 * 10);
-            } else {
 
-                $collection = Holding::get()->sortByDesc(function ($item, $key) {
-                    return $item->portfoy;
-                });
-            }
+        $collection = Holding::get()->sortByDesc(function ($item, $key) {
+            return $item->portfoy;
+        });
 
-            //  usort($collection, function ($a, $b) {
-            //     return $a['realPortfoy'] < $b['realPortfoy'];
-            // });
+        //  usort($collection, function ($a, $b) {
+        //     return $a['realPortfoy'] < $b['realPortfoy'];
+        // });
 
-            $all = HoldingResource::collection($collection);
-           
-            Cache::put('holding-data', $all, 60 * 10);
-            $error = null;
+        $all = HoldingResource::collection($collection);
 
-        
+        Cache::put('holding-data', $all, 60 * 10);
+        $error = null;
+
+
         return $this->JsonResponse($all, $error, 200);
+    }
+
+    public function showHolding()
+    {
+        if (isset(request()->id)) {
+
+            $row = Holding::whereId(request()->id)->first();
+            if($row){
+
+            
+            $h = Namad::find($row->namad_id);
+            $data = [
+                'namad' => new NamadResource($h),
+                'itemId' => $row->id,
+                'realPortfoy' => (int)$row->getMarketValue(),
+                'formatedPortfoy' => $row->format($row->getMarketValue()),
+                'percentChangePorftoy' => $row->change_percent(),
+                'Status' =>  $row->change_percent() > 0 ? '+' : '-',
+                'countNamad' => count($row->namads),
+            ];
+            $data['namads'] = $row->namadsResource();
+            $error = null;
+        }else{
+            $data = null;
+            $error = 'شرکت سرمایه گذاری یافت نشد';
+        }
+        
+            //  Cache::put('holding-data-'.request()->id, $all, 60 * 10);
+        } else {
+            $data = null;
+            $error = 'خطا در دریافت اطلاعات';
+        }
+        return $this->JsonResponse($data,$error,200);
     }
 
     public function getfinancial($id)
@@ -166,107 +191,183 @@ class MoneyReportsController extends Controller
     public function getnamadmonthlyreports(Request $request)
     {
 
-        $namad = Namad::find($request->id);
-        $monthly_reports_years = $namad->monthlyReports->pluck('year')->toArray();
+        try {
+            $namad = Namad::find($request->id);
+            $monthly_reports_years = $namad->monthlyReports()->pluck('year')->toArray();
 
-        $array = [];
-        $count = 0;
-        foreach (array_unique($monthly_reports_years) as $keys => $year) {
-            $monthly_reports = $namad->monthlyReports()->where('year', $year)->orderBy('month')->get();
-            foreach ($monthly_reports as $key => $item) {
-                switch ($item->month) {
-                    case '1':
-                        $fa = 'فروردین';
-                        break;
-
-                    case '2':
-                        $fa = 'اردیبهشت';
-                        break;
-                    case '3':
-                        $fa = 'خرداد';
-                        break;
-                    case '4':
-                        $fa = 'تیر';
-                        break;
-                    case '5':
-                        $fa = 'مرداد';
-                        break;
-                    case '6':
-                        $fa = 'شهریور';
-                        break;
-                    case '7':
-                        $fa = 'مهر';
-                        break;
-                    case '8':
-                        $fa = 'آبان';
-                        break;
-                    case '9':
-                        $fa = 'آذر';
-                        break;
-                    case '10':
-                        $fa = 'دی';
-                        break;
-                    case '11':
-                        $fa = 'بهمن';
-                        break;
-                    case '12':
-                        $fa = 'اسفند';
-                        break;
+            if (count($monthly_reports_years)) {
+                if (count(array_unique($monthly_reports_years)) == 2) {
+                    $setOne = $namad->monthlyReports()->where('year', $monthly_reports_years[0])->orderBy('month')->get();
+                    $setTwo = $namad->monthlyReports()->where('year', $monthly_reports_years[1])->orderBy('month')->get();
+                    $data['info'][] = ['setOneTitle' => $monthly_reports_years[0], 'setTwoTitle' => $monthly_reports_years[1]];
+                } else {
+                    $setOne = $namad->monthlyReports()->where('year', $monthly_reports_years[0])->get();
+                    $data['info'][] = ['setOneTitle' => $monthly_reports_years[0]];
                 }
-
-                //$array[$year][$fa] =  number_format($item->value,0,'.','');
-
-                $array[$count]['value'] = number_format((int)$item->value, 0, '.', '');
-                $array[$count]['year'] = $year;
-                $array[$count]['month'] = $fa;
-                $count++;
+            } else {
+                return $this->JsonResponse(null, 'اطلاعاتی برای این نماد ثبت نشده است', 200);
             }
-        }
-        //$array['mahemali'] = $namad['mahemali'];
 
-        return response()->json(
-            ['data' => $array],
-            200
-        );
+            if (isset($setOne) && isset($setTwo)) {
+                foreach ($setOne as $key => $item) {
+                    switch ($item->month) {
+                        case '1':
+                            $fa = 'فروردین';
+                            break;
+
+                        case '2':
+                            $fa = 'اردیبهشت';
+                            break;
+                        case '3':
+                            $fa = 'خرداد';
+                            break;
+                        case '4':
+                            $fa = 'تیر';
+                            break;
+                        case '5':
+                            $fa = 'مرداد';
+                            break;
+                        case '6':
+                            $fa = 'شهریور';
+                            break;
+                        case '7':
+                            $fa = 'مهر';
+                            break;
+                        case '8':
+                            $fa = 'آبان';
+                            break;
+                        case '9':
+                            $fa = 'آذر';
+                            break;
+                        case '10':
+                            $fa = 'دی';
+                            break;
+                        case '11':
+                            $fa = 'بهمن';
+                            break;
+                        case '12':
+                            $fa = 'اسفند';
+                            break;
+                    }
+
+                    $data['dataSet'][] = ['setOne' => $item->value, 'setTwo' => $setTwo[$key]['value'], 'xAxis' => $fa];
+                }
+            } else {
+                foreach ($setOne as $key => $item) {
+                    switch ($item->month) {
+                        case '1':
+                            $fa = 'فروردین';
+                            break;
+
+                        case '2':
+                            $fa = 'اردیبهشت';
+                            break;
+                        case '3':
+                            $fa = 'خرداد';
+                            break;
+                        case '4':
+                            $fa = 'تیر';
+                            break;
+                        case '5':
+                            $fa = 'مرداد';
+                            break;
+                        case '6':
+                            $fa = 'شهریور';
+                            break;
+                        case '7':
+                            $fa = 'مهر';
+                            break;
+                        case '8':
+                            $fa = 'آبان';
+                            break;
+                        case '9':
+                            $fa = 'آذر';
+                            break;
+                        case '10':
+                            $fa = 'دی';
+                            break;
+                        case '11':
+                            $fa = 'بهمن';
+                            break;
+                        case '12':
+                            $fa = 'اسفند';
+                            break;
+                    }
+                    $data['dataSet'][] = ['setOne' => $item->value, 'xAxis' => $fa];
+                }
+            }
+
+
+
+
+
+            $error = null;
+        } catch (\Throwable $th) {
+            $data = null;
+            $error = 'خطا در دریافت اطلاعات از سرور';
+        }
+
+        return $this->JsonResponse($data, $error, 200);
     }
     public function getnamadseasonalreports(Request $request)
     {
 
 
-        $namad = Namad::find($request->id);
-        $seasonal_reports = $namad->seasonalReports()->orderBy('number', 'desc')->take(4)->get();
-        $array = [];
-        $count = 0;
-        foreach ($seasonal_reports as $key => $season_data) {
-            // $array[$season_data->season]['profit'] = $season_data->profit;
-            // $array[$season_data->season]['loss'] = $season_data->loss;
-
-            $array[$count]['profit'] = $season_data->profit;
-            $array[$count]['loss'] = $season_data->loss;
-            $array[$count]['season'] = $season_data->get_label();
-            $count++;
+        try {
+            $namad = Namad::find($request->id);
+            $seasonal_reports = $namad->seasonalReports()->orderBy('number', 'desc')->take(4)->get();
+            $array = [];
+            if (count($seasonal_reports)) {
+                $count = 0;
+                foreach ($seasonal_reports as $key => $season_data) {
+                    // $array[$season_data->season]['profit'] = $season_data->profit;
+                    // $array[$season_data->season]['loss'] = $season_data->loss;
+                    $array[$count]['setOne'] = $season_data->profit;
+                    $array[$count]['setTwo'] = $season_data->loss;
+                    $array[$count]['xAxis'] = $season_data->get_label();
+                    $data['dataSet'] = $array;
+                    $count++;
+                }
+                $data['info'][] = ['setOneTitle' => 'درآمد', 'setTwoTitle' => 'سود'];
+                $error = null;
+            } else {
+                $data = null;
+                $error = 'اطلاعاتی برای این نماد ثبت نشده است';
+            }
+        } catch (\Throwable $th) {
+            $error = 'خطا در دریافت اطلاعات از سرور';
+            $data = [];
         }
-        return response()->json(
-            ['data' => $array],
-            200
-        );
+        return $this->JsonResponse($data, $error, 200);
     }
     public function getnamadyearlyreports(Request $request)
     {
 
-        $namad = Namad::find($request->id);
-        $yearlyreports = $namad->yearlyReports()->orderBy('year', 'desc')->get();
-        $array = [];
-        $count = 0;
-        foreach ($yearlyreports as $key => $yearlyreport_data) {
-            $array[$count]['profit'] = $yearlyreport_data->profit;
-            $array[$count]['loss'] = $yearlyreport_data->loss;
-            $array[$count]['year'] = $yearlyreport_data->year;
-            $count++;
+        try {
+            $namad = Namad::find($request->id);
+            $yearlyreports = $namad->yearlyReports()->orderBy('year', 'desc')->get();
+
+            $array = [];
+            $data = [];
+            if (count($yearlyreports)) {
+                $count = 0;
+                foreach ($yearlyreports as $key => $yearlyreport_data) {
+                    $array[$count]['setOne'] = $yearlyreport_data->profit;
+                    $array[$count]['setTwo'] = $yearlyreport_data->loss;
+                    $array[$count]['xAxis'] = $yearlyreport_data->year;
+                    $data['dataSet'] = $array;
+                    $count++;
+                }
+                $data['info'][] = ['setOneTitle' => 'درآمد', 'setTwoTitle' => 'سود'];
+                $error = null;
+            } else {
+                $data = null;
+                $error = 'اطلاعاتی برای این نماد ثبت نشده است';
+            }
+        } catch (\Throwable $th) {
+            $error = 'خطا در دریافت اطلاعات از سرور';
+            $data = [];
         }
-        return response()->json(
-            ['data' => $array],
-            200
-        );
+        return $this->JsonResponse($data, $error, 200);
     }
 }

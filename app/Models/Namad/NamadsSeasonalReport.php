@@ -16,7 +16,7 @@ class NamadsSeasonalReport extends Model
     }
     public function get_label()
     {
-        return 'سه ماهه ' . $this->season . ' سال ' . $this->year;
+        return 'سه ماهه ' . $this->season . ' ' . $this->year;
     }
 
 }

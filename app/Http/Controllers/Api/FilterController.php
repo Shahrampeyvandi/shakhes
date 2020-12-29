@@ -6,6 +6,7 @@ use App\Models\Namad\Namad;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\FilterResource;
+use App\Http\Resources\NamadResource;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 
@@ -15,15 +16,16 @@ class FilterController extends Controller
     {
 
         if (Cache::has($kilid)) {
-            return Cache::get($kilid);
+           
+            
+            return $this->JsonResponse(Cache::get($kilid),null,200);
         }
 
         $namads = Namad::all();
+        
         $array = [];
 
-        $data = [
-            'time' => $this->get_current_date_shamsi(),
-        ];
+        $data = [];
 
 
         if ($kilid == 'person_most_buy_sell' || $kilid == 'person_most_sell_buy') {
@@ -38,14 +40,11 @@ class FilterController extends Controller
             foreach ($symbols_array as $key => $symbol) {
                 $namad = Namad::whereSymbol($symbol)->first();
                 if (isset(Cache::get($namad->id)['filter'])) {
-                    $item['id'] = $namad->id;
-                    $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
-                    $item['name'] = $namad->name;
-                    $item['symbol'] = $namad->symbol;
+                    $item['namad'] =new NamadResource($namad);
                     $item['first'] = $this->format((float)((float)Cache::get($namad->id)['N_personbuy'] / (float)Cache::get($namad->id)['personbuycount']));
                     $item['second'] = $this->format((float)((float)Cache::get($namad->id)['N_personsell'] / (float)Cache::get($namad->id)['personsellcount']));
                     $item['third'] = isset(Cache::get($namad->id)['filter'][$kilid]) ?  number_format((float)Cache::get($namad->id)['filter'][$kilid], 0) : 0;
-                    $data['data'][] = $item;
+                    $data[] = $item;
                 }
             }
 
@@ -65,14 +64,11 @@ class FilterController extends Controller
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return $this->format((float)((float)Cache::get($namad->id)['personsell'] / (float)Cache::get($namad->id)['personsellcount']));
                 if (isset(Cache::get($namad->id)['filter'])) {
-                    $item['id'] = $namad->id;
-                    $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
-                    $item['name'] = $namad->name;
-                    $item['symbol'] = $namad->symbol;
+                    $item['namad'] =new NamadResource($namad);
                     $item['first'] = $this->format((float)((float)Cache::get($namad->id)['N_legalbuy'] / (float)Cache::get($namad->id)['legalbuycount']));
                     $item['second'] = $this->format((float)((float)Cache::get($namad->id)['N_legalsell'] / (float)Cache::get($namad->id)['legalsellcount']));
                     $item['third'] = isset(Cache::get($namad->id)['filter'][$kilid]) ?  number_format((float)Cache::get($namad->id)['filter'][$kilid], 0) : 0;
-                    $data['data'][] = $item;
+                    $data[] = $item;
                 }
             }
 
@@ -89,15 +85,12 @@ class FilterController extends Controller
             foreach ($symbols_array as $key => $symbol) {
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
-                $item['id'] = $namad->id;
-                $item['name'] = $namad->name;
-                $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
-                $item['symbol'] = $namad->symbol;
-                $item['first'] = isset(Cache::get($namad->id)['tradevol']) ? Cache::get($namad->id)['tradevol'] : '';
+                 $item['namad'] =new NamadResource($namad);
+                $item['first'] = isset(Cache::get($namad->id)['tradevol']) ? strval(Cache::get($namad->id)['tradevol']) : '';
                 $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
-                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? Cache::get($namad->id)['final_price_percent'] : '';
+                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
                 $item['third'] = isset(Cache::get($namad->id)['tradecash']) ? Cache::get($namad->id)['tradecash'] : '';
-                $data['data'][] = $item;
+                $data[] = $item;
             }
 
             return $this->send_json($kilid, $data);
@@ -112,17 +105,14 @@ class FilterController extends Controller
 
             foreach ($symbols_array as $key => $symbol) {
                 $namad = Namad::whereSymbol($symbol)->first();
-                $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
-                $item['id'] = $namad->id;
-                $item['name'] = $namad->name;
-                $item['symbol'] = $namad->symbol;
-                $item['first'] = isset(Cache::get($namad->id)['tradecount']) ? Cache::get($namad->id)['tradecount'] : '';
+                $item['namad'] =new NamadResource($namad);
+                $item['first'] = isset(Cache::get($namad->id)['tradecount']) ? strval(Cache::get($namad->id)['tradecount']) : '';
                 $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
-                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? Cache::get($namad->id)['final_price_percent'] : '';
+                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
                 $item['third'] = isset(Cache::get($namad->id)['N_tradeVol']) ? $this->format(Cache::get($namad->id)['N_tradeVol']) : '';
-                $item['status'] = Cache::get($namad->id)['status'];
+             
 
-                $data['data'][] = $item;
+                $data[] = $item;
             }
 
             return $this->send_json($kilid, $data);
@@ -138,16 +128,13 @@ class FilterController extends Controller
             foreach ($symbols_array as $key => $symbol) {
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
-                $item['id'] = $namad->id;
-                $item['name'] = $namad->name;
-                $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
-                $item['symbol'] = $namad->symbol;
-                $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? Cache::get($namad->id)['personbuycount'] : '';
+                $item['namad'] =new NamadResource($namad);
+                $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? strval(Cache::get($namad->id)['personbuycount']) : '';
                 $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
-                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? Cache::get($namad->id)['final_price_percent'] : '';
+                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
                 $item['third'] = isset(Cache::get($namad->id)['personbuy']) ? Cache::get($namad->id)['personbuy'] : '';
-                $item['status'] = Cache::get($namad->id)['status'];
-                $data['data'][] = $item;
+             
+                $data[] = $item;
             }
 
             return $this->send_json($kilid, $data);
@@ -164,16 +151,13 @@ class FilterController extends Controller
             foreach ($symbols_array as $key => $symbol) {
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
-                $item['id'] = $namad->id;
-                $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
-                $item['name'] = $namad->name;
-                $item['symbol'] = $namad->symbol;
-                $item['first'] = isset(Cache::get($namad->id)['personsellcount']) ? Cache::get($namad->id)['personsellcount'] : '';
+                $item['namad'] =new NamadResource($namad);
+                $item['first'] = isset(Cache::get($namad->id)['personsellcount']) ? strval(Cache::get($namad->id)['personsellcount']) : '';
                 $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
-                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? Cache::get($namad->id)['final_price_percent'] : '';
+                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
                 $item['third'] = isset(Cache::get($namad->id)['personsell']) ? Cache::get($namad->id)['personsell'] : '';
-                $item['status'] = Cache::get($namad->id)['status'];
-                $data['data'][] = $item;
+             
+                $data[] = $item;
             }
 
             return $this->send_json($kilid, $data);
@@ -190,16 +174,13 @@ class FilterController extends Controller
             foreach ($symbols_array as $key => $symbol) {
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
-                $item['id'] = $namad->id;
-                $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
-                $item['name'] = $namad->name;
-                $item['symbol'] = $namad->symbol;
-                $item['first'] = isset(Cache::get($namad->id)['legalbuycount']) ? Cache::get($namad->id)['legalbuycount'] : '';
+                $item['namad'] =new NamadResource($namad);
+                $item['first'] = isset(Cache::get($namad->id)['legalbuycount']) ? strval(Cache::get($namad->id)['legalbuycount']) : '';
                 $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
-                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? Cache::get($namad->id)['final_price_percent'] : '';
+                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
                 $item['third'] = isset(Cache::get($namad->id)['legalbuy']) ? Cache::get($namad->id)['legalbuy'] : '';
-                $item['status'] = Cache::get($namad->id)['status'];
-                $data['data'][] = $item;
+               
+                $data[] = $item;
             }
 
             return $this->send_json($kilid, $data);
@@ -216,16 +197,13 @@ class FilterController extends Controller
             foreach ($symbols_array as $key => $symbol) {
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
-                $item['id'] = $namad->id;
-                $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
-                $item['name'] = $namad->name;
-                $item['symbol'] = $namad->symbol;
-                $item['first'] = isset(Cache::get($namad->id)['legalsellcount']) ? Cache::get($namad->id)['legalsellcount'] : '';
+                $item['namad'] =new NamadResource($namad);
+                $item['first'] = isset(Cache::get($namad->id)['legalsellcount']) ? strval(Cache::get($namad->id)['legalsellcount']) : '';
                 $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
-                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? Cache::get($namad->id)['final_price_percent'] : '';
+                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
                 $item['third'] = isset(Cache::get($namad->id)['legalsell']) ? Cache::get($namad->id)['legalsell'] : '';
-                $item['status'] = Cache::get($namad->id)['status'];
-                $data['data'][] = $item;
+              
+                $data[] = $item;
             }
 
             return $this->send_json($kilid, $data);
@@ -248,15 +226,12 @@ class FilterController extends Controller
             foreach ($symbols_array as $key => $symbol) {
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
-                $item['id'] = $namad->id;
-                $item['namad_status'] = isset(Cache::get($namad->id)['namad_status'])  ? Cache::get($namad->id)['namad_status'] : '' ;
-                $item['name'] = $namad->name;
-                $item['symbol'] = $namad->symbol;
-                $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? Cache::get($namad->id)['personbuycount'] : '';
+                $item['namad'] =new NamadResource($namad);
+                $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? strval(Cache::get($namad->id)['personbuycount']) : '';
                 $item['second'] = isset(Cache::get($namad->id)['N_personbuy']) ? $this->format((int)Cache::get($namad->id)['N_personbuy']) : 0;
                 $item['third'] =isset(Cache::get($namad->id)['filter'][$kilid]) ? $this->format((float)Cache::get($namad->id)['filter'][$kilid]) : 0;
-                $item['status'] = Cache::get($namad->id)['status'];
-                $data['data'][] = $item;
+                
+                $data[] = $item;
             }
             return $this->send_json($kilid, $data);
         }
@@ -277,15 +252,13 @@ class FilterController extends Controller
             foreach ($symbols_array as $key => $symbol) {
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
-                $item['id'] = $namad->id;
-                $item['namad_status'] = isset(Cache::get($namad->id)['namad_status']) ? Cache::get($namad->id)['namad_status'] : '';
-                $item['name'] = $namad->name;
-                $item['symbol'] = $namad->symbol;
-                $item['first'] = isset(Cache::get($namad->id)['personsellcount']) ? Cache::get($namad->id)['personsellcount'] : '';
-                $item['second'] = $this->format((int)Cache::get($namad->id)['N_personsell']);
-                $item['third'] =isset(Cache::get($namad->id)['filter'][$kilid]) ?  $this->format((float)Cache::get($namad->id)['filter'][$kilid], 0) : 0;
-                $item['status'] = Cache::get($namad->id)['status'];
-                $data['data'][] = $item;
+                if (Cache::get($namad->id)) {
+                    $item['namad'] =new NamadResource($namad);
+                    $item['first'] = isset(Cache::get($namad->id)['personsellcount']) ? strval(Cache::get($namad->id)['personsellcount']) : '';
+                    $item['second'] =isset(Cache::get($namad->id)['personsellcount']) ? $this->format((int)Cache::get($namad->id)['N_personsell']) : 0;
+                    $item['third'] =isset(Cache::get($namad->id)['filter'][$kilid]) ?  $this->format((float)Cache::get($namad->id)['filter'][$kilid], 0) : 0;
+                    $data[] = $item;
+                }
             }
             return $this->send_json($kilid, $data);
         }
@@ -306,7 +279,8 @@ class FilterController extends Controller
 
     public function send_json($kilid, $data)
     {
-        Cache::store()->put($kilid, $data, 60); // 1 Minutes
-        return response()->json($data, 200);
+        Cache::store()->put($kilid, $data, 60 * 5); 
+        return $this->JsonResponse($data,null,200);
+      
     }
 }

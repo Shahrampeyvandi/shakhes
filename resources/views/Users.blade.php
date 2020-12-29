@@ -1,4 +1,5 @@
 @extends('layout.temp')
+
 @section('content')
 @include('Includes.Panel.Modal',['url'=>url('/user/delete')])
 @include('Includes.Panel.Modals.user',['edit'=>true])
@@ -10,7 +11,7 @@
         <hr />
       </div>
       <div style="overflow-x: auto;">
-        <table id="example1" class="table table-striped table-bordered">
+        <table id="users" class="table table-striped table-bordered">
           <thead>
             <tr>
               <th>ردیف</th>
@@ -27,37 +28,7 @@
               <th>عملیات</th>
             </tr>
           </thead>
-          <tbody class="tbody">
-            @foreach ($users as $key=>$user)
-            <tr>
-              <td> {{$key+1}} </td>
-              <td>{{$user->fname}}</td>
-              <td>{{$user->lname}}</td>
-              <td>{{$user->phone}}</td>
-              <td>{{$user->namads->count()}}</td>
-              <td>
-                @if ($user->avatar !== null )
-                <img width="75px" class="img-fluid " src=" {{asset("uploads/brokers/$user->avatar")}} " />
-                @else
-                <img width="75px" class="img-fluid " src=" {{asset("assets/images/avatar.png")}} " />
-                @endif
-              </td>
-              <td>{{$user->get_plan() ? $user->get_plan() : 'ندارد'}}</td>
-              <td>
-                <div class="btn-group" role="group" aria-label="">
-                  <a href="#" data-id="{{$user->id}}" title="حذف" data-toggle="modal" data-target="#userModal"
-                    class="btn btn-sm btn-primary  ">
-                    <i class="fa fa-calendar-day"></i>
-                  </a>
-                  <a href="#" data-id="{{$user->id}}" title="حذف" data-toggle="modal" data-target="#deleteModal"
-                    class="btn btn-sm btn-danger  ">
-                    <i class="fa fa-trash"></i>
-                  </a> </div>
-              </td>
-            </tr>
-            @endforeach
-
-          </tbody>
+          <tfoot></tfoot>
         </table>
       </div>
     </div>
@@ -68,6 +39,7 @@
 @endsection
 
 @section('js')
+<script src="{{asset('assets/vendors/dataTable/defaultConfig.js')}}"></script>
 <script>
   $(document).ready(function(){
     $('.user-modal').on('shown.bs.modal', function (event) {
@@ -89,6 +61,91 @@
     }
   })
 })
+
+let users_table = $('#users').DataTable({
+"columnDefs": [{
+"defaultContent": "-",
+"targets": "_all"
+}],
+"pageLength": 10,
+'ajax': {
+'url': '',
+'type': 'GET',
+"data": function (d, settings) {
+var api = new $.fn.dataTable.Api(settings);
+d.page = Math.min(
+Math.max(0, Math.round(d.start / api.page.len())),
+api.page.info().pages
+) + 1;
+}
+},
+'columns': [
+
+{
+"data": null,
+"sortable": false,
+render: function (data, type, row, meta) {
+return meta.row + meta.settings._iDisplayStart + 1;
+}
+},
+{
+"data": "fname",
+'orderable': true,
+'searchable': true,
+},
+{
+"data": "lname",
+'orderable': true,
+'searchable': true,
+},
+
+{
+"data": "mobile",
+'orderable': true,
+'searchable': true,
+},
+{
+"data": "namads",
+'orderable': true,
+'searchable': true,
+},
+{
+'orderable': false,
+'searchable': false,
+'data': null,
+'render': function (data, type, row, meta) {
+let image = ` <img style="width:60px" src="${data.avatar}">
+`
+return ` ${image}`;
+}
+},
+{
+"data": "has_plan",
+'orderable': true,
+'searchable': true,
+},
+
+{
+'data': null,
+'orderable': false,
+'searchable': false,
+'render': function (data, type, row, meta) {
+
+let links = ` <div class="btn-group" role="group" aria-label="">
+  <a href="#" data-id="${data.id}" title="ویرایش کاربر" data-toggle="modal" data-target="#userModal"
+    class="btn btn-sm btn-primary  ">
+    <i class="fa fa-calendar-day"></i>
+  </a>
+  <a href="#" data-id="${data.id}" title="حذف" data-toggle="modal" data-target="#deleteModal"
+    class="btn btn-sm btn-danger  ">
+    <i class="fa fa-trash"></i>
+  </a> </div>`
+
+return ` ${links}`;
+}
+}
+],
+});
  
 })
 </script>

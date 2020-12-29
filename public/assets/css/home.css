@@ -1,0 +1,303 @@
+@import url("font/primary-yekan.css");
+@import url("font/secondary-vazir.css");
+
+:root {
+    --blue: #007bff;
+    --indigo: #6610f2;
+    --purple: #6f42c1;
+    --pink: #e83e8c;
+    --red: #dc3545;
+    --orange: #fd7e14;
+    --yellow: #ffc107;
+    --green: #28a745;
+    --teal: #20c997;
+    --cyan: #17a2b8;
+    --white: #fff;
+    --gray: #6c757d;
+    --gray-dark: #343a40;
+    --primary: #03A9F4;
+    --secondary: #6c757d;
+    --success: #28a745;
+    --info: #17a2b8;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --light: #f8f9fa;
+    --dark: #343a40;
+    --breakpoint-xs: 0;
+    --breakpoint-sm: 576px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 992px;
+    --breakpoint-xl: 1200px;
+    --font-family-sans-serif: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    --font-family-monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+}
+
+   body {
+	font-family: "primary-font", "segoe ui", "tahoma";
+	position: relative;
+	height: 100%;
+    background-color: #ffffff;
+	line-height: 25px;
+	font-size: 14px;
+	color: #646464;
+	padding-top: 0px !important;
+    direction: rtl;
+
+    
+
+}
+
+ul:not(.list-unstyled) {
+	margin: 0;
+	padding: 0;
+}
+ul:not(.list-unstyled) li {
+	list-style-type: none;
+}
+   
+     h1{
+            font-weight: 500;
+    font-size: 2rem;
+    }
+    h3{
+            font-weight: 400;
+    font-size: 1rem;
+    }
+    h2{
+            font-weight: 500;
+    font-size: 1.5rem;
+    }
+    .nav-bar{
+      
+       -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+      
+      position: fixed;
+    right: 0;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    background-color: whitesmoke;
+    align-items: center;
+        padding-right: 1rem;
+    padding-left: 1rem;
+    background: rgb(228,228,228);
+background: linear-gradient(180deg, rgba(228,228,228,1) 0%, rgba(245,245,245,1) 55%, rgba(255,255,255,1) 100%);
+    }
+
+    .top-100{
+      top: -100px !important;
+    }
+    .menu{
+      display: flex;
+    }
+    .menu a{
+          margin-left: 1.2rem;
+    font-size: 1.2rem;
+    color:#6466aed1;
+    text-decoration: none;
+    }
+    .nav-bar .logo img{
+      width: 150px;
+    }
+
+    .lists img {
+        width: 3rem;
+
+    }
+
+    .mt-6{
+      margin-top: 6rem;
+    }
+
+    .screans {
+        display: flex;
+        padding-top: 85px;
+      
+        background-repeat: no-repeat;
+        background-size: 705px;
+        background-position: center;
+        background-color: #6366af14;
+
+    }
+
+    .screans img {
+        width: 100%;
+    }
+
+    .lists p {
+        display: inline;
+    }
+
+    .list-title {
+        font-size: 1.2rem;
+        font-weight: 400;
+    }
+   
+
+    .logo-container{
+        display: flex;
+    justify-content: center;
+    }
+
+    .links{
+        display: flex;
+            margin-top: 22px;
+    }
+    .links a{
+             flex: 1 0 30%;
+    color: white;
+    background:#1e2c7a;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-right: 2px;
+    }
+    .links img{
+        width: 100%;
+        height: 100%;
+    }
+    .screans-title{
+          text-align: center;
+          margin: 3rem 0 2rem 0;
+       
+
+        }
+
+        .screans-title span{
+             border-bottom: 2px solid;
+    padding-bottom: 1rem;
+        padding-right: 1rem;
+    padding-left: 1rem;
+        }
+
+    
+
+
+    
+.animate-bg {
+  display: block !important;
+  -webkit-animation: border-transform 10s linear infinite alternate forwards;
+  animation: border-transform 10s linear infinite alternate forwards;
+  margin: auto;
+}
+
+@-webkit-keyframes border-transform {
+  0%, 100% {
+    border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
+  }
+  14% {
+    border-radius: 40% 60% 54% 46% / 49% 60% 40% 51%;
+  }
+  28% {
+    border-radius: 54% 46% 38% 62% / 49% 70% 30% 51%;
+  }
+  42% {
+    border-radius: 61% 39% 55% 45% / 61% 38% 62% 39%;
+  }
+  56% {
+    border-radius: 61% 39% 67% 33% / 70% 50% 50% 30%;
+  }
+  70% {
+    border-radius: 50% 50% 34% 66% / 56% 68% 32% 44%;
+  }
+  84% {
+    border-radius: 46% 54% 50% 50% / 35% 61% 39% 65%;
+  }
+}
+
+@keyframes border-transform {
+  0%, 100% {
+    border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
+  }
+  14% {
+    border-radius: 40% 60% 54% 46% / 49% 60% 40% 51%;
+  }
+  28% {
+    border-radius: 54% 46% 38% 62% / 49% 70% 30% 51%;
+  }
+  42% {
+    border-radius: 61% 39% 55% 45% / 61% 38% 62% 39%;
+  }
+  56% {
+    border-radius: 61% 39% 67% 33% / 70% 50% 50% 30%;
+  }
+  70% {
+    border-radius: 50% 50% 34% 66% / 56% 68% 32% 44%;
+  }
+  84% {
+    border-radius: 46% 54% 50% 50% / 35% 61% 39% 65%;
+  }
+}
+
+
+
+footer{
+  background:url(../images/footer-bg.svg);
+      min-height: 340px;
+    background-repeat: no-repeat;
+    background-size: cover;
+          display: flex;
+          flex-wrap: wrap;
+          padding-top: 7rem;
+          padding-bottom: 4rem;
+  
+}
+
+/* footer .company-desc{
+  flex: .25;
+  text-align: justify;
+  padding-right: 1rem;
+}
+
+footer .company-title{
+  border-bottom: 2px solid;
+    margin-bottom: .4rem;
+    display: inline-block;
+    padding-bottom: .5rem;
+} */
+
+footer .copyright-area{
+      position: absolute;
+    bottom: 0;
+    margin: auto;
+    /* right: 550px; */
+    text-align: center;
+    width: 100%;
+    margin-top: 5rem;
+    flex: .25;
+    padding-right: 1rem;
+      
+    color: #606a7a;
+
+}
+/* #enamad{
+      flex: .25;
+    text-align: center;
+    align-items: center;
+    padding-top: 1rem;
+} */
+
+@media only screen and (max-width: 600px) {
+        body {
+            padding-top: 2rem !important;
+        }
+         html {
+        font-size: 13px;
+    }
+    
+        .screans{
+            background: none;
+            padding-top: 5px;
+        }
+        
+        .links a{
+                font-size: .8rem;
+        }
+    }

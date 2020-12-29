@@ -17,28 +17,30 @@ class NamadResource extends JsonResource
      */
     public function toArray($request)
     {
-        if (request()->header('Authorization')) {
-            $payload = JWTAuth::parseToken(request()->header('Authorization'))->getPayload();
-            $mobile = $payload->get('mobile');
-            $member = Member::where('phone', $mobile)->first();
-        } else {
-            $member = null;
-        }
+        // if (request()->header('Authorization')) {
+            
+        //     $payload = JWTAuth::parseToken(request()->header('Authorization'))->getPayload();
+        //     $mobile = $payload->get('mobile');
+        //     $member = Member::where('phone', $mobile)->first();
+        // } else {
+        //     $member = null;
+        // }
 
 
         if (Cache::has($this->id)) {
-
+            $c = Cache::get($this->id);
             return  [
                 'id' => $this->id,
-                'symbol' => Cache::get($this->id)['symbol'],
-                'name' => Cache::get($this->id)['name'],
-                'final_price_value' => Cache::get($this->id)['final_price_value'],
-                'final_price_percent' => Cache::get($this->id)['final_price_percent'],
-                'final_price_change' => Cache::get($this->id)['last_price_change'],
-                'final_price_status' => Cache::get($this->id)['last_price_status'] ? '+' : '-',
-                'namad_status' => Cache::get($this->id)['namad_status'],
-                'notifications_count' => $member ?  $this->getUserNamadNotifications($member)['count'] : 0
+                'symbol' => $c['symbol'],
+                'name' => $c['name'],
+                'final_price_value' => $c['final_price_value'],
+                'final_price_percent' => $c['final_price_percent'],
+                'final_price_change' => $c['last_price_change'],
+                'final_price_status' => $c['last_price_status'] ? '+' : '-',
+                'namad_status' => $c['namad_status'],
+                'notifications_count' => 0
             ];
+            
         } else {
             return [];
         }

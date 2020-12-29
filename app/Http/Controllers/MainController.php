@@ -10,12 +10,14 @@ class MainController extends Controller
 {
     public function Index()
     {
+      dd( $status = \Cache::get('bazarstatus'));
         $notystatus = null;
         $notifications = [];
         $data['members'] = Member::count();
          $data['subscribers'] = Member::where('subscribe','>=',Carbon::now())->count();
         return view('dashboard', $data);
     }
+    
     public function getTime()
     {
         $data = array(
@@ -28,5 +30,11 @@ class MainController extends Controller
             'second' => date('s')
         );
         return json_encode($data);
+    }
+
+    public function home()
+    {
+       
+        return view('Home.index');
     }
 }

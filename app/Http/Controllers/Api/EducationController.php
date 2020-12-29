@@ -9,12 +9,14 @@ use App\Http\Controllers\Controller;
 class EducationController extends Controller
 {
     function list() {
+        $all = [];
         $categories = EducationCat::latest()->get();
         if (count($categories) == 0) {
-            return \response()->json(['data' => 'هیچ دسته بندی وجود ندارد'], 401);
+            $error = 'هیچ دسته بندی برای آموزش وجود ندارد';
+           return $this->JsonResponse($all,$error,200);
+           
         }
 
-        $all = [];
         foreach ($categories as $key => $cat) {
             $array['category_id'] = $cat->id;
             $array['category'] = $cat->name;
@@ -27,17 +29,18 @@ class EducationController extends Controller
             foreach ($educations as $key => $education) {
                 $item['id'] = $education->id;
                 $item['title'] = $education->title;
-                $item['description'] = $education->description;
+                $item['link'] = route('BaseUrl') . '/education/'.$education->id.'';
                 $item['section'] = $education->section;
-                $item['image'] = $education->image;
+                $item['image'] = asset($education->image);
                 $item['views'] = $education->views;
                 $items['items'][] = $item;
             }
             $all[] = array_merge($array, $items);
 
         }
+        $error = null;
 
-        return \response()->json(['data'=>$all],200);
+         return $this->JsonResponse($all,$error,200);
        
     }
 

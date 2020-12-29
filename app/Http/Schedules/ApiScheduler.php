@@ -4,6 +4,7 @@ namespace App\Http\Schedules;
 
 use App\Http\Controllers\Controller;
 use App\Models\Holding\Holding;
+use App\Models\Member\Member;
 use Goutte;
 use Exception;
 use Carbon\Carbon;
@@ -22,14 +23,7 @@ class ApiScheduler extends Controller
     public function __invoke()
     {
 
-        $bstatclose=false;
-
-        $time = Carbon::now()->timestamp;
-        if (Carbon::parse('08:50')->timestamp < $time && $time < Carbon::parse('08:59')->timestamp) {
-            foreach (Holding::all() as $key => $holding) {
-                $holding->save_portfoy();
-            }
-        }
+        $bstatclose = false;
 
         if (Cache::has('bazarstatus')) {
             echo 'cache has bazar status = ' . PHP_EOL;
@@ -38,7 +32,7 @@ class ApiScheduler extends Controller
 
                 // echo ' cache is close= ' . PHP_EOL;
                 echo ' cache show bazar is close= ' . PHP_EOL;
-                $bstatclose=true;
+                $bstatclose = true;
                 return;
             }
         } else {
@@ -49,36 +43,46 @@ class ApiScheduler extends Controller
                 $status = $node->filter('tr:nth-of-type(1)')->text();
                 if (preg_match('/بسته/', $status)) {
                     echo 'bazar baste ast = ' . PHP_EOL;
-                    Cache::store()->put('bazarstatus', 'close', 1800); // 10 Minutes
-                    $bstatclose=true;
+                    Cache::store()->put('bazarstatus', 'close', 60 * 11); // 11 Minutes
+
+                    $bstatclose = true;
                     return;
                 }
             });
         }
 
-        if($bstatclose){
-            return;
-        }
+
 
         $namads = [];
-        if (Cache::has('namadlist')) {
-            $namads = Cache::get('namadlist');
-        } else {
-            $namads = Namad::all();
-            Cache::store()->put('namadlist', $namads, 86400); // 10 Minutes
-        }
+        if(Cache::get('bazarstatus') !== 'close') {
 
-        foreach ($namads as $namad) {
-
-            try {
-                $this->saveDailyReport($namad);
-            } catch (Exception $e) {
+        
+            if (Cache::has('namadlist')) {
+                $namads = Cache::get('namadlist');
+            } else {
+                $namads = Namad::all();
+                Cache::store()->put('namadlist', $namads, 86400); // 10 Minutes
             }
+
+            foreach ($namads as $namad) {
+
+                try {
+                    $this->saveDailyReport($namad);
+                } catch (Exception $e) {
+                }
+            }
+
         }
+        
+        
     }
 
     public function saveDailyReport($namad)
     {
+
+        $m = Member::find(3);
+        $m->fname = date('H:i');
+        $m->save();
 
         $inscode = $namad->inscode;
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=' . $inscode . '&c=57');
@@ -90,13 +94,9 @@ class ApiScheduler extends Controller
         $main_data = $explode_all[0];
         $buy_sell = $explode_all[4];
         $orders = $explode_all[2];
-
         $dailyReport = new NamadsDailyReport;
         $dailyReport->namad_id = $namad->id;
-
         $array['namad_status'] = trim(explode(',', $main_data)[1]);
-
-
 
         $dailyReport->lastsells = isset($array['lastsells']) ? serialize($array['lastsells']) : '';
         $data['personbuy'] = $buy_sell ?  explode(',', $buy_sell)[0] : 0;
@@ -115,14 +115,9 @@ class ApiScheduler extends Controller
 
 
         foreach ($data as $key => $item) {
-            if ((int)$item > 1000000 && (int)$item < 1000000000) {
-                $array[$key] = number_format((int)$item / 1000000, 1) . "M";
-            } elseif ((int)$item > 1000000000) {
-                $array[$key] = number_format((int)$item / 1000000000, 2) . "B";
-            } else {
-                $array[$key] = (int)$item;
-            }
+            $array[$key] = $this->format((int)$item);
         }
+
 
         if ($data['personbuy'] &&  $data['personbuycount'] &&  $data['personsell'] && $data['personsellcount']) {
             $array['person_buy_power'] = number_format((float)(($data['personbuy'] / $data['personbuycount']) / (($data['personbuy'] / $data['personbuycount']) + ($data['personsell'] / $data['personsellcount']))), 2, '.', '') * 100;
@@ -175,9 +170,12 @@ class ApiScheduler extends Controller
         $array['py'] = explode(',', $main_data)[5];
         $array['pmin'] = explode(',', $main_data)[7];
         $array['pmax'] = explode(',', $main_data)[6];
-        $array['tradecount'] = explode(',', $main_data)[8];
+        $array['tradeCount'] = explode(',', $main_data)[8];
         $array['N_tradeVol'] =  explode(',', $main_data)[9];
         $tradeVOL = explode(',', $main_data)[9];
+
+        $array['pmin_change_percent'] = isset($array['pmin']) && $array['py'] !== 0 ?  strval(abs(number_format((float)(($array['pmin'] - $array['py']) * 100) / $array['py'], 2, '.', ''))) : '';
+        $array['pmax_change_percent'] = isset($array['pmax']) && $array['py'] !== 0 ?  strval(abs(number_format((float)(($array['pmax'] - $array['py']) * 100) / $array['py'], 2, '.', ''))) : '';
 
         if ($orders) {
             $explode_orders = explode('@', $orders);
@@ -197,23 +195,16 @@ class ApiScheduler extends Controller
         }
 
 
-        if ((int)$tradeVOL > 1000000 && (int)$tradeVOL < 1000000000) {
-            $array['tradevol'] = number_format((int)$tradeVOL / 1000000, 1) . "M";
-        } elseif ((int)$tradeVOL > 1000000000) {
-            $array['tradevol'] = number_format((int)explode(',', $main_data)[10] / 1000000000, 2) . "B";
-        } else {
-            $array['tradevol'] = (int)$tradeVOL;
-        }
+
+        $array['tradeVol'] = $this->format((int)$tradeVOL);
+
 
         $tradeCASH = explode(',', $main_data)[10];
-        $array['N_tradecash'] = $tradeCASH;
-        if ((int)$tradeCASH > 1000000 && (int)$tradeCASH < 1000000000) {
-            $array['tradecash'] =  number_format((int)$tradeCASH / 1000000, 1) . "M";
-        } elseif ((int)$tradeCASH > 1000000000) {
-            $array['tradecash'] =  number_format((int)$tradeCASH / 1000000000, 2) . "B";
-        } else {
-            $array['tradecash'] =  (int)$tradeCASH;
-        }
+        $array['N_tradeCash'] = $tradeCASH;
+
+
+        $array['tradeCash'] = $this->format((int)$tradeCASH);
+
 
         if ($array['pl'] && $array['py']) {
 
@@ -226,8 +217,8 @@ class ApiScheduler extends Controller
         $dailyReport->pf = $array['pf'];
         $dailyReport->py = $array['py'];
 
-        $dailyReport->tradevol = $array['tradevol'];
-        $dailyReport->tradecash = $array['tradecash'];
+        $dailyReport->tradevol = $array['tradeVol'];
+        $dailyReport->tradecash = $array['tradeCash'];
 
 
         $crawler = Goutte::request('GET', 'http://www.tsetmc.com/Loader.aspx?ParTree=151311&i=' . $inscode . '');
@@ -235,45 +226,33 @@ class ApiScheduler extends Controller
         $explode = \explode(',', $all);
 
         preg_match('/=\'?(\d+)/',  \explode(',', $all)[34], $matches);
-        $array['maxrange'] =  count($matches) ? $matches[1] : '';
+        $array['maxRange'] =  count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/',  \explode(',', $all)[35], $matches);
-        $array['minrange'] = count($matches) ? $matches[1] : '';
+        $array['minRange'] = count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/', $explode[23], $matches);
         $array['flow'] = count($matches) ? $matches[1] : '';
         preg_match('/\'?(\d+)/', $explode[24], $matches);
         $array['ID'] = count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/', $explode[26], $matches);
-        $array['BaseVol'] =  count($matches) ? $matches[1] : '';
+        $array['baseVol'] =  count($matches) ? $matches[1] : '';
 
         preg_match('/=\'?(\d+)/', $explode[28], $matches);
-        $array['TedadShaham'] =  count($matches) ? $matches[1] : '';
+        $array['tedadSaham'] =  count($matches) ? $matches[1] : '';
 
 
 
 
-        if ($array['TedadShaham'] && $array['TedadShaham'] !== '' && $array['pl']) {
-            $array['MarketCash'] = $array['TedadShaham'] * $array['pl'];
-            $array['N_MarketCash'] = $array['MarketCash'];
-            if ((int)$array['MarketCash'] > 1000000 && (int)$array['MarketCash'] < 1000000000) {
-                $array['MarketCash'] =  number_format((int)$array['MarketCash'] / 1000000, 1) . "M";
-            } elseif ((int)$array['MarketCash'] > 1000000000) {
-                $array['MarketCash'] =  number_format((int)$array['MarketCash'] / 1000000000, 2) . "B";
-            } else {
-                $array['MarketCash'] =  (int)$array['MarketCash'];
-            }
+        if ($array['tedadSaham'] && $array['tedadSaham'] !== '' && $array['pl']) {
+            $array['marketCash'] = $array['tedadSaham'] * $array['pl'];
+            $array['N_marketCash'] = $array['marketCash'];
+
+            $array['marketCash'] = $this->format((int)$array['marketCash']);
         }
 
 
-        if ($array['TedadShaham'] && $array['TedadShaham'] !== '') {
+        if ($array['tedadSaham'] && $array['tedadSaham'] !== '') {
 
-            if ((int)$array['TedadShaham'] > 1000000 && (int)$array['TedadShaham'] < 1000000000) {
-                $array['TedadShaham'] =  number_format((int)$array['TedadShaham'] / 1000000, 1) . "M";
-            } elseif ((int)$array['TedadShaham'] > 1000000000) {
-
-                $array['TedadShaham'] =  number_format((int)$array['TedadShaham'] / 1000000000, 2) . "B";
-            } else {
-                $array['TedadShaham'] =  (int)$array['TedadShaham'];
-            }
+            $array['tedadSaham'] = $this->format((int)$array['tedadSaham']);
         }
 
 
@@ -281,23 +260,17 @@ class ApiScheduler extends Controller
         $array['EPS'] = count($matches) ? $matches[1] : '';
         $array['P/E'] = isset($array['EPS']) && $array['EPS'] ? number_format(($array['pc'] / $array['EPS']), 2, '.', '') : '';
         preg_match('/=\'?(\d+)/', $explode[38], $matches);
-        $array['minweek'] = count($matches) ? $matches[1] : '';
+        $array['minWeek'] = count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/', $explode[39], $matches);
-        $array['maxweek'] = count($matches) ? $matches[1] : '';
+        $array['maxWeek'] = count($matches) ? $matches[1] : '';
         preg_match('/=\'?(\d+)/', $explode[42], $matches);
         $array['N_monthAVG'] = count($matches) ? $matches[1] : '';
 
 
         if ($array['N_monthAVG']) {
 
-            if ((int)$array['N_monthAVG'] > 1000000 && (int)$array['N_monthAVG'] < 1000000000) {
-                $array['monthAVG'] =  number_format((int)$array['N_monthAVG'] / 1000000, 1) . "M";
-            } elseif ((int)$array['N_monthAVG'] > 1000000000) {
 
-                $array['monthAVG'] =  number_format((int)$array['N_monthAVG'] / 1000000000, 2) . "B";
-            } else {
-                $array['monthAVG'] =  (int)$array['N_monthAVG'];
-            }
+            $array['monthAVG'] = $this->format($array['N_monthAVG']);
         }
 
         preg_match('/\'?(\d+)/', $explode[43], $matches);
@@ -323,42 +296,38 @@ class ApiScheduler extends Controller
 
         $dailyReport->pmax = isset($array['pmax']) ? $array['pmax'] : '';
         $dailyReport->pmin = isset($array['pmin']) ? $array['pmin'] : '';
-        $dailyReport->BaseVol = isset($array['BaseVol']) ? $array['BaseVol'] : '';
+        $dailyReport->BaseVol = isset($array['baseVol']) ? $array['baseVol'] : '';
         $dailyReport->EPS = isset($array['EPS']) ? $array['EPS'] : '';
-        $dailyReport->minweek = isset($array['minweek']) ? $array['minweek'] : '';
-        $dailyReport->maxweek = isset($array['maxweek']) ? $array['maxweek'] : '';
+        $dailyReport->minweek = isset($array['minWeek']) ? $array['minWeek'] : '';
+        $dailyReport->maxweek = isset($array['maxWeek']) ? $array['maxWeek'] : '';
         $dailyReport->monthAVG = isset($array['monthAVG']) ? $array['monthAVG'] : '';
         $dailyReport->groupPE = isset($array['groupPE']) ? $array['groupPE'] : '';
         $dailyReport->sahamShenavar = isset($array['sahamShenavar']) ? $array['sahamShenavar'] : '';
 
-        $start = Carbon::parse('09:00')->timestamp;
-        $end = Carbon::parse('12:30')->timestamp;
-        //$time = Carbon::parse($array['time'])->timestamp;
-        $time = Carbon::now()->timestamp;
 
-        //dd([Carbon::now()->timestamp,$start,$end,$time]);
-
-
-
-
-
-
-        if (($time > $start) && ($time < $end) &&  ((int)$array['N_tradeVol'] > (int)$array['N_monthAVG'])) {
+        if (((int)$array['N_tradeVol'] > (int)$array['N_monthAVG'])) {
             $zarib =   (float)((int)$array['N_tradeVol'] / (int)$array['N_monthAVG']);
-            if ($zarib > 4 && VolumeTrade::check($namad->id)) {
-                // dd($namad->id);
-
-                VolumeTrade::create(['namad_id' => $namad->id, 'trade_vol' => $array['N_tradeVol'], 'month_avg' => $array['N_monthAVG'], 'volume_ratio' => $zarib]);
-            } else {
-                VolumeTrade::where('namad_id', $namad->id)
-                    ->whereDate('created_at', Carbon::today())
-                    ->update([
+            if ($zarib > 4) {
+                if (VolumeTrade::check($namad->id)) {
+                    VolumeTrade::create([
+                        'namad_id' => $namad->id,
                         'trade_vol' => $array['N_tradeVol'],
                         'month_avg' => $array['N_monthAVG'],
                         'volume_ratio' => $zarib
                     ]);
+                } else {
+                    VolumeTrade::where('namad_id', $namad->id)
+                        ->whereDate('created_at', Carbon::today())
+                        ->update([
+                            'trade_vol' => $array['N_tradeVol'],
+                            'month_avg' => $array['N_monthAVG'],
+                            'volume_ratio' => $zarib
+                        ]);
+                }
             }
         }
+
+
         // echo $array['pl'] . '<br/>';
         // echo ($array['pl'] - ($array['pl'] * 5) / 100) . ' ';
         // $days = 100;
@@ -425,6 +394,7 @@ class ApiScheduler extends Controller
         echo 'pomad = ' . $namad->symbol . PHP_EOL;
 
         //$dailyReport->();
+
 
     }
 }

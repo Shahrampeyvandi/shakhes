@@ -27,15 +27,16 @@
             <li><a href="<?php echo e(route('PortfoyList')); ?>"><i class="fas fa-list-alt"></i> <span class="pr-4">پرتفوی روزانه شرکت ها</span> </a>
             <li><a href="<?php echo e(route('CapitalIncrease')); ?>"><i class="fas fa-th"></i> <span class="pr-4">افزایش سرمایه</span> </a>
 
-            <li><a href="<?php echo e(route('Disclosures')); ?>"><i class="fas fa-list-alt"></i> <span
-                        class="pr-4">افشای اطلاعات با اهمیت</span> </a>
+           
    
             
              <li><a href="<?php echo e(route('Clarifications')); ?>"><i class="fas fa-file-medical"></i> <span
-                        class="pr-4">شفاف سازی</span> </a>
+                        class="pr-4">افشای اطلاعات و شفاف سازی</span> </a>
             </li>
-            <li><a href="<?php echo e(route('VolumeTrades')); ?>"><i class="fas fa-comment"></i> <span
+            <li><a href="<?php echo e(route('VolumeTrades')); ?>"><i class="fas fa-list"></i> <span
                         class="pr-4">افزایش حجم معاملات</span> </a>
+            </li>
+            <li><a href="<?php echo e(route('Panel.Tickets')); ?>"><i class="fas fa-comment"></i> <span class="pr-4">پیام های کاربران</span> </a>
             </li>
             <li><a href="#"><i class="fas fa-cog"></i> <span class="pr-4">تنظیمات</span> </a>
             </li>

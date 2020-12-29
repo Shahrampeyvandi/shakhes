@@ -24,8 +24,7 @@ class HoldingResource extends JsonResource
             'formatedPortfoy' => $this->format($this->getMarketValue()),
             'percentChangePorftoy' => $this->change_percent(),
             'Status' =>  $this->change_percent() > 0 ? '+' : '-',
-            'countNamad' => count($this->namads),
-            'namads' => NamadResource::collection($this->namads()->orderBy('symbol')->get())
+            'countNamad' => count($this->namads),               
         ];
     }
 }

@@ -20,7 +20,6 @@ class VolumeTradeResource extends JsonResource
 
             'namad' => new NamadResource($this->namad),
             'newsId' => $this->id,
-            'newsId' => $this->id,
             'transactionVolume' =>  $this->trade_vol,
             'averageVolumeOfMonth' => $this->month_avg,
             'increaseRatio' => number_format((float)$this->volume_ratio, 1),

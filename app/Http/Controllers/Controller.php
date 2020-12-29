@@ -65,11 +65,14 @@ class Controller extends BaseController
     public function format($number)
     {
         if ($number > 0 &&  $number < 1000000) {
-            return number_format($number, 0);
+            return number_format($number);
         } elseif ($number > 1000000 &&  $number < 1000000000) {
-            return $number = number_format($number / 1000000, 2) . "M";
+           $number = number_format($number / 1000000,2,'.','') + 0;
+            return $number = number_format($number, 2) . "M";
         } elseif ($number > 1000000000) {
-            return  $number = number_format($number / 1000000000, 2) . "B";
+           $number =  number_format($number / 1000000000,2,'.','') + 0;
+            return  $number = number_format($number, 2) . "B";
+            
         }
     }
 
@@ -77,12 +80,25 @@ class Controller extends BaseController
     {
         return Jalalian::forge('now')->format('%Y/%m/%d');
     }
+    public function convertPersianToEnglish()
+    {
+        // $string = '۱۳۹۹/۰۹/۱۱ ۱۵:۰۱:۴۳';
+        //  $string = '۱۳۹۹/۰۹/۱۱ ۱۵:۰۱:۴۳';
+         $string = '۱۳۹۹/۰۹/۱۱ ۱۵:۰۱:۴۳';
+        $persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        $english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+        $output = str_replace($persian, $english, $string);
+        
+        return $output;
+    }
+    
 
     public function sendSMS($patterncode, $phone, $data)
     {
         $datas = array(
             "pattern_code" => $patterncode,
-            "originator" => "+985000125475",
+            "originator" => "+985000415020000",
             "recipient" => '+98' . substr($phone, 1),
             "values" => $data
         );
@@ -104,7 +120,7 @@ class Controller extends BaseController
     public function get_history_data($inscode, $days)
     {
         $array = [];
-        $ch = curl_init("http://members.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=$inscode&Top=$days&A=0");
+        $ch = curl_init("https://members.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=$inscode&Top=$days&A=0");
         curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
@@ -182,9 +198,9 @@ class Controller extends BaseController
         return $array;
     }
 
-    public function JsonResponse($data,$error,$status = 200)
+    public function JsonResponse($data, $error, $status = 200)
     {
-            return response()->json(
+        return response()->json(
             [
                 'data' => $data,
                 'responseDate' => Jalalian::forge('now')->format('Y/m/d'),

@@ -32,7 +32,7 @@
                             </span>
                             <span >
                                 وضعیت بازار : 
-                                {{Cache::get('bazarstatus')}}
+                                {{Cache::get('bazarstatus') == 'close' ? 'بسته' : 'باز'}}
                             </span>
                         </a>
                     </li>

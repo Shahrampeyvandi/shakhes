@@ -10,7 +10,7 @@ class CapitalIncreaseController extends Controller
 {
     public function Index()
     {
-        return view('CapitalIncrease.Index');
+        return view('CapitalIncrease.Index',['cps'=>CapitalIncrease::latest()->get()]);
     }
     public function Insert(Request $request)
     {

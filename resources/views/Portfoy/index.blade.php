@@ -28,10 +28,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($array as $key=>$holding)
                             @php
                             $count = 1;
                             @endphp
+                            @foreach ($array as $key=>$holding)
+                            
                             <tr>
                                 <td>{{$count}}</td>
                                 <td>

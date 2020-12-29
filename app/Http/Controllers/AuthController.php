@@ -18,7 +18,7 @@ class AuthController extends Controller
     {
 
         if (Auth::guard('admin')->check()) {
-            return redirect()->route('BaseUrl');
+            return redirect('/dashboard');
         }
 
 
@@ -44,7 +44,7 @@ class AuthController extends Controller
                     Auth::guard('admin')->Login($admin);
                 }
 
-                return redirect()->route('BaseUrl');
+                return redirect('/dashboard');
             } else {
                 $request->session()->flash('Error', 'رمز عبور وارد شده صحیح نمیباشد');
                 return back();
