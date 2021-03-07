@@ -22,6 +22,7 @@ use App\Http\Resources\ClarificationResource;
 use App\Http\Resources\CapitalIncreaseResource;
 use App\Http\Resources\NamadResource;
 use App\Models\CapitalIncrease\CapitalIncrease;
+use App\Models\Holding\Holding;
 
 class MembersDataController extends Controller
 {
@@ -55,15 +56,14 @@ class MembersDataController extends Controller
     {
         $member = $this->token($request->header('Authorization'));
         // $member=Member::find(2);
-       
+
         $namads_array = $member->namads;
         $array = [];
 
         $array = NamadResource::collection($namads_array);
         $error = null;
-      
-        return $this->JsonResponse($array,$error,200);
-       
+
+        return $this->JsonResponse($array, $error, 200);
     }
 
     public function mark_to_read()
@@ -94,6 +94,40 @@ class MembersDataController extends Controller
 
         return response()->json('success', 200);
     }
+    
+
+    public function tabList()
+    {
+        $user = $this->token(request()->header('Authorization'));
+        $namad_id = request()->id;
+        $namad = Namad::find($namad_id);
+        $arr = [];
+        if ($holding = Holding::where('namad_id', $namad_id)->first()) {
+            $arr[] = [
+                'tabName' => 'portfoy',
+                'tabNotificationCount' => $holding->updated_at->isToday() ? 1 : 0
+            ];
+        }
+
+        $arr[] = [
+            'tabName' => 'capital_increases',
+            'tabNotificationCount' => $namad->getUserNamadNotifications($user)['capital_increases']
+        ];
+        $arr[] = [
+            'tabName' => 'volume_trades',
+            'tabNotificationCount' => $namad->getUserNamadNotifications($user)['volume_trades']
+        ];
+        $arr[] = [
+            'tabName' => 'disclosures',
+            'tabNotificationCount' => $namad->getUserNamadNotifications($user)['disclosures']
+        ];
+        $arr[] = [
+            'tabName' => 'clarifications',
+            'tabNotificationCount' => $namad->getUserNamadNotifications($user)['clarifications']
+        ];
+
+        return $this->JsonResponse($arr,null,200);
+    }
 
 
     public function add(Request $request)
@@ -106,11 +140,10 @@ class MembersDataController extends Controller
 
         if ($res['status'] == 201) {
             $member->namads()->attach($namad_id, ['amount' => 0, 'profit_loss_percent' => 0, 'price' => $price]);
-            return $this->JsonResponse($res['message'],null,201);
+            return $this->JsonResponse($res['message'], null, 201);
         }
 
-        return $this->JsonResponse(null,$res['message'],200);
-        
+        return $this->JsonResponse(null, $res['message'], 200);
     }
 
     public function remove(Request $request)
@@ -127,8 +160,7 @@ class MembersDataController extends Controller
             $count = 1;
         }
         $data = $count . ' نماد با موفقیت حذف شدند';
-        return $this->JsonResponse($data,null,200);
-      
+        return $this->JsonResponse($data, null, 200);
     }
 
 

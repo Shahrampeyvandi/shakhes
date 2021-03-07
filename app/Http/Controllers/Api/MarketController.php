@@ -11,10 +11,333 @@ use App\Http\Resources\NamadResource;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Namad\NamadsDailyReport;
 use App\MovingAverage;
+use App\Shakhes;
 use Carbon\Carbon;
 
 class MarketController extends Controller
 {
+
+    public function get_distributes()
+    {
+       try {
+
+
+        $dist_arr = [];
+        if (Cache::has('namad_status_counts')) {
+            $status_count = Cache::get('namad_status_counts');
+            return $this->JsonResponse($status_count,null,200);
+        } 
+
+        if (Cache::has('namadlist')) {
+            $namads = Cache::get('namadlist');
+            // dd($namads);
+        } else {
+            $namads =  \App\Models\Namad\Namad::all();
+            Cache::store()->put('namadlist', $namads, 60*60*12); // 12 hours
+        }
+
+
+        foreach ($namads as $key => $namad) {
+            if (Cache::has($namad->id)) {
+                $dist_arr[] = ['percent' => Cache::get($namad->id)['final_price_percent'], 'status' => Cache::get($namad->id)['status']];
+            }
+        }
+
+        $status_count[] = [
+            'count' => count(array_filter($dist_arr, function ($value) {
+                if (0 < $value['percent'] && $value['percent'] <= 1 && $value['status'] == 'green') {
+                    return true;
+                }
+                return false;
+            })),
+            'status' => 'green', 'range' => 'zero_to_one'
+        ];
+
+        $status_count[] = [
+            'count' => count(array_filter($dist_arr, function ($value) {
+                if (1 < $value['percent'] && $value['percent'] <= 2 && $value['status'] == 'green') {
+                    return true;
+                }
+                return false;
+            })),
+            'status' => 'green', 'range' => 'one_to_two'
+        ];
+        $status_count[] = [
+            'count' => count(array_filter($dist_arr, function ($value) {
+                if (2 < $value['percent'] && $value['percent'] <= 3 && $value['status'] == 'green') {
+                    return true;
+                }
+                return false;
+            })),
+            'status' => 'green', 'range' => 'two_to_three'
+        ];
+        $status_count[] = [
+            'count' => count(array_filter($dist_arr, function ($value) {
+                if (3 < $value['percent'] && $value['percent'] <= 4 && $value['status'] == 'green') {
+                    return true;
+                }
+                return false;
+            })),
+            'status' => 'green', 'range' => 'three_to_four'
+        ];
+       
+        $status_count[] = [
+            'count' => count(array_filter($dist_arr, function ($value) {
+                if (4 < $value['percent'] && $value['percent'] <= 5 && $value['status'] == 'green') {
+                    return true;
+                }
+                return false;
+            })),
+            'status' => 'green', 'range' => 'four_to_five'
+        ];
+        $status_count[] = [
+            'count' => count(array_filter($dist_arr, function ($value) {
+                if (0 < $value['percent'] && $value['percent'] <= 1 && $value['status'] == 'red') {
+                    return true;
+                }
+                return false;
+            })),
+            'status' => 'red', 'range' => 'zero_to_one'
+        ];
+        $status_count[] = [
+            'count' => count(array_filter($dist_arr, function ($value) {
+                if (1 < $value['percent'] && $value['percent'] <= 2 && $value['status'] == 'red') {
+                    return true;
+                }
+                return false;
+            })),
+            'status' => 'red', 'range' => 'one_to_two'
+        ];
+
+        $status_count[] = [
+            'count' => count(array_filter($dist_arr, function ($value) {
+                if (2 < $value['percent'] && $value['percent'] <= 3 && $value['status'] == 'red') {
+                    return true;
+                }
+                return false;
+            })),
+            'status' => 'red', 'range' => 'two_to_three'
+        ];
+        $status_count[] = [
+            'count' => count(array_filter($dist_arr, function ($value) {
+                if (3 < $value['percent'] && $value['percent'] <= 4 && $value['status'] == 'red') {
+                    return true;
+                }
+                return false;
+            })),
+            'status' => 'red', 'range' => 'three_to_four'
+        ];
+
+        $status_count[] = [
+            'count' => count(array_filter($dist_arr, function ($value) {
+                if (4 < $value['percent'] && $value['percent'] <= 5 && $value['status'] == 'red') {
+                    return true;
+                }
+                return false;
+            })),
+            'status' => 'red', 'range' => 'four_to_five'
+        ];
+
+        $status_count[] = [
+            'count' => count(array_filter($dist_arr, function ($value) {
+                if (0 == $value['percent']) {
+                    return true;
+                }
+                return false;
+            })),
+            'status' => 'red', 'range' => 'zero'
+        ];
+
+        Cache::put('namad_status_counts',$status_count,60*10);
+       } catch (\Throwable $th) {
+           //throw $th;
+           return [];
+       }
+        // dd($dist_arr);
+
+        return $status_count;
+        // return $this->JsonResponse($status_count,null,200);
+
+    }
+
+    public function filterFunction($value)
+    {
+        if ($value > 1) {
+            return true;
+        }
+        return false;
+    }
+
+
+    public function index_values()
+    {
+
+        if(isset(request()->type)) {
+            if(request()->type == 'bourse') {
+                $url = "http://www.tsetmc.com/tsev2/chart/data/Index.aspx?Top=2&i=32097828799138957&t=value";
+                $type = 'bourse';
+            }elseif(request()->type == 'farabourse'){
+                $url = 'http://www.tsetmc.com/tsev2/chart/data/Index.aspx?i=43685683301327984&t=value';
+                $type = 'farabourse';
+            }elseif(request()->type == 'equivalent'){
+                $url = 'http://www.tsetmc.com/tsev2/chart/data/Index.aspx?i=67130298613737946&t=value';
+                $type = 'bourse';
+            }else{
+
+                $url = "http://www.tsetmc.com/tsev2/chart/data/Index.aspx?Top=2&i=32097828799138957&t=value";
+                $type = 'bourse';
+            }
+        }else
+        {
+            $url = "http://www.tsetmc.com/tsev2/chart/data/Index.aspx?Top=2&i=32097828799138957&t=value";
+            $type = 'bourse';
+
+        }
+        
+        if($type == 'bourse') {
+            $bourse = Shakhes::where('title','شاخص كل')->latest()->first();
+            $data[] = [
+                'title' => 'شاخص کل',
+                'value' => $bourse ? $bourse->value : '',
+                'change' => $bourse ? $bourse->value_change : '',
+                'percent' => $bourse ? $bourse->percent_change : '',
+                'status' => $bourse ? ($bourse->status == 'positive' ? '+' : '-') : '',
+                'link' => route('BaseUrl') . '/api/market/index/shakhes-status?type=bourse'
+            ];
+
+            $equivalent = Shakhes::where('title','شاخص كل (هم وزن)')->latest()->first();
+            $data[] = [
+                'title' => 'شاخص كل (هم وزن)',
+                'value' => $equivalent ? $equivalent->value : '',
+                'change' => $equivalent ? $equivalent->value_change : '',
+                'percent' => $equivalent ? $equivalent->percent_change : '',
+                'status' => $equivalent ? ($equivalent->status == 'positive' ? '+' : '-') : '',
+                'link' => route('BaseUrl') . '/api/market/index/shakhes-status?type=equivalent'
+            ];
+
+        }
+
+        if($type == 'farabourse') {
+            $bourse = Shakhes::where('title','بازار اول فرابورس')->latest()->first();
+            $data[] = [
+                'title' => 'شاخص فرابورس',
+                'value' => $bourse ? $bourse->value : '',
+                'change' => $bourse ? $bourse->value_change : '',
+                'percent' => $bourse ? $bourse->percent_change : '',
+                'status' => $bourse ? ($bourse->status == 'positive' ? '+' : '-') : '',
+                'link' => route('BaseUrl') . '/api/market/index/shakhes-status?type=farabourse'
+            ];                
+        }
+
+        return $this->JsonResponse($data, null, 200);
+
+      
+       
+    }
+  
+
+    public function index_chart()
+    {
+
+       //    return $data['distributes'] = $this->get_distributes();
+
+        
+        try {
+            
+            if(isset(request()->type)) {
+                if(request()->type == 'bourse') {
+                    $url = "http://www.tsetmc.com/tsev2/chart/data/Index.aspx?Top=2&i=32097828799138957&t=value";
+                    $type = 'bourse';
+                }elseif(request()->type == 'farabourse'){
+                    $url = 'http://www.tsetmc.com/tsev2/chart/data/Index.aspx?i=43685683301327984&t=value';
+                    $type = 'farabourse';
+                }elseif(request()->type == 'equivalent'){
+                    $url = 'http://www.tsetmc.com/tsev2/chart/data/Index.aspx?i=67130298613737946&t=value';
+                    $type = 'bourse';
+                }else{
+
+                    $url = "http://www.tsetmc.com/tsev2/chart/data/Index.aspx?Top=2&i=32097828799138957&t=value";
+                    $type = 'bourse';
+                }
+            }else
+            {
+                $url = "http://www.tsetmc.com/tsev2/chart/data/Index.aspx?Top=2&i=32097828799138957&t=value";
+                $type = 'bourse';
+
+            }
+
+            $days = request()->months ? (int)request()->months * 30 : 7;
+            $date = Jalalian::forge('now')->subDays($days)->getTimestamp();
+            $chart_arr = [];
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_ENCODING, "");
+            $result = curl_exec($ch);
+            $day_data = explode(';', $result);
+            foreach (array_reverse($day_data) as $item) {
+
+                $y = explode('/', explode(',', $item)[0])[0];
+                $m = explode('/', explode(',', $item)[0])[1] < 10 ? '0' . intval(explode('/', explode(',', $item)[0])[1]) : explode('/', explode(',', $item)[0])[1];
+                $d = explode('/', explode(',', $item)[0])[2] < 10 ? '0' . intval(explode('/', explode(',', $item)[0])[2]) : explode('/', explode(',', $item)[0])[2];
+
+                $chart_arr[] = ['yAxis' => implode('/', [$y, $m, $d]), 'xAxis' => explode(',', $item)[1]];
+
+                if (Jalalian::fromFormat('Y/m/d', implode('/', [$y, $m, $d]))->getTimestamp() < $date) break;
+                
+                $error = null;
+            }
+
+            $data = $chart_arr;
+
+            // $data['distributes'] = $this->get_distributes();
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            $error = 'خطای سرور';
+            $chart_arr = null;
+        }
+
+        return $this->JsonResponse($data, $error, 200);
+    }
+
+    public function chart()
+    {
+        try {
+            $namad = Namad::find(request()->namad);
+            $inscode = $namad->inscode;
+            $days = request()->months ? (int)request()->months * 30 : 7;
+
+
+            $c = Carbon::now()->subDays($days)->format('Ymd');
+
+            if (Cache::has("chartdata-$inscode-$days")) {
+                $chartdata = Cache::get("chartdata-$inscode-$days");
+            } else {
+
+                $data = $this->get_history_data($inscode, $days, $c);
+                foreach ($data as $key => $item) {
+                    $axis['xAxis'] = $item['pc'];
+                    $axis['open'] = $item['pf'];
+                    $axis['close'] = $item['pl'];
+                    $axis['high'] = $item['pmax'];
+                    $axis['low'] = $item['pmin'];
+                    $axis['yAxis'] = $item['date'];
+                    $chartdata[] = $axis;
+                }
+
+                Cache::put("chartdata-$inscode-$days", $chartdata, 60 * 60 * 12);
+            }
+            $error = null;
+        } catch (\Throwable $th) {
+            $chartdata = null;
+            $error = 'خطا در دریافت اطلاعات از سرور';
+        }
+
+
+        return $this->JsonResponse($chartdata, $error, 200);
+    }
 
 
     public function getNamad(Request $request)
@@ -22,78 +345,164 @@ class MarketController extends Controller
 
         $member = $this->token(request()->header('Authorization'));
         $namad = Namad::find($request->id);
-        if ($namad) {
-            $information = Cache::get($namad->id);
-            $information['notifications_count'] = $namad->getUserNamadNotifications($member)['count'];
-            $information['time'] = date('g:i', strtotime($information['time']));
-            $information['namad_status'] = $information['namad_status'];
+        try {
+            if ($namad) {
+                $information = Cache::get($namad->id);
+                $information['time'] = date('g:i', strtotime($information['time']));
+                $information['namad_status'] = $information['namad_status'];
+                $information['final_price_change'] = $information['last_price_change'];
+                $information['final_price_status'] = $information['last_price_status'] ? '+' : '-';
+                $information['final_price_value'] = $information['final_price_value'];
+                $information['final_price_percent'] = $information['final_price_percent'];
 
-           
-            $information['personbuycount'] = strval($information['personbuycount']);
-            $information['legalbuycount'] = strval($information['legalbuycount']);
-            $information['personsellcount'] = strval($information['personsellcount']);
-            $information['legalsellcount'] = strval($information['legalsellcount']);
-            $information['person_buy_power'] = strval($information['person_buy_power']);
-            $information['pc_change_percent'] = strval($information['pc_change_percent']);
-            $information['pc_status'] = (int)$information['pc'] > (int)$information['py'] ? '+' : '-';
-            $information['pf_change_percent'] = strval($information['pf_change_percent']);
-            $information['pf_status'] = (int)$information['pc'] > (int)$information['py'] ? '+' : '-';
-            $information['pl_change_percent'] = strval($information['final_price_percent']);
-            $information['pl_change_val'] = strval($information['last_price_change']);
-            $information['pl_status'] = (int)$information['pl'] > (int)$information['py'] ? '+' : '-';
-            $information['pmin_status'] = (int)$information['pmin'] > (int)$information['py'] ? '+' : '-';
-            $information['pmax_status'] = (int)$information['pmax'] > (int)$information['py'] ? '+' : '-';
+                $information['person_buy_power'] = strval($information['person_buy_power']);
+                $information['pc_change_percent'] = strval($information['pc_change_percent']);
+                $information['pc_status'] = (int)$information['pc'] > (int)$information['py'] ? '+' : '-';
+                $information['pf_change_percent'] = strval($information['pf_change_percent']);
+                $information['pf_status'] = (int)$information['pc'] > (int)$information['py'] ? '+' : '-';
+                $information['pl_change_percent'] = strval($information['final_price_percent']);
+                $information['pl_change_val'] = strval($information['last_price_change']);
+                $information['pl_status'] = (int)$information['pl'] > (int)$information['py'] ? '+' : '-';
+                $information['pmin_status'] = (int)$information['pmin'] > (int)$information['py'] ? '+' : '-';
+                $information['pmax_status'] = (int)$information['pmax'] > (int)$information['py'] ? '+' : '-';
+                $information['tradeVol'] = $this->format($information['N_tradeVol'], 'fa');
+                $information['tradeCash'] = $this->format($information['N_tradeCash'], 'fa');
+                $information['marketCash'] = $this->format((int)$information['TedadSaham'] * (int)$information['pc'], 'fa');
+                $information['tedadSaham'] = $this->format($information['TedadSaham'], 'fa');
+                $information['TedadSaham'] = $this->format($information['TedadSaham'], 'fa');
+                $information['monthAVG'] = $this->format($information['N_monthAVG'], 'fa');
 
-            unset($information['last_price_change']);
-            unset($information['last_price_status']);
-            unset($information['final_price_percent']);
-            unset($information['lastsells']);
-            unset($information['lastbuys']);
-            unset($information['filter']);
+                $information['notifications_count'] = 0;
 
-            if (Cache::has('order' . $namad->id)) {
-                $sefareshat = Cache::get('order' . $namad->id);
-            } else {
-                $sefareshat = [];
-                do {
-                    try {
-                        $status = false;
-                        $ch = curl_init("http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=$namad->inscode&c=57");
-                        curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
-                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-                        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                        curl_setopt($ch, CURLOPT_ENCODING, "");
-                        $result = curl_exec($ch);
-                    } catch (\Throwable $th) {
-                        $status = true;
-                        sleep(.5);
+                $information['flow'] = $information['flow'] == '1' ? 'بورس' : 'فرابورس';
+
+                unset($information['last_price_change']);
+                unset($information['last_price_status']);
+                unset($information['lastsells']);
+                unset($information['lastbuys']);
+                unset($information['N_personbuy']);
+                unset($information['N_legalbuy']);
+                unset($information['N_personsell']);
+                unset($information['N_legalsell']);
+                unset($information['personbuy']);
+                unset($information['personsell']);
+                unset($information['legalbuy']);
+                unset($information['legalsell']);
+                unset($information['personbuycount']);
+                unset($information['personsellcount']);
+                unset($information['legalsellcount']);
+                unset($information['legalbuycount']);
+                unset($information['person_buy_power']);
+                unset($information['person_sell_power']);
+                unset($information['percent_person_buy']);
+                unset($information['percent_legal_buy']);
+                unset($information['percent_person_sell']);
+                unset($information['percent_legal_sell']);
+
+
+
+                if (Cache::has('order' . $namad->id)) {
+                    $data = Cache::get('order' . $namad->id);
+                } else {
+                    $data = [];
+                    do {
+                        try {
+                            $status = false;
+                            // $ch = curl_init("http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=$namad->inscode&c=57");
+                            // curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
+                            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                            // curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                            // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                            // curl_setopt($ch, CURLOPT_ENCODING, "");
+                            $crawler = Goutte::request('GET', 'http://www.tsetmc.com/tsev2/data/instinfofast.aspx?i=' . $namad->inscode . '&c=57');
+                            $all = \strip_tags($crawler->html());
+
+
+                            $result = $all;
+                        } catch (\Throwable $th) {
+                            $status = true;
+                            sleep(.1);
+                        }
+                    } while ($status);
+
+                    $explode_all = explode(';', $result);
+
+                    $orders = $explode_all[2];
+                    if ($orders) {
+                        $explode_orders = explode('@', $orders);
+                        $explode_orders[1] = $this->format((int) $explode_orders[1], 'en');
+                        $data['lastbuys'][] = array('tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2], 'color' => $explode_orders[2] < $information['minRange'] ? 'gray' : 'black');
+                        $explode_orders[6] = $this->format((int) $explode_orders[6], 'en');
+                        $data['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7], 'color' => $explode_orders[7] < $information['minRange'] ? 'gray' : 'black');
+                        $explode_orders[11] = $this->format((int) $explode_orders[11], 'en');
+                        $data['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12], 'color' => $explode_orders[12] < $information['minRange'] ? 'gray' : 'black');
+                        $explode_orders[4] = $this->format((int) $explode_orders[4], 'en');
+                        $data['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3], 'color' => $explode_orders[3] > $information['maxRange'] ? 'gray' : 'black');
+                        $explode_orders[9] = $this->format((int) $explode_orders[9], 'en');
+                        $data['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8], 'color' => $explode_orders[8] > $information['maxRange'] ? 'gray' : 'black');
+                        $explode_orders[14] = $this->format((int) $explode_orders[14], 'en');
+                        $data['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13], 'color' => $explode_orders[13] > $information['maxRange'] ? 'gray' : 'black');
                     }
-                } while ($status);
 
-                $explode_all = explode(';', $result);
-                $orders = $explode_all[2];
-                if ($orders) {
-                    $explode_orders = explode('@', $orders);
-                    $explode_orders[1] = $this->format((int) $explode_orders[1]);
-                    $sefareshat['lastbuys'][] = array('tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2], 'color' => $explode_orders[2] < $information['minRange'] ? 'gray' : 'black');
-                    $explode_orders[6] = $this->format((int) $explode_orders[6]);
-                    $sefareshat['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7], 'color' => $explode_orders[7] < $information['minRange'] ? 'gray' : 'black');
-                    $explode_orders[11] = $this->format((int) $explode_orders[11]);
-                    $sefareshat['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12], 'color' => $explode_orders[12] < $information['minRange'] ? 'gray' : 'black');
 
-                    $explode_orders[4] = $this->format((int) $explode_orders[4]);
-                    $sefareshat['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3], 'color' => $explode_orders[3] > $information['maxRange'] ? 'gray' : 'black');
-                    $explode_orders[9] = $this->format((int) $explode_orders[9]);
-                    $sefareshat['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8], 'color' => $explode_orders[8] > $information['maxRange'] ? 'gray' : 'black');
-                    $explode_orders[14] = $this->format((int) $explode_orders[14]);
-                    $sefareshat['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13], 'color' => $explode_orders[13] > $information['maxRange'] ? 'gray' : 'black');
+                    // dd(explode(',', $buy_sell)[0] );
+
+                    $buy_sell = $explode_all[4];
+                    $data['N_personbuy'] = $buy_sell ?  explode(',', $buy_sell)[0] : 0;
+                    $data['N_legalbuy'] = $buy_sell ? explode(',', $buy_sell)[1] : 0;
+                    $data['N_personsell'] = $buy_sell ? explode(',', $buy_sell)[3] : 0;
+                    $data['N_legalsell'] = $buy_sell ? strval(explode(',', $buy_sell)[4]) : 0;
+                    $data['personbuycount'] = $buy_sell ? strval(explode(',', $buy_sell)[5]) : 0;
+                    $data['legalbuycount'] = $buy_sell ? strval(explode(',', $buy_sell)[6]) : 0;
+                    $data['personsellcount'] = $buy_sell ? strval(explode(',', $buy_sell)[8]) : 0;
+                    $data['legalsellcount'] = $buy_sell ? strval(explode(',', $buy_sell)[9]) : 0;
+                    $data['personbuy'] = $this->format($data['N_personbuy'], 'en');
+                    $data['personsell'] = $this->format($data['N_personsell'], 'en');
+                    $data['legalbuy'] = $this->format($data['N_legalbuy'], 'en');
+                    $data['legalsell'] = $this->format($data['N_legalsell'], 'en');
+
+                    if ($data['N_personbuy'] &&  $data['personbuycount'] &&  $data['N_personsell'] && $data['personsellcount']) {
+                        $data['person_buy_power'] = strval(number_format((float)(($data['N_personbuy'] / $data['personbuycount']) / (($data['N_personbuy'] / $data['personbuycount']) + ($data['N_personsell'] / $data['personsellcount']))), 2, '.', '') * 100);
+                        $data['person_sell_power'] = number_format((float)(100 - $data['person_buy_power']), 0, '.', '');
+                    } else {
+                        $data['person_buy_power'] = 0;
+                        $data['person_sell_power'] = 0;
+                    }
+
+                    $totalbuy = $buy_sell ? explode(',', $buy_sell)[0] + explode(',', $buy_sell)[1] : 0;
+                    $totalsell = $buy_sell ? explode(',', $buy_sell)[3] + explode(',', $buy_sell)[4] : 0;
+
+                    if ($totalbuy && $buy_sell) {
+                        $data['percent_person_buy'] = number_format((float)((explode(',', $buy_sell)[0] * 100) / $totalbuy), 0, '.', '');
+                    } else {
+                        $data['percent_person_buy'] = 0;
+                    }
+                    if ($totalbuy && $buy_sell) {
+                        $data['percent_legal_buy'] = number_format((float)((explode(',', $buy_sell)[1] * 100) / $totalbuy), 0, '.', '');
+                    } else {
+                        $data['percent_legal_buy'] = 0;
+                    }
+
+                    if ($totalsell && $buy_sell) {
+                        $data['percent_person_sell'] = number_format((float)((explode(',', $buy_sell)[3] * 100) / $totalsell), 0, '.', '');
+                    } else {
+                        $data['percent_person_sell'] = 0;
+                    }
+                    if ($totalsell && $buy_sell) {
+                        $data['percent_legal_sell'] = number_format((float)((explode(',', $buy_sell)[4] * 100) / $totalsell), 0, '.', '');
+                    } else {
+
+                        $data['percent_legal_sell'] = 0;
+                    }
+
+                    Cache::store()->put('order' . $namad->id, $data, 12);
                 }
-
-                Cache::store()->put('order' . $namad->id, $sefareshat, 12);
+                $result = array_merge($information, $data);
+                return $this->JsonResponse($result, null, 200);
             }
-            $result = array_merge($information, $sefareshat);
-            return $this->JsonResponse($result, null, 200);
+        } catch (\Throwable $th) {
+            $result = null;
+            $error = 'خطا در دریافت اطلاعات از سرور';
         }
     }
 
@@ -226,10 +635,10 @@ class MarketController extends Controller
                 $all[] = $array;
             });
 
-            Cache::put('bshakhes', $all, 60 * 5);
+            Cache::put('bshakhes', $all, 60 * 10);
             $error = null;
         } catch (\Throwable $th) {
-            $error = 'در حال حاضر سرور با مشکل مواجه است';
+            $error = 'در حال حاضر سرور مشغول است لطفا مجددا امتحان کنید';
             $all = [];
         }
 
@@ -499,7 +908,7 @@ class MarketController extends Controller
                 if (!is_null($information)) {
                     if (array_key_exists('pl', $information) && array_key_exists('py', $information)) {
                         $dd['namad'] = new NamadResource($namad);
-                        $dd['effect'] = (int)$value;
+                        $dd['effect'] = (float)$value;
 
                         $ff[] = $dd;
                     }

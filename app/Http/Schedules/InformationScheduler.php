@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Cache;
 use Goutte;
 use Morilog\Jalali\Jalalian;
 
-class InformationScheduler
+class InformationScheduler extends Scheduler
 {
 
 
@@ -84,7 +84,16 @@ class InformationScheduler
                 $capitalincrease->codal_date = isset($info['PublishDateTime']) ? $this->convertPersianToEnglish($info['PublishDateTime']) : '';
                 $capitalincrease->link_to_codal = 'https://www.codal.ir/' . $info['Url'];
                 $capitalincrease->save();
+
+
+                // send to users
+                foreach ($namad->users as $key => $user) {
+                    $this->sendnotification($user->firebase_token,'آگهی افزایش سرمایه',$info['Title']);   
+                }
             }
+
+
+
         }
     }
 
@@ -116,6 +125,11 @@ class InformationScheduler
                 $clarification->codal_date = isset($info['PublishDateTime']) ? $this->convertPersianToEnglish($info['PublishDateTime']) : '';
                 $clarification->publish_date = date('Y-m-d');
                 $clarification->save();
+
+                 // send to users
+                 foreach ($namad->users as $key => $user) {
+                    $this->sendnotification($user->firebase_token,'آگهی شفاف سازی',$info['Title']);   
+                }
             }
         }
     }

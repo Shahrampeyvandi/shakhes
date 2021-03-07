@@ -6,7 +6,9 @@ Route::post('register', 'Api\LoginSignUpController@register');
 Route::post('login', 'Api\LoginSignUpController@login');
 
 
+
 Route::group(['middleware' => ['jwt.verify']], function () {
+    Route::any('/updateFirebaseToken', 'Api\LoginSignUpController@updateFirebaseToken');
     Route::get('/me', 'Api\LoginSignUpController@me');
     Route::get('/member/notifications', 'Api\MembersDataController@notifications');
     //----------- بخش نماد من----------------
@@ -20,40 +22,45 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::get('/getnotifications', 'Api\NamadsController@getHomeNotifications');
     Route::get('/read', 'Api\MembersDataController@mark_to_read');
     Route::get('/capitalincreases', 'Api\CapitalIncreasesController@getall'); // get all capitalincreases
-    Route::get('/getvolumetrades/{id?}', 'Api\VolumeTradesController@get');
+    Route::get('/getvolumetrades', 'Api\VolumeTradesController@get');
     Route::get('/clarifications', 'Api\ClarificationController@getall'); // get all clarifications
-    
     Route::get('addbookmark', 'Api\MembersDataController@addToSelected');
     Route::get('userbookmarks', 'Api\MembersDataController@userSelected');
-
     Route::post('ticket/submit', 'Api\TicketController@add');
-
-    
-//---------- بخش بازار------------------
-Route::group(['prefix'=>'market'], function(){
-Route::get('/1/topindex', 'Api\MarketController@bshackes');
-Route::get('/2/topindex', 'Api\MarketController@fshackes');
-Route::get('/1/mostvisited', 'Api\MarketController@bourseMostVisited');
-Route::get('/2/mostvisited', 'Api\MarketController@farabourceMostVisited');
-Route::get('/1/mosteffect', 'Api\MarketController@bourseEffectInShakhes');
-Route::get('/2/mosteffect', 'Api\MarketController@farabourseEffectInShakhes');
-Route::get('/1/most-price-increases', 'Api\MarketController@bourseMostPriceIncreases');
-Route::get('/2/most-price-increases', 'Api\MarketController@farabourseMostPriceIncreases');
-Route::get('/1/most-price-decreases', 'Api\MarketController@bourseMostPriceDecreases');
-Route::get('/2/most-price-decreases', 'Api\MarketController@farabourseMostPriceDecreases');
-Route::get('/namad', 'Api\MarketController@getNamad');
-Route::get('/bnamads/search', 'Api\MarketController@search');
-
-//-----------بخش آموزشی------------------
-Route::get('/education/list', 'Api\EducationController@list');
-Route::get('/education/addview/{id}', 'Api\EducationController@addViewCount');
-Route::get('/education/{id}', 'Api\EducationController@view');
-//----------------------------------------------------------------
+    Route::get('tickets/list', 'Api\TicketController@list');
+    Route::get('plans/list', 'Api\PlanController@list');
+    Route::get('member/namad/tablist', 'Api\MembersDataController@tabList');
 
 
-});
-//----------------------------------------------------------------
-    
+    //---------- بخش بازار------------------
+    Route::group(['prefix' => 'market'], function () {
+        
+        Route::get('/index/chart','Api\MarketController@index_chart');
+        Route::get('index/distributions-status','Api\MarketController@get_distributes');
+        Route::get('/index/shakhes-status','Api\MarketController@index_values');
+
+        Route::get('/1/topindex', 'Api\MarketController@bshackes');
+        Route::get('/2/topindex', 'Api\MarketController@fshackes');
+        Route::get('/1/mostvisited', 'Api\MarketController@bourseMostVisited');
+        Route::get('/2/mostvisited', 'Api\MarketController@farabourceMostVisited');
+        Route::get('/1/mosteffect', 'Api\MarketController@bourseEffectInShakhes');
+        Route::get('/2/mosteffect', 'Api\MarketController@farabourseEffectInShakhes');
+        Route::get('/1/most-price-increases', 'Api\MarketController@bourseMostPriceIncreases');
+        Route::get('/2/most-price-increases', 'Api\MarketController@farabourseMostPriceIncreases');
+        Route::get('/1/most-price-decreases', 'Api\MarketController@bourseMostPriceDecreases');
+        Route::get('/2/most-price-decreases', 'Api\MarketController@farabourseMostPriceDecreases');
+        Route::get('/namad', 'Api\MarketController@getNamad');
+        Route::get('chart', 'Api\MarketController@chart');
+       
+        Route::get('/bnamads/search', 'Api\MarketController@search');
+        //-----------بخش آموزشی------------------
+        Route::get('/education/list', 'Api\EducationController@list');
+        Route::get('/education/addview/{id}', 'Api\EducationController@addViewCount');
+        Route::get('/education/{id}', 'Api\EducationController@view');
+        //----------------------------------------------------------------
+    });
+    //----------------------------------------------------------------
+
 });
 Route::get('getholdings', 'Api\MoneyReportsController@getHoldings');
 

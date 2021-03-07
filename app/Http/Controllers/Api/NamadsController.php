@@ -28,20 +28,12 @@ class NamadsController extends Controller
         $res = [];
         try {
             if ($key) {
-
                 $namads = Namad::where('symbol', 'like', '%' . $key . '%')
                     ->take(5)->get();
                 if (count($namads) == 0) {
                     $error = 'موردی یافت نشد';
                 } else {
-                    foreach ($namads as $key => $namad) {
-                        $res[] = [
-                            'id' => $namad->id,
-                            'symbol' => $namad->symbol,
-                            'name' => $namad->name,
-                            'isSelected' => $member->check_if_has_namad($namad->id)
-                        ];
-                    }
+                    $res = NamadResource::collection($namads);
                     $error = null;
                 }
             }
@@ -58,19 +50,12 @@ class NamadsController extends Controller
         $namad = Namad::find($request->id);
         if ($namad) {
            
-            $information['symbol'] = $namad->symbol;
-            $information['name'] = Cache::get($namad->id)['name'];
-                $information['final_price_value'] = Cache::get($namad->id)['final_price_value'];
-                $information['final_price_percent'] = Cache::get($namad->id)['final_price_percent'];
-                $information['final_price_change'] = Cache::get($namad->id)['last_price_change'];
-                $information['final_price_status'] = Cache::get($namad->id)['last_price_status'] ? '+' : '-';
-                $information['namad_status'] = Cache::get($namad->id)['namad_status'];
-             $information['notifications_count'] = $namad->getUserNamadNotifications($member)['count'];
+            $information = new NamadResource($namad);
 
             return $this->JsonResponse($information,null,200);
         } else {
             $error = 'نماد مورد نظر یافت نشد';
-            return $this->JsonResponse([],$error,200);
+            return $this->JsonResponse(null,$error,200);
            
         }
     }

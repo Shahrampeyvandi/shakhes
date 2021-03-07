@@ -14,25 +14,18 @@ use Morilog\Jalali\Jalalian;
 
 class VolumeTradesController extends Controller
 {
-    public function get($id = null)
+    public function get()
     {
-        // VolumeTrade::whereDate('created_at','<',Carbon::now()->subMonth())->delete();
 
         try {
-            if ($id) {
-                $volume_trades = VolumeTrade::whereNamad_id($id)->paginate(20);
+            if (Cache::get('bazarstatus') == 'close') {
+                $orderby = 'volume_ratio';
             } else {
-
-                if (Cache::has('volume-trades')) {
-                    return $this->JsonResponse(Cache::get('volume-trades'), null, 200);
-                }
-
-                if (Cache::has('bazarstatus') && Cache::get('bazarstatus') == 'close') {
-                    $orderby = 'volume_ratio';
-                } else {
-                    $orderby = 'updated_at';
-                }
-
+                $orderby = 'updated_at';
+            }
+           if (isset(request()->namad) && request()->namad) {
+                $volume_trades = VolumeTrade::whereNamad_id(request()->namad)->orderBy($orderby, 'desc')->paginate(20);
+            } else {
                 if (isset(request()->ratio)) {
                     if (VolumeTrade::whereDate('created_at', Carbon::today())->count()) {
                         $volume_trades = VolumeTrade::whereDate('created_at', Carbon::today())->orderBy($orderby, 'desc')
@@ -45,23 +38,25 @@ class VolumeTradesController extends Controller
                     }
                 } else {
                     if (VolumeTrade::whereDate('created_at', Carbon::today())->count()) {
-                       
+
                         $volume_trades = VolumeTrade::whereDate('created_at', Carbon::today())->orderBy($orderby, 'desc')->get();
                     } else {
-                       
+
                         $volume_trades = VolumeTrade::orderBy($orderby, 'desc')->take(40)->get();
                     }
                 }
             }
-
-
-
-            $all = VolumeTradeResource::collection($volume_trades);
-            if (!$id) {
-
-                Cache::put('volume-trades', $all, 60);
+            if (isset(request()->section) && request()->section == 'mynamad') {
+                $member = $this->token(request()->header('Authorization'));
+                $namads = $member->namads->pluck('id')->toArray();
+                $volume_trades = $volume_trades->whereIn('namad_id', $namads);
+                $all = VolumeTradeResource::collection($volume_trades);
+            } else {
+                $all = VolumeTradeResource::collection($volume_trades);
+                if (!request()->namad) {
+                    Cache::put('volume-trades', $all, 60);
+                }
             }
-
             $status = 200;
             $error = null;
         } catch (\Exception $th) {

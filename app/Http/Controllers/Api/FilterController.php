@@ -16,8 +16,6 @@ class FilterController extends Controller
     {
 
         if (Cache::has($kilid)) {
-           
-            
             return $this->JsonResponse(Cache::get($kilid),null,200);
         }
 
@@ -41,9 +39,9 @@ class FilterController extends Controller
                 $namad = Namad::whereSymbol($symbol)->first();
                 if (isset(Cache::get($namad->id)['filter'])) {
                     $item['namad'] =new NamadResource($namad);
-                    $item['first'] = $this->format((float)((float)Cache::get($namad->id)['N_personbuy'] / (float)Cache::get($namad->id)['personbuycount']));
-                    $item['second'] = $this->format((float)((float)Cache::get($namad->id)['N_personsell'] / (float)Cache::get($namad->id)['personsellcount']));
-                    $item['third'] = isset(Cache::get($namad->id)['filter'][$kilid]) ?  number_format((float)Cache::get($namad->id)['filter'][$kilid], 0) : 0;
+                    // $item['first'] = $this->format((float)((float)Cache::get($namad->id)['N_personbuy'] / (float)Cache::get($namad->id)['personbuycount']));
+                    // $item['second'] = $this->format((float)((float)Cache::get($namad->id)['N_personsell'] / (float)Cache::get($namad->id)['personsellcount']));
+                    $item['first'] = isset(Cache::get($namad->id)['filter'][$kilid]) ?  number_format((float)Cache::get($namad->id)['filter'][$kilid], 0) : 0;
                     $data[] = $item;
                 }
             }
@@ -65,9 +63,9 @@ class FilterController extends Controller
                 // return $this->format((float)((float)Cache::get($namad->id)['personsell'] / (float)Cache::get($namad->id)['personsellcount']));
                 if (isset(Cache::get($namad->id)['filter'])) {
                     $item['namad'] =new NamadResource($namad);
-                    $item['first'] = $this->format((float)((float)Cache::get($namad->id)['N_legalbuy'] / (float)Cache::get($namad->id)['legalbuycount']));
-                    $item['second'] = $this->format((float)((float)Cache::get($namad->id)['N_legalsell'] / (float)Cache::get($namad->id)['legalsellcount']));
-                    $item['third'] = isset(Cache::get($namad->id)['filter'][$kilid]) ?  number_format((float)Cache::get($namad->id)['filter'][$kilid], 0) : 0;
+                    // $item['first'] = $this->format((float)((float)Cache::get($namad->id)['N_legalbuy'] / (float)Cache::get($namad->id)['legalbuycount']));
+                    // $item['second'] = $this->format((float)((float)Cache::get($namad->id)['N_legalsell'] / (float)Cache::get($namad->id)['legalsellcount']));
+                    $item['first'] = isset(Cache::get($namad->id)['filter'][$kilid]) ?  number_format((float)Cache::get($namad->id)['filter'][$kilid], 0) : 0;
                     $data[] = $item;
                 }
             }
@@ -77,7 +75,7 @@ class FilterController extends Controller
         
         if ($kilid == 'most_cash_trade') {
             foreach ($namads as $namad) {
-                $array[$namad->symbol] =  Cache::get($namad->id) && isset(Cache::get($namad->id)['N_tradecash']) ? Cache::get($namad->id)['N_tradecash'] : 0;
+                $array[$namad->symbol] =  Cache::get($namad->id) && isset(Cache::get($namad->id)['N_tradeCash']) ? Cache::get($namad->id)['N_tradeCash'] : 0;
             }
             asort($array);
             $symbols_array = array_slice(array_keys(array_reverse($array)), 0, 50);
@@ -86,10 +84,10 @@ class FilterController extends Controller
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
                  $item['namad'] =new NamadResource($namad);
-                $item['first'] = isset(Cache::get($namad->id)['tradevol']) ? strval(Cache::get($namad->id)['tradevol']) : '';
-                $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
-                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
-                $item['third'] = isset(Cache::get($namad->id)['tradecash']) ? Cache::get($namad->id)['tradecash'] : '';
+                // $item['first'] = isset(Cache::get($namad->id)['tradevol']) ? strval(Cache::get($namad->id)['tradevol']) : '';
+                // $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
+                // $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
+                $item['first'] = isset(Cache::get($namad->id)['N_tradeCash']) ? $this->format(Cache::get($namad->id)['N_tradeCash'],'fa') : '';
                 $data[] = $item;
             }
 
@@ -106,10 +104,10 @@ class FilterController extends Controller
             foreach ($symbols_array as $key => $symbol) {
                 $namad = Namad::whereSymbol($symbol)->first();
                 $item['namad'] =new NamadResource($namad);
-                $item['first'] = isset(Cache::get($namad->id)['tradecount']) ? strval(Cache::get($namad->id)['tradecount']) : '';
-                $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
-                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
-                $item['third'] = isset(Cache::get($namad->id)['N_tradeVol']) ? $this->format(Cache::get($namad->id)['N_tradeVol']) : '';
+                // $item['first'] = isset(Cache::get($namad->id)['tradecount']) ? strval(Cache::get($namad->id)['tradecount']) : '';
+                // $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
+                // $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
+                $item['first'] = isset(Cache::get($namad->id)['N_tradeVol']) ? $this->format(Cache::get($namad->id)['N_tradeVol'],'fa') : '';
              
 
                 $data[] = $item;
@@ -129,10 +127,10 @@ class FilterController extends Controller
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
                 $item['namad'] =new NamadResource($namad);
-                $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? strval(Cache::get($namad->id)['personbuycount']) : '';
-                $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
-                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
-                $item['third'] = isset(Cache::get($namad->id)['personbuy']) ? Cache::get($namad->id)['personbuy'] : '';
+                // $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? strval(Cache::get($namad->id)['personbuycount']) : '';
+                // $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
+                // $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
+                $item['first'] = isset(Cache::get($namad->id)['personbuy']) ? $this->format(Cache::get($namad->id)['N_personbuy'],'fa') : '';
              
                 $data[] = $item;
             }
@@ -152,10 +150,10 @@ class FilterController extends Controller
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
                 $item['namad'] =new NamadResource($namad);
-                $item['first'] = isset(Cache::get($namad->id)['personsellcount']) ? strval(Cache::get($namad->id)['personsellcount']) : '';
-                $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
-                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
-                $item['third'] = isset(Cache::get($namad->id)['personsell']) ? Cache::get($namad->id)['personsell'] : '';
+                // $item['first'] = isset(Cache::get($namad->id)['personsellcount']) ? strval(Cache::get($namad->id)['personsellcount']) : '';
+                // $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
+                // $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
+                $item['first'] = isset(Cache::get($namad->id)['personsell']) ? $this->format(Cache::get($namad->id)['N_personsell'],'fa') : '';
              
                 $data[] = $item;
             }
@@ -175,10 +173,10 @@ class FilterController extends Controller
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
                 $item['namad'] =new NamadResource($namad);
-                $item['first'] = isset(Cache::get($namad->id)['legalbuycount']) ? strval(Cache::get($namad->id)['legalbuycount']) : '';
-                $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
-                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
-                $item['third'] = isset(Cache::get($namad->id)['legalbuy']) ? Cache::get($namad->id)['legalbuy'] : '';
+                // $item['first'] = isset(Cache::get($namad->id)['legalbuycount']) ? strval(Cache::get($namad->id)['legalbuycount']) : '';
+                // $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
+                // $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
+                $item['first'] = isset(Cache::get($namad->id)['legalbuy']) ? $this->format(Cache::get($namad->id)['N_legalbuy'],'fa') : '';
                
                 $data[] = $item;
             }
@@ -198,10 +196,10 @@ class FilterController extends Controller
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
                 $item['namad'] =new NamadResource($namad);
-                $item['first'] = isset(Cache::get($namad->id)['legalsellcount']) ? strval(Cache::get($namad->id)['legalsellcount']) : '';
-                $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
-                $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
-                $item['third'] = isset(Cache::get($namad->id)['legalsell']) ? Cache::get($namad->id)['legalsell'] : '';
+                // $item['first'] = isset(Cache::get($namad->id)['legalsellcount']) ? strval(Cache::get($namad->id)['legalsellcount']) : '';
+                // $item['second'] = isset(Cache::get($namad->id)['pl']) ? Cache::get($namad->id)['pl'] : '';
+                // $item['secondsecond'] = isset(Cache::get($namad->id)['final_price_percent']) ? strval(Cache::get($namad->id)['final_price_percent']) : '';
+                $item['first'] = isset(Cache::get($namad->id)['legalsell']) ? $this->format(Cache::get($namad->id)['N_legalsell'],'fa') : '';
               
                 $data[] = $item;
             }
@@ -227,9 +225,9 @@ class FilterController extends Controller
                 $namad = Namad::whereSymbol($symbol)->first();
                 // return Cache::get($namad->id);
                 $item['namad'] =new NamadResource($namad);
-                $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? strval(Cache::get($namad->id)['personbuycount']) : '';
-                $item['second'] = isset(Cache::get($namad->id)['N_personbuy']) ? $this->format((int)Cache::get($namad->id)['N_personbuy']) : 0;
-                $item['third'] =isset(Cache::get($namad->id)['filter'][$kilid]) ? $this->format((float)Cache::get($namad->id)['filter'][$kilid]) : 0;
+                // $item['first'] = isset(Cache::get($namad->id)['personbuycount']) ? strval(Cache::get($namad->id)['personbuycount']) : '';
+                // $item['second'] = isset(Cache::get($namad->id)['N_personbuy']) ? $this->format((int)Cache::get($namad->id)['N_personbuy']) : 0;
+                $item['first'] =isset(Cache::get($namad->id)['filter'][$kilid]) ? $this->format((float)Cache::get($namad->id)['filter'][$kilid],'fa') : 0;
                 
                 $data[] = $item;
             }
@@ -254,9 +252,9 @@ class FilterController extends Controller
                 // return Cache::get($namad->id);
                 if (Cache::get($namad->id)) {
                     $item['namad'] =new NamadResource($namad);
-                    $item['first'] = isset(Cache::get($namad->id)['personsellcount']) ? strval(Cache::get($namad->id)['personsellcount']) : '';
-                    $item['second'] =isset(Cache::get($namad->id)['personsellcount']) ? $this->format((int)Cache::get($namad->id)['N_personsell']) : 0;
-                    $item['third'] =isset(Cache::get($namad->id)['filter'][$kilid]) ?  $this->format((float)Cache::get($namad->id)['filter'][$kilid], 0) : 0;
+                    // $item['first'] = isset(Cache::get($namad->id)['personsellcount']) ? strval(Cache::get($namad->id)['personsellcount']) : '';
+                    // $item['second'] =isset(Cache::get($namad->id)['personsellcount']) ? $this->format((int)Cache::get($namad->id)['N_personsell']) : 0;
+                    $item['first'] =isset(Cache::get($namad->id)['filter'][$kilid]) ?  $this->format((float)Cache::get($namad->id)['filter'][$kilid],'fa') : 0;
                     $data[] = $item;
                 }
             }

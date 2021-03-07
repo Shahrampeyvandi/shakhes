@@ -2,6 +2,7 @@
 
 return [
 
+    'FIREBASE_LEGACY_SERVER_KEY'=>'AAAAKN22tA0:APA91bEhhwYlPvy452mKulNuSadvK2jsfUgM41-Lg-njTxWLzb_xrcg-QhXrxXml3MHFSfCSF7dMuihvWbySp5kNxfNneUVoCnfH3hHjxJwymakBxtUxUlB2ZjnSk5V6yAF_iFWnHhMK',
     /*
     |--------------------------------------------------------------------------
     | Application Name

@@ -65,6 +65,8 @@ class MoneyReportsController extends Controller
 
     public function getHoldings()
     {
+        $h = Holding::find(30);
+        return $h->getMarketValue();
 
         // return Cache::get(856);
 
@@ -74,11 +76,12 @@ class MoneyReportsController extends Controller
             $all = Cache::get('holding-data');
             return $this->JsonResponse($all, null, 200);
         }
+        $holding = Holding::query();
+        foreach ($holding->get() as $key => $holding) {
+            $holding->save_portfoy();
+        }
 
-
-        $collection = Holding::get()->sortByDesc(function ($item, $key) {
-            return $item->portfoy;
-        });
+        $collection = $holding->orderBy('portfoy', 'desc')->get();
 
         //  usort($collection, function ($a, $b) {
         //     return $a['realPortfoy'] < $b['realPortfoy'];
@@ -95,35 +98,41 @@ class MoneyReportsController extends Controller
 
     public function showHolding()
     {
-        if (isset(request()->id)) {
-
-            $row = Holding::whereId(request()->id)->first();
-            if($row){
-
+        try {
             
-            $h = Namad::find($row->namad_id);
-            $data = [
-                'namad' => new NamadResource($h),
-                'itemId' => $row->id,
-                'realPortfoy' => (int)$row->getMarketValue(),
-                'formatedPortfoy' => $row->format($row->getMarketValue()),
-                'percentChangePorftoy' => $row->change_percent(),
-                'Status' =>  $row->change_percent() > 0 ? '+' : '-',
-                'countNamad' => count($row->namads),
-            ];
-            $data['namads'] = $row->namadsResource();
-            $error = null;
-        }else{
+            if (isset(request()->id)) {
+                $row = Holding::whereId(request()->id)->first();
+            }
+
+            if (isset(request()->namad_id)) {
+                $row = Holding::where('namad_id', request()->namad_id)->first();
+            }
+
+            if ($row) {
+                $h = Namad::find($row->namad_id);
+                $data = [
+                    'namad' => new NamadResource($h),
+                    'itemId' => $row->id,
+                    'realPortfoy' => (int)$row->getMarketValue(),
+                    'formatedPortfoy' => $this->format($row->getMarketValue(), 'fa'),
+                    'percentChangePorftoy' => $row->change_percent(),
+                    'Status' =>  $row->change_percent() > 0 ? '+' : '-',
+                    'countNamad' => count($row->namads),
+                ];
+                $data['namads'] = $row->namadsResource();
+                $error = null;
+            } else {
+                $data = null;
+                $error = 'شرکت سرمایه گذاری یافت نشد';
+            }
+        } catch (\Throwable $th) {
             $data = null;
-            $error = 'شرکت سرمایه گذاری یافت نشد';
+            $error = 'خطا در دریافت اطلاعات از سرور';
         }
-        
-            //  Cache::put('holding-data-'.request()->id, $all, 60 * 10);
-        } else {
-            $data = null;
-            $error = 'خطا در دریافت اطلاعات';
-        }
-        return $this->JsonResponse($data,$error,200);
+
+        //  Cache::put('holding-data-'.request()->id, $all, 60 * 10);
+
+        return $this->JsonResponse($data, $error, 200);
     }
 
     public function getfinancial($id)
@@ -193,13 +202,17 @@ class MoneyReportsController extends Controller
 
         try {
             $namad = Namad::find($request->id);
+
+
+
+
             $monthly_reports_years = $namad->monthlyReports()->pluck('year')->toArray();
 
             if (count($monthly_reports_years)) {
                 if (count(array_unique($monthly_reports_years)) == 2) {
                     $setOne = $namad->monthlyReports()->where('year', $monthly_reports_years[0])->orderBy('month')->get();
                     $setTwo = $namad->monthlyReports()->where('year', $monthly_reports_years[1])->orderBy('month')->get();
-                    $data['info'][] = ['setOneTitle' => $monthly_reports_years[0], 'setTwoTitle' => $monthly_reports_years[1]];
+                    $data['info'][] = ['setOneTitle' => $monthly_reports_years[1], 'setTwoTitle' => $monthly_reports_years[0]];
                 } else {
                     $setOne = $namad->monthlyReports()->where('year', $monthly_reports_years[0])->get();
                     $data['info'][] = ['setOneTitle' => $monthly_reports_years[0]];
@@ -250,7 +263,7 @@ class MoneyReportsController extends Controller
                             break;
                     }
 
-                    $data['dataSet'][] = ['setOne' => $item->value, 'setTwo' => $setTwo[$key]['value'], 'xAxis' => $fa];
+                    $data['dataSet'][] = ['setOne' => $setTwo[$key]['value'], 'setTwo' => $item->value, 'xAxis' => $fa];
                 }
             } else {
                 foreach ($setOne as $key => $item) {
@@ -296,6 +309,8 @@ class MoneyReportsController extends Controller
                     $data['dataSet'][] = ['setOne' => $item->value, 'xAxis' => $fa];
                 }
             }
+
+
 
 
 

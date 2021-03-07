@@ -76,8 +76,8 @@ class PlanController extends Controller
             'description' => request()->desc,
 
         ]);
-        toastr()->success('اشتراک با موفقیت ویرایش  شد');
-        return redirect()->route('Panel.PlanList');
+       
+        return redirect()->route('Panel.PlanList')->with('success','با موفقیت ویراش شد');
     }
 
     function list()

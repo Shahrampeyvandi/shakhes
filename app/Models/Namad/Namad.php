@@ -59,6 +59,11 @@ class Namad extends Model
         return $this->hasMany(VolumeTrade::class);
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(Namad::class, 'members_namads','namad_id','member_id')->withPivot(['amount', 'profit_loss_percent', 'price']);
+    }
+
 
     public static function GetAllNotifications($user)
     {

@@ -82,6 +82,20 @@ class LoginSignUpController extends Controller
         return $member = $this->token(request()->header('Authorization'));
     }
 
+    public function updateFirebaseToken()
+    {
+        $token = request('firebaseToken');
+        if($token){
+            $member = $this->token(request()->header('Authorization'));
+            $member->firebase_token = $token;
+            $member->save();
+        }
+        
+        return $this->JsonResponse('ok',null,200);
+    }
+
+   
+
 
     // public function login(Request $request)
     // {

@@ -12,7 +12,9 @@ use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Member\Member;
 use Illuminate\Support\Facades\Mail;
+use Morilog\Jalali\Jalalian;
 
 class PayController extends Controller
 {
@@ -23,13 +25,33 @@ class PayController extends Controller
     }
     public function pay(Request $request)
     {
+        // dd('d');
+
+        if(!$request->token) return $this->JsonResponse(null,'Token Not Found',200);
 
         $plan = Plan::whereId($request->plan_id)->first();
-        $user = $this->token(request()->header('Authorization'));
 
-        if (!$plan) return back();
+        try {
+            $user = $this->token($request->token);
+        } catch (\Exception $e) {
+            if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
 
-        $expire_date = Carbon::now()->addDays($plan->days);
+                return $this->JsonResponse(null, 'Token is Invalid', 401);
+            } else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
+                return $this->JsonResponse(null, 'Token is Invalid', 401);
+            } else {
+                return $this->JsonResponse(null, 'Authorization Token Not Found', 401);
+            }
+        }
+        
+        if(!$user) return $this->JsonResponse(null,'User Not Found',200);
+        // $user = Member::find(3);
+        
+
+        if (!$plan)   return $this->JsonResponse(null,'اشتراک یافت نشد',200);
+
+
+        $subscribe = Carbon::now()->addDays($plan->days);
 
         //برای تست کردن مقدار دیباگ مد رو روی یک قررا بده وگرنه صفر
         $debugmode = 1;
@@ -49,15 +71,15 @@ class PayController extends Controller
 
         if ($payment->amount == 0) {
             $plan = Plan::find($payment->plan_id);
-            $expire = Carbon::parse($user->expire_date)->timestamp;
+            $expire = Carbon::parse($user->subscribe)->timestamp;
             $now = Carbon::now()->timestamp;
             if ($expire < $now) {
-                $expire_date = Carbon::now()->addDays($plan->days);
+                $subscribe = Carbon::now()->addDays($plan->days);
             } else {
-                $expire_date = Carbon::parse($user->expire_date)->addDays($plan->days);
+                $subscribe = Carbon::parse($user->subscribe)->addDays($plan->days);
             }
 
-            $user->expire_date = $expire_date;
+            $user->subscribe = $subscribe;
             $user->update();
             $user->fresh();
 
@@ -84,7 +106,7 @@ class PayController extends Controller
         $data = array(
             'MerchantID' => '2a00b862-a97e-11e6-9e29-005056a205be',
             'Amount' => $payment->amount,
-            'CallbackURL' => route('Pay.CallBack') . '?id=' . $payment->id,
+            'CallbackURL' => route('Pay.CallBack') . '?id=' . $payment->id.'&user_id='.$user->id,
             'Description' => 'پرداخت از سایت'
         );
         $jsonData = json_encode($data);
@@ -128,9 +150,10 @@ class PayController extends Controller
 
     public function callback(Request $request)
     {
-          $user = $this->token(request()->header('Authorization'));
+        //   $user = $this->token(request()->header('Authorization'));
+          $user = Member::find(request()->user_id);
         //برای تست کردن مقدار دیباگ مد رو روی یک قررا بده وگرنه صفر
-        $debugmode = 0;
+        $debugmode = 1;
 
         $payment = Payment::find($request->id);
 
@@ -171,16 +194,16 @@ class PayController extends Controller
                 // به اعتبارش اضافه کن
                 // تراکنش موفق بود هر جا می خوای ریدایرکتش کن
                 $plan = Plan::find($payment->plan_id);
-                $expire = Carbon::parse($user->expire_date)->timestamp;
+                $expire = Carbon::parse($user->subscribe)->timestamp;
                 $now = Carbon::now()->timestamp;
                 if ($expire < $now) {
-                    $expire_date = Carbon::now()->addDays($plan->days);
+                    $subscribe = Carbon::now()->addDays($plan->days);
                 } else {
-                    $expire_date = Carbon::parse($user->expire_date)->addDays($plan->days);
+                    $subscribe = Carbon::parse($user->subscribe)->addDays($plan->days);
                 }
 
 
-                $user->expire_date = $expire_date;
+                $user->subscribe = $subscribe;
                 $user->update();
 
                 // برای ارسال پیامک ثبت خرید اشتراک
@@ -199,18 +222,23 @@ class PayController extends Controller
                 // }
                 // session()->forget('discount_id' . $user->id);
                 // session()->forget('amount' . auth()->user()->id);
-                // //auth()->user()->plans()->attach($plan->id, ['expire_date' => $expire_date]);
+                // //auth()->user()->plans()->attach($plan->id, ['subscribe' => $subscribe]);
                 // // send sms 
                 // $this->sendNoty(auth()->user(), $plan);
                 // return redirect()->route('MainUrl');
-                return response()->json('success',200);
-            } else {
-
-                // تراکنش ناموفق بوده
-                // toastr()->error('تراکنش ناموفق بود');
-                // return redirect()->route('S.SiteSharing');
-                return response()->json('error',200);
-            }
+                $res['transaction_code'] = $payment->transaction_code;
+                $res['mobile'] = $user->phone;
+                $res['expire_date'] = Jalalian::forge($user->subscribe)->format('d/m/Y');
+                    $res['success'] = 1;
+                } else {
+                    
+                    // تراکنش ناموفق بوده
+                    // toastr()->error('تراکنش ناموفق بود');
+                    // return redirect()->route('S.SiteSharing');
+                    $error = 'تراکنش ناموفق بود';
+                   $res['success'] = 0;
+                }
+                return view('Pay.result',$res);
         }
     }
 }

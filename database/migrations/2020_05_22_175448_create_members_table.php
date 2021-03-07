@@ -22,6 +22,7 @@ class CreateMembersTable extends Migration
             $table->string('avatar')->nullable();
             $table->dateTime('subscribe')->nullable();
             $table->timestamp('expire_date')->nullable();
+            $table->timestamp('firebase_token')->nullable();
             $table->timestamps();
         });
     }

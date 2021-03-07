@@ -26,6 +26,8 @@ class PortfoyController extends Controller
 
 
         $holdings = Holding::latest()->get();
+        $holding = Holding::find(30);
+        dd($holding->namads);
         $array = [];
         foreach ($holdings as $key => $holding_obj) {
             $namad = Namad::where('id', $holding_obj->namad_id)->first();
@@ -113,6 +115,8 @@ class PortfoyController extends Controller
 
         Holding::where('id', $request->holding)->first()->namads()->detach($request->id);
         $holding = Holding::where('id', $request->holding)->first();
+        $holding->updated_at = Carbon::now();
+        $holding->save();    
         // بررسی دوباره درصد پرتفوی سهم ها
         $this->calculate($holding);
         return redirect()->route('Holding.Namads', $holding->id);
@@ -153,7 +157,8 @@ class PortfoyController extends Controller
 
         ]);
 
-
+        $holding->updated_at = Carbon::now();
+        $holding->save();    
 
         $this->calculate($holding);
         return redirect()->route('Holding.Namads', $holding->id);

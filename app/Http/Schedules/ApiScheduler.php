@@ -71,10 +71,7 @@ class ApiScheduler extends Controller
                 } catch (Exception $e) {
                 }
             }
-
         }
-        
-        
     }
 
     public function saveDailyReport($namad)
@@ -246,7 +243,7 @@ class ApiScheduler extends Controller
             $array['marketCash'] = $array['tedadSaham'] * $array['pl'];
             $array['N_marketCash'] = $array['marketCash'];
 
-            $array['marketCash'] = $this->format((int)$array['marketCash']);
+            $array['marketCash'] = $this->format((int)$array['marketCash'],'fa');
         }
 
 

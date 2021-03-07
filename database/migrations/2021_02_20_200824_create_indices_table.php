@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTicketsTable extends Migration
+class CreateIndicesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,8 @@ class CreateTicketsTable extends Migration
      */
     public function up()
     {
-        Schema::create('tickets', function (Blueprint $table) {
+        Schema::create('indices', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('member_id');
-            $table->text('subject');
-            $table->text('content');
-            $table->text('answer');
-            $table->enum('status',['unread','readed','suspended','expired']);
-            $table->boolean('new')->default(1);
             $table->timestamps();
         });
     }
@@ -32,6 +26,6 @@ class CreateTicketsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tickets');
+        Schema::dropIfExists('indices');
     }
 }

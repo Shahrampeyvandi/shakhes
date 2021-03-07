@@ -46,7 +46,7 @@
                             <div class="row">
                                 <div class="form-group col-md-12">
                                     <label for="desc">پاسخ</label>
-                                    <textarea class="form-control" name="text" id="text" cols="30" rows="8">@isset($ticket){!! $ticket->answer !!}@endisset</textarea>
+                                    <textarea class="form-control" name="text" id="text" cols="30" rows="8" required>@isset($ticket){!! $ticket->answer !!}@endisset</textarea>
                                 </div>
                             </div>
                         </div>

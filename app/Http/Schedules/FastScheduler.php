@@ -70,10 +70,10 @@ class FastScheduler
                         'pc' => $dd[6],
                         'pl' => $dd[7],
                         'py' => $dd[13],
-                        'tradecount' => $dd[8],
+                        'tradeCount' => $dd[8],
                         'N_tradeVol' => $dd[9],
-                        'N_tradecash' => $dd[10],
-                        'TedadShaham' => $dd[21],
+                        'N_tradeCash' => $dd[10],
+                        'TedadSaham' => $dd[21],
                         'EPS' => $dd[14],
                         'P/E' => $dd[14] ? number_format(($dd[6] / $dd[14]), 2, '.', '') : '',
                         'maxrange' => substr($dd[19],0,strlen($dd[19])-3),
@@ -99,6 +99,10 @@ class FastScheduler
             }
         }
 
+        
+
         echo 'information stored ';
     }
+
+    
 }

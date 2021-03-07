@@ -134,7 +134,7 @@
               
              <div class="col-sm-12 col-md-3">
                   <div id="enamad">
-                      enamad
+                    
                       <a referrerpolicy="origin" target="_blank"
                           href="https://trustseal.enamad.ir/?id=186807&amp;Code=lhLZw40M6rmWvlyRuYSe"><img referrerpolicy="origin"
                               src="https://Trustseal.eNamad.ir/logo.aspx?id=186807&amp;Code=lhLZw40M6rmWvlyRuYSe" alt=""

@@ -44,7 +44,7 @@
 
                                     <input type="number" class="form-control  mx-2" name="discount" id="discount"
                                         placeholder="" value="">
-                                    <span>تومان</span>
+                                    <span>درصد</span>
                                 </div>
                             </div>
                         </div>

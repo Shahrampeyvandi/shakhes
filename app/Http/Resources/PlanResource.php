@@ -15,9 +15,12 @@ class PlanResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'name' => $this->name,
+            'id' => $this->id,
+            'name' => $this->name .' '. number_format($this->price,0,'.',',') . ' تومان',
             'price' => $this->price,
-            'discount' => $this->discount,
+            'has_discount' => $this->discount ? true : false,
+            'discount' => $this->discount ? 'تخفیف '. $this->discount .' %' : '0',
+            'days_number' => $this->days, 
             'description' => $this->description
         ];
     }

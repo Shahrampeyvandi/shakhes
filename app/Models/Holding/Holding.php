@@ -14,16 +14,27 @@ class Holding extends Model
     {
         return $this->belongsToMany(Namad::class, 'holdings_namads')->withPivot(['amount_percent', 'amount_value', 'change']);
     }
-   public function format($number)
+    public function format($number,$lang = 'fa')
     {
+       
         if ($number > 0 &&  $number < 1000000) {
             return number_format($number);
         } elseif ($number > 1000000 &&  $number < 1000000000) {
            $number = number_format($number / 1000000,2,'.','') + 0;
-            return $number = number_format($number, 2) . "M";
+           if($lang == 'fa') {
+               $label = ' میلیون';
+           }else{
+               $label = ' M';
+           }
+            return $number = number_format($number, 2) . $label;
         } elseif ($number > 1000000000) {
            $number =  number_format($number / 1000000000,2,'.','') + 0;
-            return  $number = number_format($number, 2) . "B";
+           if($lang == 'fa') {
+               $label = ' میلیارد';
+           }else{
+               $label = ' B';
+           }
+            return  $number = number_format($number, 2) . $label;
             
         }
     }
@@ -108,7 +119,7 @@ class Holding extends Model
                 'final_price_status' => Cache::get($namad->id)['last_price_status'] ? '+' : '-',
                 'namad_status' => Cache::get($namad->id)['namad_status'],
                 'amount_value' => $this->format($namad->pivot->amount_value),
-                'amount_percent' => $namad->pivot->amount_percent ? strval($namad->pivot->amount_percent) : 0
+                'amount_percent' => $namad->pivot->amount_percent ? number_format($namad->pivot->amount_percent,2) : 0
             ];
         }
 
@@ -117,15 +128,16 @@ class Holding extends Model
 
     public function getMarketValue($index='pc')
     {
-        // if (Cache::has('holding-' . $this->id)) {
-        //     return   (int)Cache::get('holding-' . $this->id)['marketvalue'];
-        // }
+        if (Cache::has('marketvalue-'. $index . '-' . $this->id)) {
+            return   Cache::get('marketvalue-'. $index . '-' . $this->id);
+        }
 
         $namads = $this->namads()->get();
         $sum_market_value = [];
         foreach ($namads as $key => $namad) {
             $sum_market_value[] = (int)$namad->pivot->amount_value * (int)Cache::get($namad->id)[$index];
         }
+        Cache::put('marketvalue-'. $index . '-' . $this->id,array_sum($sum_market_value),60*5);
         return array_sum($sum_market_value);
     }
 
@@ -145,7 +157,7 @@ class Holding extends Model
         $portfoy = $this->getMarketValue();
         $yesterday_portfoy = $this->getMarketValue('py');
 
-       return $percent = number_format((($portfoy - $yesterday_portfoy) / $yesterday_portfoy) * 100, 1);
+       return $percent = number_format((($portfoy - $yesterday_portfoy) / $yesterday_portfoy) * 100, 2);
     }
 
     public function get_history_data($inscode, $days)

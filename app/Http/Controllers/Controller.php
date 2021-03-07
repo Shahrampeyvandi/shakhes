@@ -28,10 +28,8 @@ class Controller extends BaseController
         return $member;
     }
 
-
     public function convertDate($date)
     {
-
         $date_array = explode('/', $date);
         $day = $date_array[2];
         $month = $date_array[1];
@@ -62,16 +60,27 @@ class Controller extends BaseController
         }
     }
 
-    public function format($number)
+    public function format($number,$lang = 'en')
     {
+       
         if ($number > 0 &&  $number < 1000000) {
             return number_format($number);
         } elseif ($number > 1000000 &&  $number < 1000000000) {
            $number = number_format($number / 1000000,2,'.','') + 0;
-            return $number = number_format($number, 2) . "M";
+           if($lang == 'fa') {
+               $label = ' میلیون';
+           }else{
+               $label = ' M';
+           }
+            return $number = number_format($number, 2) . $label;
         } elseif ($number > 1000000000) {
            $number =  number_format($number / 1000000000,2,'.','') + 0;
-            return  $number = number_format($number, 2) . "B";
+           if($lang == 'fa') {
+               $label = ' میلیارد';
+           }else{
+               $label = ' B';
+           }
+            return  $number = number_format($number, 2) . $label;
             
         }
     }
@@ -98,7 +107,7 @@ class Controller extends BaseController
     {
         $datas = array(
             "pattern_code" => $patterncode,
-            "originator" => "+985000415020000",
+            "originator" => "+9810003816",
             "recipient" => '+98' . substr($phone, 1),
             "values" => $data
         );
@@ -117,7 +126,7 @@ class Controller extends BaseController
         return $response;
     }
 
-    public function get_history_data($inscode, $days)
+    public function get_history_data($inscode, $days,$c)
     {
         $array = [];
         $ch = curl_init("https://members.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=$inscode&Top=$days&A=0");
@@ -131,20 +140,28 @@ class Controller extends BaseController
         foreach ($day_data as $key => $value) {
             $data = explode('@', $value);
 
+            
             if (count($data) == 10) {
                 $pl = substr($data[4], 0, -3);
-                $pc = substr($data[3], 0, -3);;
+                $pc = substr($data[3], 0, -3);
+                $pf = substr($data[5], 0, -3);
+                $pmax = substr($data[1], 0, -3);
+                $pmin = substr($data[2], 0, -3);
                 $year = substr($data[0], 0, 4);
                 $month = substr($data[0], 4, 2);
                 $day = substr($data[0], 6, 2);
                 $timestamp = mktime(0, 0, 0, $month, $day, $year);
-                $shamsi = Jalalian::forge($timestamp)->format('%d/%m/%y');
+                $shamsi = Jalalian::forge($timestamp)->format('%y%m%d');
                 $array[] = [
                     'pl' => $pl,
                     'pc' => $pc,
+                    'pf' => $pf,
+                    'pmin' => $pmin,
+                    'pmax' => $pmax,
                     'date' => $shamsi
                 ];
             }
+            if($data[0] == $c) break;
         }
         return $array;
     }
@@ -210,4 +227,49 @@ class Controller extends BaseController
             $status
         );
     }
+
+    public function sendnotification($firebasetoken, $title, $text)
+    {
+        // $this->sendnotification($member->firebase_token, $notification->title, $notification->text);
+        $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
+
+        $notification = [
+            'title' => $title,
+            'sound' => true,
+            "body" => $text,
+        ];
+
+        $extraNotificationData = ["message" => $title, "moredata" => $title];
+
+        $fcmNotification = [
+            //'registration_ids' => $tokenList, //multple token array
+            'to' => $firebasetoken, //single token
+            'notification' => $notification,
+            'data' => $extraNotificationData,
+        ];
+        
+
+        $serverkey = config('FIREBASE_LEGACY_SERVER_KEY');
+
+        $headers = [
+            'Authorization: key=' . $serverkey,
+            'Content-Type: application/json',
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $fcmUrl);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fcmNotification));
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        //dd($result);
+
+        return true;
+
+    }
+
 }
