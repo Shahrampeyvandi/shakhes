@@ -99,9 +99,14 @@ class MembersDataController extends Controller
     public function tabList()
     {
         $user = $this->token(request()->header('Authorization'));
-        $namad_id = request()->id;
+        $namad_id = request()->query('id');
         $namad = Namad::find($namad_id);
         $arr = [];
+        $arr[] = [
+            'tabName' => 'trades',
+            'tabNotificationCount' =>0
+        ];
+
         if ($holding = Holding::where('namad_id', $namad_id)->first()) {
             $arr[] = [
                 'tabName' => 'portfoy',
@@ -109,21 +114,19 @@ class MembersDataController extends Controller
             ];
         }
 
-        $arr[] = [
-            'tabName' => 'capital_increases',
-            'tabNotificationCount' => $namad->getUserNamadNotifications($user)['capital_increases']
-        ];
+      
         $arr[] = [
             'tabName' => 'volume_trades',
             'tabNotificationCount' => $namad->getUserNamadNotifications($user)['volume_trades']
         ];
         $arr[] = [
-            'tabName' => 'disclosures',
-            'tabNotificationCount' => $namad->getUserNamadNotifications($user)['disclosures']
+            'tabName' => 'financial_reports',
+            'tabNotificationCount' => 0
         ];
+        
         $arr[] = [
-            'tabName' => 'clarifications',
-            'tabNotificationCount' => $namad->getUserNamadNotifications($user)['clarifications']
+            'tabName' => 'codal_reports',
+            'tabNotificationCount' => $namad->getUserNamadNotifications($user)['codal_reports']
         ];
 
         return $this->JsonResponse($arr,null,200);

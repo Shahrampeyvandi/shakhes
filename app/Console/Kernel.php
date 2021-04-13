@@ -7,6 +7,7 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Http\Schedules\ApiScheduler;
 use App\Http\Schedules\DailyReportScheduler;
 use App\Http\Schedules\FastScheduler;
+use App\Http\Schedules\FilterScheduler;
 use App\Http\Schedules\IndexScheduler;
 use App\Http\Schedules\PortfoyScheduler;
 use App\Http\Schedules\InformationScheduler;
@@ -43,7 +44,7 @@ class Kernel extends ConsoleKernel
         //$schedule->call(new DailyReportScheduler)->dailyAt('11:55');
 
         // $schedule->call(new ApiScheduler)->everyTenMinutes();
-
+        //$schedule->call(new FilterScheduler)->everyTenMinutes();
         //$schedule->call(new ApiScheduler)->everyMinute();
 
         

@@ -7,6 +7,8 @@ use App\Models\Namad\Namad;
 use Illuminate\Http\Request;
 use Morilog\Jalali\Jalalian;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CapitalIncreaseResource;
+use App\Http\Resources\ClarificationResource;
 use App\Http\Resources\NamadResource;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Namad\NamadsDailyReport;
@@ -19,140 +21,140 @@ class MarketController extends Controller
 
     public function get_distributes()
     {
-       try {
+        try {
 
 
-        $dist_arr = [];
-        if (Cache::has('namad_status_counts')) {
-            $status_count = Cache::get('namad_status_counts');
-            return $this->JsonResponse($status_count,null,200);
-        } 
-
-        if (Cache::has('namadlist')) {
-            $namads = Cache::get('namadlist');
-            // dd($namads);
-        } else {
-            $namads =  \App\Models\Namad\Namad::all();
-            Cache::store()->put('namadlist', $namads, 60*60*12); // 12 hours
-        }
-
-
-        foreach ($namads as $key => $namad) {
-            if (Cache::has($namad->id)) {
-                $dist_arr[] = ['percent' => Cache::get($namad->id)['final_price_percent'], 'status' => Cache::get($namad->id)['status']];
+            $dist_arr = [];
+            if (Cache::has('namad_status_counts')) {
+                $status_count = Cache::get('namad_status_counts');
+                return $this->JsonResponse($status_count, null, 200);
             }
+
+            if (Cache::has('namadlist')) {
+                $namads = Cache::get('namadlist');
+                // dd($namads);
+            } else {
+                $namads =  \App\Models\Namad\Namad::all();
+                Cache::store()->put('namadlist', $namads, 60 * 60 * 12); // 12 hours
+            }
+
+
+            foreach ($namads as $key => $namad) {
+                if (Cache::has($namad->id)) {
+                    $dist_arr[] = ['percent' => Cache::get($namad->id)['final_price_percent'], 'status' => Cache::get($namad->id)['status']];
+                }
+            }
+
+            $status_count[] = [
+                'count' => count(array_filter($dist_arr, function ($value) {
+                    if (0 < $value['percent'] && $value['percent'] <= 1 && $value['status'] == 'green') {
+                        return true;
+                    }
+                    return false;
+                })),
+                'status' => 'green', 'range' => 'zero_to_one'
+            ];
+
+            $status_count[] = [
+                'count' => count(array_filter($dist_arr, function ($value) {
+                    if (1 < $value['percent'] && $value['percent'] <= 2 && $value['status'] == 'green') {
+                        return true;
+                    }
+                    return false;
+                })),
+                'status' => 'green', 'range' => 'one_to_two'
+            ];
+            $status_count[] = [
+                'count' => count(array_filter($dist_arr, function ($value) {
+                    if (2 < $value['percent'] && $value['percent'] <= 3 && $value['status'] == 'green') {
+                        return true;
+                    }
+                    return false;
+                })),
+                'status' => 'green', 'range' => 'two_to_three'
+            ];
+            $status_count[] = [
+                'count' => count(array_filter($dist_arr, function ($value) {
+                    if (3 < $value['percent'] && $value['percent'] <= 4 && $value['status'] == 'green') {
+                        return true;
+                    }
+                    return false;
+                })),
+                'status' => 'green', 'range' => 'three_to_four'
+            ];
+
+            $status_count[] = [
+                'count' => count(array_filter($dist_arr, function ($value) {
+                    if (4 < $value['percent'] && $value['percent'] <= 5 && $value['status'] == 'green') {
+                        return true;
+                    }
+                    return false;
+                })),
+                'status' => 'green', 'range' => 'four_to_five'
+            ];
+            $status_count[] = [
+                'count' => count(array_filter($dist_arr, function ($value) {
+                    if (0 < $value['percent'] && $value['percent'] <= 1 && $value['status'] == 'red') {
+                        return true;
+                    }
+                    return false;
+                })),
+                'status' => 'red', 'range' => 'zero_to_one'
+            ];
+            $status_count[] = [
+                'count' => count(array_filter($dist_arr, function ($value) {
+                    if (1 < $value['percent'] && $value['percent'] <= 2 && $value['status'] == 'red') {
+                        return true;
+                    }
+                    return false;
+                })),
+                'status' => 'red', 'range' => 'one_to_two'
+            ];
+
+            $status_count[] = [
+                'count' => count(array_filter($dist_arr, function ($value) {
+                    if (2 < $value['percent'] && $value['percent'] <= 3 && $value['status'] == 'red') {
+                        return true;
+                    }
+                    return false;
+                })),
+                'status' => 'red', 'range' => 'two_to_three'
+            ];
+            $status_count[] = [
+                'count' => count(array_filter($dist_arr, function ($value) {
+                    if (3 < $value['percent'] && $value['percent'] <= 4 && $value['status'] == 'red') {
+                        return true;
+                    }
+                    return false;
+                })),
+                'status' => 'red', 'range' => 'three_to_four'
+            ];
+
+            $status_count[] = [
+                'count' => count(array_filter($dist_arr, function ($value) {
+                    if (4 < $value['percent'] && $value['percent'] <= 5 && $value['status'] == 'red') {
+                        return true;
+                    }
+                    return false;
+                })),
+                'status' => 'red', 'range' => 'four_to_five'
+            ];
+
+            $status_count[] = [
+                'count' => count(array_filter($dist_arr, function ($value) {
+                    if (0 == $value['percent']) {
+                        return true;
+                    }
+                    return false;
+                })),
+                'status' => 'red', 'range' => 'zero'
+            ];
+
+            Cache::put('namad_status_counts', $status_count, 60 * 10);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return [];
         }
-
-        $status_count[] = [
-            'count' => count(array_filter($dist_arr, function ($value) {
-                if (0 < $value['percent'] && $value['percent'] <= 1 && $value['status'] == 'green') {
-                    return true;
-                }
-                return false;
-            })),
-            'status' => 'green', 'range' => 'zero_to_one'
-        ];
-
-        $status_count[] = [
-            'count' => count(array_filter($dist_arr, function ($value) {
-                if (1 < $value['percent'] && $value['percent'] <= 2 && $value['status'] == 'green') {
-                    return true;
-                }
-                return false;
-            })),
-            'status' => 'green', 'range' => 'one_to_two'
-        ];
-        $status_count[] = [
-            'count' => count(array_filter($dist_arr, function ($value) {
-                if (2 < $value['percent'] && $value['percent'] <= 3 && $value['status'] == 'green') {
-                    return true;
-                }
-                return false;
-            })),
-            'status' => 'green', 'range' => 'two_to_three'
-        ];
-        $status_count[] = [
-            'count' => count(array_filter($dist_arr, function ($value) {
-                if (3 < $value['percent'] && $value['percent'] <= 4 && $value['status'] == 'green') {
-                    return true;
-                }
-                return false;
-            })),
-            'status' => 'green', 'range' => 'three_to_four'
-        ];
-       
-        $status_count[] = [
-            'count' => count(array_filter($dist_arr, function ($value) {
-                if (4 < $value['percent'] && $value['percent'] <= 5 && $value['status'] == 'green') {
-                    return true;
-                }
-                return false;
-            })),
-            'status' => 'green', 'range' => 'four_to_five'
-        ];
-        $status_count[] = [
-            'count' => count(array_filter($dist_arr, function ($value) {
-                if (0 < $value['percent'] && $value['percent'] <= 1 && $value['status'] == 'red') {
-                    return true;
-                }
-                return false;
-            })),
-            'status' => 'red', 'range' => 'zero_to_one'
-        ];
-        $status_count[] = [
-            'count' => count(array_filter($dist_arr, function ($value) {
-                if (1 < $value['percent'] && $value['percent'] <= 2 && $value['status'] == 'red') {
-                    return true;
-                }
-                return false;
-            })),
-            'status' => 'red', 'range' => 'one_to_two'
-        ];
-
-        $status_count[] = [
-            'count' => count(array_filter($dist_arr, function ($value) {
-                if (2 < $value['percent'] && $value['percent'] <= 3 && $value['status'] == 'red') {
-                    return true;
-                }
-                return false;
-            })),
-            'status' => 'red', 'range' => 'two_to_three'
-        ];
-        $status_count[] = [
-            'count' => count(array_filter($dist_arr, function ($value) {
-                if (3 < $value['percent'] && $value['percent'] <= 4 && $value['status'] == 'red') {
-                    return true;
-                }
-                return false;
-            })),
-            'status' => 'red', 'range' => 'three_to_four'
-        ];
-
-        $status_count[] = [
-            'count' => count(array_filter($dist_arr, function ($value) {
-                if (4 < $value['percent'] && $value['percent'] <= 5 && $value['status'] == 'red') {
-                    return true;
-                }
-                return false;
-            })),
-            'status' => 'red', 'range' => 'four_to_five'
-        ];
-
-        $status_count[] = [
-            'count' => count(array_filter($dist_arr, function ($value) {
-                if (0 == $value['percent']) {
-                    return true;
-                }
-                return false;
-            })),
-            'status' => 'red', 'range' => 'zero'
-        ];
-
-        Cache::put('namad_status_counts',$status_count,60*10);
-       } catch (\Throwable $th) {
-           //throw $th;
-           return [];
-       }
         // dd($dist_arr);
 
         return $status_count;
@@ -172,30 +174,28 @@ class MarketController extends Controller
     public function index_values()
     {
 
-        if(isset(request()->type)) {
-            if(request()->type == 'bourse') {
+        if (isset(request()->type)) {
+            if (request()->type == 'bourse') {
                 $url = "http://www.tsetmc.com/tsev2/chart/data/Index.aspx?Top=2&i=32097828799138957&t=value";
                 $type = 'bourse';
-            }elseif(request()->type == 'farabourse'){
+            } elseif (request()->type == 'farabourse') {
                 $url = 'http://www.tsetmc.com/tsev2/chart/data/Index.aspx?i=43685683301327984&t=value';
                 $type = 'farabourse';
-            }elseif(request()->type == 'equivalent'){
+            } elseif (request()->type == 'equivalent') {
                 $url = 'http://www.tsetmc.com/tsev2/chart/data/Index.aspx?i=67130298613737946&t=value';
                 $type = 'bourse';
-            }else{
+            } else {
 
                 $url = "http://www.tsetmc.com/tsev2/chart/data/Index.aspx?Top=2&i=32097828799138957&t=value";
                 $type = 'bourse';
             }
-        }else
-        {
+        } else {
             $url = "http://www.tsetmc.com/tsev2/chart/data/Index.aspx?Top=2&i=32097828799138957&t=value";
             $type = 'bourse';
-
         }
-        
-        if($type == 'bourse') {
-            $bourse = Shakhes::where('title','شاخص كل')->latest()->first();
+
+        if ($type == 'bourse') {
+            $bourse = Shakhes::where('title', 'شاخص كل')->latest()->first();
             $data[] = [
                 'title' => 'شاخص کل',
                 'value' => $bourse ? $bourse->value : '',
@@ -205,7 +205,7 @@ class MarketController extends Controller
                 'link' => route('BaseUrl') . '/api/market/index/shakhes-status?type=bourse'
             ];
 
-            $equivalent = Shakhes::where('title','شاخص كل (هم وزن)')->latest()->first();
+            $equivalent = Shakhes::where('title', 'شاخص كل (هم وزن)')->latest()->first();
             $data[] = [
                 'title' => 'شاخص كل (هم وزن)',
                 'value' => $equivalent ? $equivalent->value : '',
@@ -214,11 +214,10 @@ class MarketController extends Controller
                 'status' => $equivalent ? ($equivalent->status == 'positive' ? '+' : '-') : '',
                 'link' => route('BaseUrl') . '/api/market/index/shakhes-status?type=equivalent'
             ];
-
         }
 
-        if($type == 'farabourse') {
-            $bourse = Shakhes::where('title','بازار اول فرابورس')->latest()->first();
+        if ($type == 'farabourse') {
+            $bourse = Shakhes::where('title', 'بازار اول فرابورس')->latest()->first();
             $data[] = [
                 'title' => 'شاخص فرابورس',
                 'value' => $bourse ? $bourse->value : '',
@@ -226,44 +225,39 @@ class MarketController extends Controller
                 'percent' => $bourse ? $bourse->percent_change : '',
                 'status' => $bourse ? ($bourse->status == 'positive' ? '+' : '-') : '',
                 'link' => route('BaseUrl') . '/api/market/index/shakhes-status?type=farabourse'
-            ];                
+            ];
         }
 
         return $this->JsonResponse($data, null, 200);
-
-      
-       
     }
-  
+
 
     public function index_chart()
     {
 
-       //    return $data['distributes'] = $this->get_distributes();
+        //    return $data['distributes'] = $this->get_distributes();
 
-        
+
         try {
-            
-            if(isset(request()->type)) {
-                if(request()->type == 'bourse') {
+
+            if (isset(request()->type)) {
+                if (request()->type == 'bourse') {
                     $url = "http://www.tsetmc.com/tsev2/chart/data/Index.aspx?Top=2&i=32097828799138957&t=value";
                     $type = 'bourse';
-                }elseif(request()->type == 'farabourse'){
+                } elseif (request()->type == 'farabourse') {
                     $url = 'http://www.tsetmc.com/tsev2/chart/data/Index.aspx?i=43685683301327984&t=value';
                     $type = 'farabourse';
-                }elseif(request()->type == 'equivalent'){
+                } elseif (request()->type == 'equivalent') {
                     $url = 'http://www.tsetmc.com/tsev2/chart/data/Index.aspx?i=67130298613737946&t=value';
                     $type = 'bourse';
-                }else{
+                } else {
 
                     $url = "http://www.tsetmc.com/tsev2/chart/data/Index.aspx?Top=2&i=32097828799138957&t=value";
                     $type = 'bourse';
                 }
-            }else
-            {
+            } else {
                 $url = "http://www.tsetmc.com/tsev2/chart/data/Index.aspx?Top=2&i=32097828799138957&t=value";
                 $type = 'bourse';
-
             }
 
             $days = request()->months ? (int)request()->months * 30 : 7;
@@ -285,7 +279,7 @@ class MarketController extends Controller
                 $chart_arr[] = ['yAxis' => implode('/', [$y, $m, $d]), 'xAxis' => explode(',', $item)[1]];
 
                 if (Jalalian::fromFormat('Y/m/d', implode('/', [$y, $m, $d]))->getTimestamp() < $date) break;
-                
+
                 $error = null;
             }
 
@@ -504,6 +498,32 @@ class MarketController extends Controller
             $result = null;
             $error = 'خطا در دریافت اطلاعات از سرور';
         }
+    }
+
+
+    public function getCodal(Request $request)
+    {
+        try {
+            $page = $request->page ?? 1;
+
+            $namad = Namad::find($request->query('namad_id'));
+            if ($namad) {
+                $capitalIncreases = collect(CapitalIncreaseResource::collection($namad->capital_increases()->get()));
+                $clarifications = collect(ClarificationResource::collection($namad->clarifications()->get()));
+                $all = $capitalIncreases->merge($clarifications)->sortByDesc('publish_at')->values()->forPage($page, 10);
+                $error = null;
+            }else{
+                $all = null;
+                $error = 'هیچ پارامتری ارسال نشده است';
+            }
+            
+        } catch (\Throwable $th) {
+            $error = 'خطا در دریافت اطلاعات از سرور';
+            $all = null;
+        }
+      
+
+        return $this->JsonResponse($all, $error, 200);
     }
 
     public function bshackes()
@@ -801,6 +821,7 @@ class MarketController extends Controller
 
     public function bourseMostPriceIncreases()
     {
+        
         try {
             $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151317&Type=PClosingTop&Flow=1';
             $data = $this->getFromTSE($url, 'boursepriceincrease');

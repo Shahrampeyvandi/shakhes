@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use App\Models\Namad\Namad;
 use Morilog\Jalali\Jalalian;
 use Illuminate\Support\Facades\Cache;
@@ -31,9 +32,11 @@ class ClarificationResource extends JsonResource
             ],
             'newsId' => $this->id,
             'newsDate' => Jalalian::forge($this->publish_date)->format('Y/m/d'),
+            'publish_at' => $this->publish_date,
             'newsLink' => $this->link_to_codal,
-            'newsText' => $this->description,
+            'newsText' => $this->subject,
             'isBookmarked' => false,
+            'seen' => Carbon::parse($this->created_at)->isToday() ? false : true
         ];
     }
 }

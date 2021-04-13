@@ -108,4 +108,31 @@ Route::get('/d-namad/{name}',function($name){
   
 });
 
+Route::get('/sendsms',function(){
+   
+
+    dd(\App\Models\Namad\Namad::find(2)->users);
+        $data = array('code' => '123456');
+        $datas = array(
+            "pattern_code" => 'e281gs93os',
+            "originator" => "+9810003816",
+            "recipient" => '+9899154131736',
+            "values" => $data
+        );
+    
+        $url = "http://rest.ippanel.com/v1/messages/patterns/send";
+        $handler = curl_init($url);
+        curl_setopt($handler, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($handler, CURLOPT_POSTFIELDS, json_encode($datas));
+        curl_setopt($handler, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($handler, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Authorization: AccessKey LH5pTlnaCiZKZiEL7gPYh_nr-c6OmdmhRh9uKLSkkP0='
+        ));
+    
+        $response = curl_exec($handler);
+        dd($response);
+    });
+    
+
 

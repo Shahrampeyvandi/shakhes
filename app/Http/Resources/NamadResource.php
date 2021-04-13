@@ -25,6 +25,7 @@ class NamadResource extends JsonResource
         // } else {
         //     $member = null;
         // }
+        
 
 
         if (Cache::has($this->id)) {
@@ -38,7 +39,8 @@ class NamadResource extends JsonResource
                 'final_price_change' => $c['last_price_change'],
                 'final_price_status' => $c['last_price_status'] ? '+' : '-',
                 'namad_status' => $c['namad_status'],
-                'notifications_count' => 0
+                'notifications_count' => 0,
+                'codal' => $this->hasCodal()
             ];
             
         } else {

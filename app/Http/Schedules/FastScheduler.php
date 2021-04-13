@@ -19,7 +19,7 @@ class FastScheduler
        // if (date('H') >= 8 && date('H') <= 12) {
             try {
                 
-              $this->get_data();
+            //   $this->get_data();
                    if(strtotime('08:30') < strtotime(date('H:i')) &&  strtotime('13:00') > strtotime(date('H:i'))){
                     $this->get_data();
                 }

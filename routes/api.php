@@ -5,8 +5,8 @@ Route::post('verify', 'Api\LoginSignUpController@verify');
 Route::post('register', 'Api\LoginSignUpController@register');
 Route::post('login', 'Api\LoginSignUpController@login');
 
-
-
+Route::get('market/namad/codal', 'Api\MarketController@getCodal');
+Route::get('market/1/mosteffect', 'Api\MarketController@bourseEffectInShakhes');
 Route::group(['middleware' => ['jwt.verify']], function () {
     Route::any('/updateFirebaseToken', 'Api\LoginSignUpController@updateFirebaseToken');
     Route::get('/me', 'Api\LoginSignUpController@me');
@@ -31,6 +31,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::get('plans/list', 'Api\PlanController@list');
     Route::get('member/namad/tablist', 'Api\MembersDataController@tabList');
 
+   
 
     //---------- بخش بازار------------------
     Route::group(['prefix' => 'market'], function () {
@@ -43,12 +44,13 @@ Route::group(['middleware' => ['jwt.verify']], function () {
         Route::get('/2/topindex', 'Api\MarketController@fshackes');
         Route::get('/1/mostvisited', 'Api\MarketController@bourseMostVisited');
         Route::get('/2/mostvisited', 'Api\MarketController@farabourceMostVisited');
-        Route::get('/1/mosteffect', 'Api\MarketController@bourseEffectInShakhes');
+        
         Route::get('/2/mosteffect', 'Api\MarketController@farabourseEffectInShakhes');
         Route::get('/1/most-price-increases', 'Api\MarketController@bourseMostPriceIncreases');
         Route::get('/2/most-price-increases', 'Api\MarketController@farabourseMostPriceIncreases');
         Route::get('/1/most-price-decreases', 'Api\MarketController@bourseMostPriceDecreases');
         Route::get('/2/most-price-decreases', 'Api\MarketController@farabourseMostPriceDecreases');
+       
         Route::get('/namad', 'Api\MarketController@getNamad');
         Route::get('chart', 'Api\MarketController@chart');
        
@@ -105,6 +107,7 @@ Route::get('/holding-namads', 'Api\MoneyReportsController@showHolding');
 
 
 // filter
+Route::get('/filters', 'Api\FilterController@list');
 Route::get('/filter/{key}', 'Api\FilterController@get');
 
 Route::get('shownamad/{id}', 'Api\NamadsController@show');

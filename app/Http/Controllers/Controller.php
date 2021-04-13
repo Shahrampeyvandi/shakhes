@@ -248,8 +248,8 @@ class Controller extends BaseController
             'data' => $extraNotificationData,
         ];
         
-
-        $serverkey = config('FIREBASE_LEGACY_SERVER_KEY');
+       $serverkey = "AAAAKN22tA0:APA91bEhhwYlPvy452mKulNuSadvK2jsfUgM41-Lg-njTxWLzb_xrcg-QhXrxXml3MHFSfCSF7dMuihvWbySp5kNxfNneUVoCnfH3hHjxJwymakBxtUxUlB2ZjnSk5V6yAF_iFWnHhMK";
+        // $serverkey = config('FIREBASE_LEGACY_SERVER_KEY');
 
         $headers = [
             'Authorization: key=' . $serverkey,

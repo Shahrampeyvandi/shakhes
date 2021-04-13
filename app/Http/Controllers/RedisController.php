@@ -27,7 +27,47 @@ class RedisController extends Controller
     public function get_data1()
     {
 
-        dd(Namad::find(2)->users);
+        dd(Carbon::now());
+        // dd(array_slice(Cache::get('person_most_buy_sell'),0,3));
+        foreach (array_slice(Cache::get('person_most_buy_sell'),0,3) as $key => $value) {
+            $arr['namads'][] = [
+                'name' => $value->namad->symbol,
+                'icon' => asset('dss')
+            ];
+        }
+        dd($arr);
+        $filters_arr = [
+            'person_most_buy_sell',
+            'person_most_sell_buy',
+            'legal_most_buy_sell',
+            'legal_most_sell_buy',
+            'most_cash_trade',
+            'most_volume_trade',
+            'most_person_buy',
+            'most_person_sell',
+            'most_legall_buy',
+            'most_legall_sell',
+            'power_person_buy',
+            'power_person_sell'
+        ];
+
+        foreach ($filters_arr as $key => $value) {
+            
+        $ch = curl_init("http://localhost/shakhes/public/api/filter/$value");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_ENCODING, "");
+        $result = curl_exec($ch);
+
+        Cache::put("$value", json_decode($result)->data);
+        // dd(Cache::get("$value"));
+        }
+
+    
+
+
+        // dd(Namad::find(2)->users);
         // $c = Carbon::now()->subDays(2)->format('Ymd');
         // dd($c);
         // if (Cache::has('bshakhes')) {
@@ -37,226 +77,7 @@ class RedisController extends Controller
         // }
 
         // try {
-            $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151315&Flow=1';
-            $all = [];
-            $crawler = Goutte::request('GET', $url);
-            $crawler->filter('table')->each(function ($node) use (&$all) {
-
-                $array['title'] = $node->filter('tr:nth-of-type(54) td')->text();
-                $array['time'] =  $node->filter('tr:nth-of-type(54) td:nth-of-type(2)')->text();
-                $array['last_val'] =  $node->filter('tr:nth-of-type(54) td:nth-of-type(3)')->text();
-                $array['value_change'] =  $node->filter('tr:nth-of-type(54) td:nth-of-type(4)')->text();
-                $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
-                $array['percent_change'] =  $node->filter('tr:nth-of-type(54) td:nth-of-type(5) div')->text();
-                $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
-                if ($node->filter('tr:nth-of-type(54) td:nth-of-type(5) div.pn')->count()) {
-                    $array['status'] = 'positive';
-                }
-                if ($node->filter('tr:nth-of-type(54) td:nth-of-type(5) div.mn')->count()) {
-                    $array['status'] = 'negative';
-                }
-                $all[] = $array;
-
-
-
-
-
-
-
-                $array['title'] = $node->filter('tr:nth-of-type(47) td')->text();
-                $array['time'] =  $node->filter('tr:nth-of-type(47) td:nth-of-type(2)')->text();
-                $array['last_val'] =  $node->filter('tr:nth-of-type(47) td:nth-of-type(3)')->text();
-                $array['value_change'] =  $node->filter('tr:nth-of-type(47) td:nth-of-type(4)')->text();
-                $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
-                $array['percent_change'] =  $node->filter('tr:nth-of-type(47) td:nth-of-type(5) div')->text();
-                $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
-                if ($node->filter('tr:nth-of-type(47) td:nth-of-type(5) div.pn')->count()) {
-                    $array['status'] = 'positive';
-                }
-                if ($node->filter('tr:nth-of-type(47) td:nth-of-type(5) div.mn')->count()) {
-                    $array['status'] = 'negative';
-                }
-                $all[] = $array;
-
-                $array['title'] = $node->filter('tr:nth-of-type(48) td')->text();
-                $array['time'] =  $node->filter('tr:nth-of-type(48) td:nth-of-type(2)')->text();
-                $array['last_val'] =  $node->filter('tr:nth-of-type(48) td:nth-of-type(3)')->text();
-                $array['value_change'] =  $node->filter('tr:nth-of-type(48) td:nth-of-type(4)')->text();
-                $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
-                $array['percent_change'] =  $node->filter('tr:nth-of-type(48) td:nth-of-type(5) div')->text();
-                $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
-                if ($node->filter('tr:nth-of-type(48) td:nth-of-type(5) div.pn')->count()) {
-                    $array['status'] = 'positive';
-                }
-                if ($node->filter('tr:nth-of-type(48) td:nth-of-type(5) div.mn')->count()) {
-                    $array['status'] = 'negative';
-                }
-                $all[] = $array;
-
-                $array['title'] = $node->filter('tr:nth-of-type(53) td')->text();
-                $array['time'] =  $node->filter('tr:nth-of-type(53) td:nth-of-type(2)')->text();
-                $array['last_val'] =  $node->filter('tr:nth-of-type(53) td:nth-of-type(3)')->text();
-                $array['value_change'] =  $node->filter('tr:nth-of-type(53) td:nth-of-type(4)')->text();
-                $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
-                $array['percent_change'] =  $node->filter('tr:nth-of-type(53) td:nth-of-type(5) div')->text();
-                $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
-                if ($node->filter('tr:nth-of-type(53) td:nth-of-type(5) div.pn')->count()) {
-                    $array['status'] = 'positive';
-                }
-                if ($node->filter('tr:nth-of-type(53) td:nth-of-type(5) div.mn')->count()) {
-                    $array['status'] = 'negative';
-                }
-                $all[] = $array;
-
-
-                $array['title'] = $node->filter('tr:nth-of-type(55) td')->text();
-                $array['time'] =  $node->filter('tr:nth-of-type(55) td:nth-of-type(2)')->text();
-                $array['last_val'] =  $node->filter('tr:nth-of-type(55) td:nth-of-type(3)')->text();
-                $array['value_change'] =  $node->filter('tr:nth-of-type(55) td:nth-of-type(4)')->text();
-                $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
-                $array['percent_change'] =  $node->filter('tr:nth-of-type(55) td:nth-of-type(5) div')->text();
-                $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
-                if ($node->filter('tr:nth-of-type(55) td:nth-of-type(5) div.pn')->count()) {
-                    $array['status'] = 'positive';
-                }
-                if ($node->filter('tr:nth-of-type(55) td:nth-of-type(5) div.mn')->count()) {
-                    $array['status'] = 'negative';
-                }
-
-                $all[] = $array;
-                $array['title'] = $node->filter('tr:nth-of-type(51) td')->text();
-                $array['time'] =  $node->filter('tr:nth-of-type(51) td:nth-of-type(2)')->text();
-                $array['last_val'] =  $node->filter('tr:nth-of-type(51) td:nth-of-type(3)')->text();
-
-                $array['value_change'] =  $node->filter('tr:nth-of-type(51) td:nth-of-type(4)')->text();
-                $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
-                $array['percent_change'] =  $node->filter('tr:nth-of-type(51) td:nth-of-type(5) div')->text();
-                $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
-                if ($node->filter('tr:nth-of-type(51) td:nth-of-type(5) div.pn')->count()) {
-                    $array['status'] = 'positive';
-                }
-                if ($node->filter('tr:nth-of-type(51) td:nth-of-type(5) div.mn')->count()) {
-                    $array['status'] = 'negative';
-                }
-                $all[] = $array;
-
-
-                $array['title'] = $node->filter('tr:nth-of-type(46) td')->text();
-                $array['time'] =  $node->filter('tr:nth-of-type(46) td:nth-of-type(2)')->text();
-                $array['last_val'] =  $node->filter('tr:nth-of-type(46) td:nth-of-type(3)')->text();
-                $array['value_change'] =  $node->filter('tr:nth-of-type(46) td:nth-of-type(4)')->text();
-                $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
-                $array['percent_change'] =  $node->filter('tr:nth-of-type(46) td:nth-of-type(5) div')->text();
-                $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
-                if ($node->filter('tr:nth-of-type(46) td:nth-of-type(5) div.pn')->count()) {
-                    $array['status'] = 'positive';
-                }
-                if ($node->filter('tr:nth-of-type(46) td:nth-of-type(5) div.mn')->count()) {
-                    $array['status'] = 'negative';
-                }
-                $all[] = $array;
-            });
-            $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151315&Flow=2';
-            $farabourse = [];
-            $crawler = Goutte::request('GET', $url);
-            $crawler->filter('table')->each(function ($node) use (&$farabourse) {
-                $array['title'] = $node->filter('tr:nth-of-type(5) td')->text();
-                $array['time'] =  $node->filter('tr:nth-of-type(5) td:nth-of-type(2)')->text();
-                $array['last_val'] =  $node->filter('tr:nth-of-type(5) td:nth-of-type(3)')->text();
-                $array['value_change'] =  $node->filter('tr:nth-of-type(5) td:nth-of-type(4)')->text();
-                $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
-                $array['percent_change'] =  $node->filter('tr:nth-of-type(5) td:nth-of-type(5) div')->text();
-                $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
-                if ($node->filter('tr:nth-of-type(5) td:nth-of-type(5) div.pn')->count()) {
-                    $array['status'] = 'positive';
-                }
-                if ($node->filter('tr:nth-of-type(5) td:nth-of-type(5) div.mn')->count()) {
-                    $array['status'] = 'negative';
-                }
-                $farabourse[] = $array;
-
-
-                $array['title'] = $node->filter('tr:nth-of-type(1) td')->text();
-                $array['time'] =  $node->filter('tr:nth-of-type(1) td:nth-of-type(2)')->text();
-                $array['last_val'] =  $node->filter('tr:nth-of-type(1) td:nth-of-type(3)')->text();
-                $array['value_change'] =  $node->filter('tr:nth-of-type(1) td:nth-of-type(4)')->text();
-                $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
-                $array['percent_change'] =  $node->filter('tr:nth-of-type(1) td:nth-of-type(5) div')->text();
-                $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
-                if ($node->filter('tr:nth-of-type(1) td:nth-of-type(5) div.pn')->count()) {
-                    $array['status'] = 'positive';
-                }
-                if ($node->filter('tr:nth-of-type(1) td:nth-of-type(5) div.mn')->count()) {
-                    $array['status'] = 'negative';
-                }
-                $farabourse[] = $array;
-
-
-                $array['title'] = $node->filter('tr:nth-of-type(2) td')->text();
-                $array['time'] =  $node->filter('tr:nth-of-type(2) td:nth-of-type(2)')->text();
-                $array['last_val'] =  $node->filter('tr:nth-of-type(2) td:nth-of-type(3)')->text();
-                $array['value_change'] =  $node->filter('tr:nth-of-type(2) td:nth-of-type(4)')->text();
-                $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
-                $array['percent_change'] =  $node->filter('tr:nth-of-type(2) td:nth-of-type(5) div')->text();
-                $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
-                if ($node->filter('tr:nth-of-type(2) td:nth-of-type(5) div.pn')->count()) {
-                    $array['status'] = 'positive';
-                }
-                if ($node->filter('tr:nth-of-type(2) td:nth-of-type(5) div.mn')->count()) {
-                    $array['status'] = 'negative';
-                }
-                $farabourse[] = $array;
-
-
-
-                $array['title'] = $node->filter('tr:nth-of-type(3) td')->text();
-                $array['time'] =  $node->filter('tr:nth-of-type(3) td:nth-of-type(2)')->text();
-                $array['last_val'] =  $node->filter('tr:nth-of-type(3) td:nth-of-type(3)')->text();
-                $array['value_change'] =  $node->filter('tr:nth-of-type(3) td:nth-of-type(4)')->text();
-                $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
-                $array['percent_change'] =  $node->filter('tr:nth-of-type(3) td:nth-of-type(5) div')->text();
-                $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
-                if ($node->filter('tr:nth-of-type(3) td:nth-of-type(5) div.pn')->count()) {
-                    $array['status'] = 'positive';
-                }
-                if ($node->filter('tr:nth-of-type(3) td:nth-of-type(5) div.mn')->count()) {
-                    $array['status'] = 'negative';
-                }
-                $farabourse[] = $array;
-
-
-                $array['title'] = $node->filter('tr:nth-of-type(4) td')->text();
-                $array['time'] =  $node->filter('tr:nth-of-type(4) td:nth-of-type(2)')->text();
-                $array['last_val'] =  $node->filter('tr:nth-of-type(4) td:nth-of-type(3)')->text();
-
-                $array['value_change'] =  $node->filter('tr:nth-of-type(4) td:nth-of-type(4)')->text();
-                $array['value_change'] = preg_replace('/\(|\)/', '', $array['value_change']);
-                $array['percent_change'] =  $node->filter('tr:nth-of-type(4) td:nth-of-type(5) div')->text();
-                $array['percent_change'] = preg_replace('/\(|\)/', '', $array['percent_change']);
-                if ($node->filter('tr:nth-of-type(4) td:nth-of-type(5) div.pn')->count()) {
-                    $array['status'] = 'positive';
-                }
-                if ($node->filter('tr:nth-of-type(4) td:nth-of-type(5) div.mn')->count()) {
-                    $array['status'] = 'negative';
-                }
-                $farabourse[] = $array;
-            });
-
-            Cache::put('fshakhes', $farabourse, 60 * 15);
-
-
-
-            Cache::put('bshakhes', $all, 60 * 4);
-            $error = null;
-
-            $this->save_in_db();
-        // } catch (\Throwable $th) {
-        // }
-
-
-
-
-        echo 'information stored ';
+          
     }
 
     protected function save_in_db() {
@@ -286,6 +107,10 @@ class RedisController extends Controller
     }
     public function getmain()
     {
+
+        $user = Member::find(3);
+
+        $this->sendnotification($user->firebase_token,'آگهی افزایش سرمایه','اعلامیه پذیره نویسی عمومی');   
 
         do {
             try {

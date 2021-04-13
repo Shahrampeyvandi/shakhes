@@ -13,7 +13,9 @@ use App\Models\Namad\NamadsYearlyReport;
 use App\Models\Namad\NamadsMonthlyReport;
 use App\Models\Namad\NamadsSeasonalReport;
 use App\Models\CapitalIncrease\CapitalIncrease;
+use App\Models\Member\Member;
 use App\Models\VolumeTrade;
+use App\User;
 
 class Namad extends Model
 {
@@ -61,7 +63,7 @@ class Namad extends Model
 
     public function users()
     {
-        return $this->belongsToMany(Namad::class, 'members_namads','namad_id','member_id')->withPivot(['amount', 'profit_loss_percent', 'price']);
+        return $this->belongsToMany(User::class, 'members_namads','namad_id','member_id')->withPivot(['amount', 'profit_loss_percent', 'price']);
     }
 
 
@@ -109,17 +111,31 @@ class Namad extends Model
             })
             ->count();
 
-        $array['clarifications'] = $this->clarifications()->whereDate('updated_at', Carbon::today())->whereDoesntHave('readed_notifications', function ($q) use ($user) {
-            $q->where(['member_id' => $user->id, 'namad_id' => $this->id]);
-        })->count();
-        $array['disclosures']  = $this->disclosures()->whereDate('updated_at', Carbon::today())->whereDoesntHave('readed_notifications', function ($q) use ($user) {
-            $q->where(['member_id' => $user->id, 'namad_id' => $this->id]);
-        })->count();
         $array['volume_trades'] = $this->volume_trades()->whereDate('updated_at', Carbon::today())->whereDoesntHave('readed_notifications', function ($q) use ($user) {
             $q->where(['member_id' => $user->id, 'namad_id' => $this->id]);
         })->count();
-        $count += $array['capital_increases'] + $array['disclosures'] + $array['volume_trades'] ;
+        $array['codal_reports'] = $this->capital_increases()->whereDate('publish_date',Carbon::today())->count() + $this->clarifications()->whereDate('publish_date',Carbon::today())->count();
+
+        $count += $array['capital_increases'] + $array['codal_reports'] + $array['volume_trades'] ;
         $array['count'] = $count;
         return $array;
     }
+
+    public function hasCodal()
+    {
+
+        // $member = Member::find($memberId);
+        // if($member && $member->namads->contains($this->id)) {
+          
+                if($this->capital_increases()->whereDate('publish_date',Carbon::today())->count() 
+                || $this->clarifications()->whereDate('publish_date',Carbon::today())->count())
+                {
+                    return true;
+                }
+            
+        // }
+        
+        return false;
+    }
+   
 }

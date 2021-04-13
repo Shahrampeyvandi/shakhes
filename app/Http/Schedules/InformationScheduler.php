@@ -2,18 +2,19 @@
 
 namespace App\Http\Schedules;
 
-use Illuminate\Http\Request;
-use App\Models\Namad\Namad;
-use App\Models\CapitalIncrease\CapitalIncrease;
-use App\Models\clarification;
-use App\Models\Namad\NamadsDailyReport;
-use App\Models\Namad\Disclosures;
-use App\Models\Notification;
-use Exception;
-use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\Cache;
 use Goutte;
+use Exception;
+use App\Models\Namad\Namad;
+use Illuminate\Support\Str;
+use App\Models\Notification;
+use Illuminate\Http\Request;
 use Morilog\Jalali\Jalalian;
+use App\Models\clarification;
+use App\Models\Namad\Disclosures;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
+use App\Models\Namad\NamadsDailyReport;
+use App\Models\CapitalIncrease\CapitalIncrease;
 
 class InformationScheduler extends Scheduler
 {
@@ -88,7 +89,7 @@ class InformationScheduler extends Scheduler
 
                 // send to users
                 foreach ($namad->users as $key => $user) {
-                    $this->sendnotification($user->firebase_token,'آگهی افزایش سرمایه',$info['Title']);   
+                    $this->sendnotification($user->firebase_token,'آگهی افزایش سرمایه',Str::limit($info['Title'], 30, '...'));   
                 }
             }
 
@@ -128,7 +129,7 @@ class InformationScheduler extends Scheduler
 
                  // send to users
                  foreach ($namad->users as $key => $user) {
-                    $this->sendnotification($user->firebase_token,'آگهی شفاف سازی',$info['Title']);   
+                    $this->sendnotification($user->firebase_token,'آگهی شفاف سازی',Str::limit($info['Title'], 30, '...'));   
                 }
             }
         }

@@ -11,8 +11,10 @@ class MainController extends Controller
 {
     public function Index()
     {
-        
-            
+        dd('sds');
+        Log::channel('single')->info('Something happened!');
+        dd('d');
+            dd(Log::error('this is a logttest'));
         
 
       dd( $status = \Cache::get('bazarstatus'));
@@ -39,11 +41,13 @@ class MainController extends Controller
 
     public function home()
     {
+        // dd(\Log::error('this is a logttest'));
+
         // $this->sendnotification('czt3zPZBQEOOVT86uEGJE8:APA91bHgYVpA_WRADGUfZH7dL5P5LxZCa29Fjs0NTYEmjSiwGtAMV3NzcrgiZrPckUtWaVFGZSfwhTmp5n2ANEM9elUao6ZE9ongD_xlWIOm_Ixa-dv_Dr0I-b9XHVWH6Wsdca6nAmlz','وبملت','گزارش کدال , افزایش سرمایه دویست درصدی از محل سود انباشته');
-        dd(\Config::get('app.FIREBASE_LEGACY_SERVER_KEY'));
-        dd(env('FIREBASE_LEGACY_SERVER_KEY'));
-    $namads=Namad::latest()->get();
-    dd(collect($namads)->whereIn('id',[2,3,4,5,6]));
-        return view('Home.index');
+    //     dd(\Config::get('app.FIREBASE_LEGACY_SERVER_KEY'));
+    //     dd(env('FIREBASE_LEGACY_SERVER_KEY'));
+    // $namads=Namad::latest()->get();
+    // dd(collect($namads)->whereIn('id',[2,3,4,5,6]));
+    //     return view('Home.index');
     }
 }
