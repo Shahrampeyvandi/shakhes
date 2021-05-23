@@ -102,30 +102,37 @@ class MembersDataController extends Controller
         $namad_id = request()->query('id');
         $namad = Namad::find($namad_id);
         $arr = [];
+        $id = 1;
         $arr[] = [
-            'tabName' => 'trades',
+            'id' => $id,
+            'tabName' => 'اطلاعات نماد',
             'tabNotificationCount' =>0
         ];
 
         if ($holding = Holding::where('namad_id', $namad_id)->first()) {
+            
             $arr[] = [
-                'tabName' => 'portfoy',
+                'id' => ++$id,
+                'tabName' => 'پورتفوی لحظه ای',
                 'tabNotificationCount' => $holding->updated_at->isToday() ? 1 : 0
             ];
         }
-
+       
       
         $arr[] = [
-            'tabName' => 'volume_trades',
+            'id' => ++$id,
+            'tabName' => 'حجم معاملات مشکوک',
             'tabNotificationCount' => $namad->getUserNamadNotifications($user)['volume_trades']
         ];
         $arr[] = [
-            'tabName' => 'financial_reports',
+            'id' => ++$id,
+            'tabName' => 'صورت های مالی و گزارشات',
             'tabNotificationCount' => 0
         ];
         
         $arr[] = [
-            'tabName' => 'codal_reports',
+            'id' => ++$id,
+            'tabName' => 'کدال',
             'tabNotificationCount' => $namad->getUserNamadNotifications($user)['codal_reports']
         ];
 

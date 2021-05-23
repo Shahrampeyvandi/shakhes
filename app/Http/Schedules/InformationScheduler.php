@@ -84,6 +84,7 @@ class InformationScheduler extends Scheduler
                 $capitalincrease->publish_date = date('Y-m-d');
                 $capitalincrease->codal_date = isset($info['PublishDateTime']) ? $this->convertPersianToEnglish($info['PublishDateTime']) : '';
                 $capitalincrease->link_to_codal = 'https://www.codal.ir/' . $info['Url'];
+                $capitalincrease->pdf_link = isset($info['PdfUrl']) ? 'https://www.codal.ir/' . $info['PdfUrl'] : null;
                 $capitalincrease->save();
 
 
@@ -125,6 +126,7 @@ class InformationScheduler extends Scheduler
                 $clarification->link_to_codal = 'https://www.codal.ir/' . $info['Url'];
                 $clarification->codal_date = isset($info['PublishDateTime']) ? $this->convertPersianToEnglish($info['PublishDateTime']) : '';
                 $clarification->publish_date = date('Y-m-d');
+                $clarification->pdf_link = isset($info['PdfUrl']) ? 'https://www.codal.ir/' . $info['PdfUrl'] : null;
                 $clarification->save();
 
                  // send to users

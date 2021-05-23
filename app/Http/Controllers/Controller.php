@@ -28,6 +28,7 @@ class Controller extends BaseController
         return $member;
     }
 
+
     public function convertDate($date)
     {
         $date_array = explode('/', $date);
@@ -62,7 +63,7 @@ class Controller extends BaseController
 
     public function format($number,$lang = 'en')
     {
-       
+
         if ($number > 0 &&  $number < 1000000) {
             return number_format($number);
         } elseif ($number > 1000000 &&  $number < 1000000000) {
@@ -81,7 +82,7 @@ class Controller extends BaseController
                $label = ' B';
            }
             return  $number = number_format($number, 2) . $label;
-            
+
         }
     }
 
@@ -98,10 +99,11 @@ class Controller extends BaseController
         $english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
         $output = str_replace($persian, $english, $string);
-        
+
         return $output;
     }
-    
+
+
 
     public function sendSMS($patterncode, $phone, $data)
     {
@@ -126,8 +128,10 @@ class Controller extends BaseController
         return $response;
     }
 
-    public function get_history_data($inscode, $days,$c)
+    public function get_history_data($inscode, $days)
     {
+        $c = Jalalian::forge('now')->subDays($days)->getTimestamp();
+
         $array = [];
         $ch = curl_init("https://members.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=$inscode&Top=$days&A=0");
         curl_setopt($ch, CURLOPT_USERAGENT, 'ZarinPal Rest Api v1');
@@ -140,7 +144,6 @@ class Controller extends BaseController
         foreach ($day_data as $key => $value) {
             $data = explode('@', $value);
 
-            
             if (count($data) == 10) {
                 $pl = substr($data[4], 0, -3);
                 $pc = substr($data[3], 0, -3);
@@ -151,17 +154,19 @@ class Controller extends BaseController
                 $month = substr($data[0], 4, 2);
                 $day = substr($data[0], 6, 2);
                 $timestamp = mktime(0, 0, 0, $month, $day, $year);
-                $shamsi = Jalalian::forge($timestamp)->format('%y%m%d');
+                $shamsi = Jalalian::forge($timestamp)->format('Y/m/d');
                 $array[] = [
                     'pl' => $pl,
                     'pc' => $pc,
                     'pf' => $pf,
                     'pmin' => $pmin,
                     'pmax' => $pmax,
-                    'date' => $shamsi
+                    'date' => $shamsi,
+                    'year'=>$year
                 ];
+                if (Jalalian::forge($timestamp)->getTimestamp() < $c) break;
             }
-            if($data[0] == $c) break;
+
         }
         return $array;
     }
@@ -215,7 +220,7 @@ class Controller extends BaseController
         return $array;
     }
 
-    public function JsonResponse($data, $error, $status = 200)
+    public function JsonResponse($data, $error, $status = 200): \Illuminate\Http\JsonResponse
     {
         return response()->json(
             [
@@ -247,7 +252,7 @@ class Controller extends BaseController
             'notification' => $notification,
             'data' => $extraNotificationData,
         ];
-        
+
        $serverkey = "AAAAKN22tA0:APA91bEhhwYlPvy452mKulNuSadvK2jsfUgM41-Lg-njTxWLzb_xrcg-QhXrxXml3MHFSfCSF7dMuihvWbySp5kNxfNneUVoCnfH3hHjxJwymakBxtUxUlB2ZjnSk5V6yAF_iFWnHhMK";
         // $serverkey = config('FIREBASE_LEGACY_SERVER_KEY');
 

@@ -113,7 +113,7 @@ class Holding extends Model
                 'id' => $namad->id,
                 'symbol' => Cache::get($namad->id)['symbol'],
                 'name' => Cache::get($namad->id)['name'],
-                'final_price_value' => Cache::get($namad->id)['final_price_value'],
+                'final_price_value' => number_format(Cache::get($namad->id)['pc']),
                 'final_price_percent' => Cache::get($namad->id)['final_price_percent'],
                 'final_price_change' => Cache::get($namad->id)['last_price_change'],
                 'final_price_status' => Cache::get($namad->id)['last_price_status'] ? '+' : '-',

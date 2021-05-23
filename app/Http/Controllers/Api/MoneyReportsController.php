@@ -65,8 +65,8 @@ class MoneyReportsController extends Controller
 
     public function getHoldings()
     {
-        $h = Holding::find(30);
-        return $h->getMarketValue();
+        // $h = Holding::find(30);
+        // return $h->getMarketValue();
 
         // return Cache::get(856);
 

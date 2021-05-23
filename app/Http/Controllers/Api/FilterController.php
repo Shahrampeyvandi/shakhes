@@ -36,6 +36,7 @@ class FilterController extends Controller
         try {
             foreach ($arr as  $value) {
                 $cache = Cache::get($value['en']);
+
                  if ($cache) {
                      $slice =  array_slice($cache, 0, 3);
                      $data = [];
@@ -43,19 +44,19 @@ class FilterController extends Controller
                      $data['key'] = $value['en'];
                      $count = 1;
                      foreach ($slice as  $item) {
-                         if ($item->namad) {
+
                              $data['namads'][] = [
-                                 'name' => $item->namad->symbol,
+                                 'name' => $item['namad']->symbol,
                                  'icon' => asset('assets/images/filter-icons/'.$value['icon'].'-'.$count.'.png')
                              ];
                              $count++;
-                         }
+
                      }
                      $arrr[] = $data;
                  }
              }
              $error = null;
-             
+
         } catch (\Throwable $th) {
             $error = 'خطای سرور لطفا بعدا تلاش کنید';
             $errr = null;
@@ -64,8 +65,6 @@ class FilterController extends Controller
         return $this->JsonResponse($arrr, $error, 200);
     }
 
-
-
     public function get($kilid)
     {
 
@@ -73,10 +72,14 @@ class FilterController extends Controller
             return $this->JsonResponse(Cache::get($kilid), null, 200);
         }
 
-        $namads = Namad::all();
+        if (Cache::has('namadlist')) {
+            $namads = Cache::get('namadlist');
+        } else {
+            $namads = Namad::all();
+            Cache::store()->put('namadlist', $namads, 86400); // 10 Minutes
+        }
 
         $array = [];
-
         $data = [];
 
 
@@ -331,7 +334,7 @@ class FilterController extends Controller
 
     public function send_json($kilid, $data)
     {
-        // Cache::store()->put($kilid, $data, 60 * 5); 
+         Cache::store()->put($kilid, $data, 60 * 5);
         return $this->JsonResponse($data, null, 200);
     }
 }

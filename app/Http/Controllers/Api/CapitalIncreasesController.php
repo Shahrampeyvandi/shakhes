@@ -16,12 +16,12 @@ class CapitalIncreasesController extends Controller
     if (isset(request()->section) && request()->section == 'mynamad') {
       $member = $this->token(request()->header('Authorization'));
       $namads = $member->namads->pluck('id')->toArray();
-      $capitalincreases_array = CapitalIncrease::whereIn('namad_id', $namads)->latest()->paginate(20);
+      $capitalincreases_array = CapitalIncrease::whereIn('namad_id', $namads)->latest()->paginate(5);
     } else {
        if (isset(request()->namad) && request()->namad) {
-        $capitalincreases_array = CapitalIncrease::where('namad_id', request()->namad)->latest()->paginate(20);
+        $capitalincreases_array = CapitalIncrease::where('namad_id', request()->namad)->latest()->paginate(5);
       } else {
-        $capitalincreases_array = CapitalIncrease::latest()->paginate(20);
+        $capitalincreases_array = CapitalIncrease::latest()->paginate(5);
       }
     }
     $count = 1;
@@ -36,6 +36,8 @@ class CapitalIncreasesController extends Controller
           $array['newsTime'] = $capitalincrease_obj->get_codal_time();
           $array['newsLink'] = $capitalincrease_obj->link_to_codal;
           $array['newsText'] = $capitalincrease_obj->description;
+          $array['extra'] = $capitalincrease_obj->pdf_link;
+          $array['seen'] = false;
           $array['isBookmarked'] = false;
           $all[] = $array;
           $count++;

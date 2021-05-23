@@ -17,13 +17,13 @@ class ClarificationController extends Controller
     if (isset(request()->section) && request()->section == 'mynamad') {
       $member = $this->token(request()->header('Authorization'));
       $namads = $member->namads->pluck('id')->toArray();
-      $clarifications = clarification::whereIn('namad_id', $namads)->latest()->paginate(20);
+      $clarifications = clarification::whereIn('namad_id', $namads)->latest()->paginate(5);
     } else {
 
       if (isset(request()->namad) && request()->namad) {
-        $clarifications = clarification::where('namad_id', request()->namad)->latest()->paginate(20);
+        $clarifications = clarification::where('namad_id', request()->namad)->latest()->paginate(5);
       } else {
-        $clarifications = clarification::latest()->paginate(20);
+        $clarifications = clarification::latest()->paginate(5);
       }
     }
 
@@ -39,6 +39,8 @@ class ClarificationController extends Controller
           $array['newsTime'] = $clarification_obj->get_codal_time();
           $array['newsLink'] = $clarification_obj->link_to_codal;
           $array['newsText'] = $clarification_obj->subject;
+          $array['extra'] = $clarification_obj->pdf_link;
+          $array['seen'] = false;
           $array['isBookmarked'] = false;
           $all[] = $array;
           $count++;
