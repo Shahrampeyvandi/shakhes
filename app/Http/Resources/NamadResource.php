@@ -18,14 +18,14 @@ class NamadResource extends JsonResource
     public function toArray($request)
     {
         // if (request()->header('Authorization')) {
-            
+
         //     $payload = JWTAuth::parseToken(request()->header('Authorization'))->getPayload();
         //     $mobile = $payload->get('mobile');
         //     $member = Member::where('phone', $mobile)->first();
         // } else {
         //     $member = null;
         // }
-        
+
 
         if (Cache::has($this->id)) {
             $c = Cache::get($this->id);
@@ -33,7 +33,7 @@ class NamadResource extends JsonResource
                 'id' => $this->id,
                 'symbol' => $c['symbol'],
                 'name' => $c['name'],
-                'last_price' => number_format($c['pc']),
+                'last_price' => $c['pc'] ? number_format($c['pc']) : '',
                 'final_price_value' => $c['final_price_value'],
                 'final_price_percent' => $c['final_price_percent'],
                 'final_price_change' => $c['last_price_change'],
@@ -43,7 +43,7 @@ class NamadResource extends JsonResource
                 'py' => $c['py'],
                 'codal' => $this->hasCodal()
             ];
-            
+
         } else {
             return [];
         }

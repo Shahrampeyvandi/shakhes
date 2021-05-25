@@ -66,6 +66,7 @@ class MembersDataController extends Controller
         return $this->JsonResponse($array, $error, 200);
     }
 
+
     public function mark_to_read()
     {
         $member = $this->token(request()->header('Authorization'));
@@ -94,7 +95,7 @@ class MembersDataController extends Controller
 
         return response()->json('success', 200);
     }
-    
+
 
     public function tabList()
     {
@@ -110,15 +111,15 @@ class MembersDataController extends Controller
         ];
 
         if ($holding = Holding::where('namad_id', $namad_id)->first()) {
-            
+
             $arr[] = [
                 'id' => ++$id,
                 'tabName' => 'پورتفوی لحظه ای',
                 'tabNotificationCount' => $holding->updated_at->isToday() ? 1 : 0
             ];
         }
-       
-      
+
+
         $arr[] = [
             'id' => ++$id,
             'tabName' => 'حجم معاملات مشکوک',
@@ -129,7 +130,7 @@ class MembersDataController extends Controller
             'tabName' => 'صورت های مالی و گزارشات',
             'tabNotificationCount' => 0
         ];
-        
+
         $arr[] = [
             'id' => ++$id,
             'tabName' => 'کدال',

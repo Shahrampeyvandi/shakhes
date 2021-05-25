@@ -981,7 +981,7 @@ class MarketController extends Controller
                 $information = Cache::get($id);
                 // return $information;
                 if (!is_null($information)) {
-                    if (array_key_exists('pl', $information) && array_key_exists('py', $information)) {
+                    if (array_key_exists('pc', $information) && array_key_exists('py', $information)) {
                         $dd['namad'] = new NamadResource($namad);
                         $dd['effect'] = (float)$value;
 

@@ -99,7 +99,7 @@ class MoneyReportsController extends Controller
     public function showHolding()
     {
         try {
-            
+
             if (isset(request()->id)) {
                 $row = Holding::whereId(request()->id)->first();
             }
@@ -127,7 +127,7 @@ class MoneyReportsController extends Controller
             }
         } catch (\Throwable $th) {
             $data = null;
-            $error = 'خطا در دریافت اطلاعات از سرور';
+            $error = $th->getMessage();
         }
 
         //  Cache::put('holding-data-'.request()->id, $all, 60 * 10);

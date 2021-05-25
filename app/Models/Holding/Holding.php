@@ -16,7 +16,7 @@ class Holding extends Model
     }
     public function format($number,$lang = 'fa')
     {
-       
+
         if ($number > 0 &&  $number < 1000000) {
             return number_format($number);
         } elseif ($number > 1000000 &&  $number < 1000000000) {
@@ -35,7 +35,7 @@ class Holding extends Model
                $label = ' B';
            }
             return  $number = number_format($number, 2) . $label;
-            
+
         }
     }
 
@@ -119,7 +119,10 @@ class Holding extends Model
                 'final_price_status' => Cache::get($namad->id)['last_price_status'] ? '+' : '-',
                 'namad_status' => Cache::get($namad->id)['namad_status'],
                 'amount_value' => $this->format($namad->pivot->amount_value),
-                'amount_percent' => $namad->pivot->amount_percent ? number_format($namad->pivot->amount_percent,2) : 0
+                'amount_percent' => $namad->pivot->amount_percent ? number_format($namad->pivot->amount_percent,2) : 0,
+                'notifications_count' => 0,
+                'py' => Cache::get($namad->id)['py'],
+                'codal' => $namad->hasCodal()
             ];
         }
 
