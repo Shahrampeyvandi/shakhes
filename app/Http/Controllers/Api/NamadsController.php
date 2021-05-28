@@ -21,6 +21,7 @@ class NamadsController extends Controller
     {
         return Namad::whereId($id)->first()->dailyReports;
     }
+
     public function search(Request $request)
     {
         $member = $this->token(request()->header('Authorization'));
@@ -28,20 +29,16 @@ class NamadsController extends Controller
         $res = [];
         try {
             if ($key) {
-                $namads = Namad::where('symbol', 'like', '%' . $key . '%')
-                    ->take(5)->get();
-                if (count($namads) == 0) {
-                    $error = 'موردی یافت نشد';
-                } else {
-                    $res = NamadResource::collection($namads);
-                    $error = null;
-                }
+                $namads = Namad::search($key)->get();
+                $res = NamadResource::collection($namads);
+                $error = null;
+
             }
-            $status = 200;
+
         } catch (\Throwable $th) {
-            $error = 'خطا در دریافت اطلاعات از سرور';
+            $error = $th->getMessage() . ' in line ' . $th->getLine();
         }
-         return $this->JsonResponse($res,$error,$status);
+        return $this->JsonResponse($res, $error, 200);
     }
 
     public function getnamad(Request $request)
@@ -49,14 +46,14 @@ class NamadsController extends Controller
         $member = $this->token(request()->header('Authorization'));
         $namad = Namad::find($request->id);
         if ($namad) {
-           
+
             $information = new NamadResource($namad);
 
-            return $this->JsonResponse($information,null,200);
+            return $this->JsonResponse($information, null, 200);
         } else {
             $error = 'نماد مورد نظر یافت نشد';
-            return $this->JsonResponse(null,$error,200);
-           
+            return $this->JsonResponse(null, $error, 200);
+
         }
     }
 
@@ -73,7 +70,7 @@ class NamadsController extends Controller
         ];
 
         $all_notif = array_merge(["my_namad" => $my_notif['my_namads']], $common_notif);
-        return $this->JsonResponse($all_notif,null,200);
+        return $this->JsonResponse($all_notif, null, 200);
         // return response()->json($all_notif, 200);
     }
 
@@ -121,18 +118,18 @@ class NamadsController extends Controller
             $orders = $explode_all[2];
             if ($orders) {
                 $explode_orders = explode('@', $orders);
-                $explode_orders[1] = $this->format((int) $explode_orders[1]);
+                $explode_orders[1] = $this->format((int)$explode_orders[1]);
                 $array['lastbuys'][] = array('tedad' => $explode_orders[0], 'vol' => $explode_orders[1], 'price' => $explode_orders[2], 'color' => $explode_orders[2] < $cache['minrange'] ? 'gray' : 'black');
-                $explode_orders[6] = $this->format((int) $explode_orders[6]);
+                $explode_orders[6] = $this->format((int)$explode_orders[6]);
                 $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[5])[1], 'vol' => $explode_orders[6], 'price' => $explode_orders[7], 'color' => $explode_orders[7] < $cache['minrange'] ? 'gray' : 'black');
-                $explode_orders[11] = $this->format((int) $explode_orders[11]);
+                $explode_orders[11] = $this->format((int)$explode_orders[11]);
                 $array['lastbuys'][] = array('tedad' => explode(',', $explode_orders[10])[1], 'vol' => $explode_orders[11], 'price' => $explode_orders[12], 'color' => $explode_orders[12] < $cache['minrange'] ? 'gray' : 'black');
 
-                $explode_orders[4] = $this->format((int) $explode_orders[4]);
+                $explode_orders[4] = $this->format((int)$explode_orders[4]);
                 $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[5])[0], 'vol' => $explode_orders[4], 'price' => $explode_orders[3], 'color' => $explode_orders[3] > $cache['maxrange'] ? 'gray' : 'black');
-                $explode_orders[9] = $this->format((int) $explode_orders[9]);
+                $explode_orders[9] = $this->format((int)$explode_orders[9]);
                 $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[10])[0], 'vol' => $explode_orders[9], 'price' => $explode_orders[8], 'color' => $explode_orders[8] > $cache['maxrange'] ? 'gray' : 'black');
-                $explode_orders[14] = $this->format((int) $explode_orders[14]);
+                $explode_orders[14] = $this->format((int)$explode_orders[14]);
                 $array['lastsells'][] = array('tedad' => explode(',', $explode_orders[15])[0], 'vol' => $explode_orders[14], 'price' => $explode_orders[13], 'color' => $explode_orders[13] > $cache['maxrange'] ? 'gray' : 'black');
             }
 
@@ -146,8 +143,8 @@ class NamadsController extends Controller
             $array['pmin'] = $old_cache['pmin'];
             $array['pmax'] = $old_cache['pmin'];
             $array['tradecount'] = $cache['tradecount'];
-            $array['N_tradeVol'] =  $this->format($cache['N_tradeVol']);
-            $array['N_tradecash'] =  $this->format($cache['N_tradecash']);
+            $array['N_tradeVol'] = $this->format($cache['N_tradeVol']);
+            $array['N_tradecash'] = $this->format($cache['N_tradecash']);
             $array['EPS'] = $cache['EPS'];
             $array['P/E'] = $cache['P/E'];
             $array['TedadShaham'] = $cache['TedadShaham'];
@@ -160,7 +157,7 @@ class NamadsController extends Controller
             $array['flow'] = $old_cache['flow'];
             $array['ID'] = $old_cache['ID'];
             $array['BaseVol'] = $old_cache['BaseVol'];
-            $array['status'] =  ($array['pl'] - $array['py'])  > 0 ? 'green' : 'red';
+            $array['status'] = ($array['pl'] - $array['py']) > 0 ? 'green' : 'red';
             $array['personbuy'] = $old_cache['personbuy'];
             $array['legalbuy'] = $old_cache['legalbuy'];
             $array['personsell'] = $old_cache['personsell'];
@@ -194,6 +191,7 @@ class NamadsController extends Controller
         return response()->json(['data' => $reversed], 200);
         return response()->json(['data' => $array], 200);
     }
+
     public function support_resistance()
     {
 
@@ -201,7 +199,7 @@ class NamadsController extends Controller
         $days = request()->days;
         if (isset(request()->namad)) {
 
-            $namads[]  = Namad::find(request()->namad)->symbol;
+            $namads[] = Namad::find(request()->namad)->symbol;
         } else {
             if (Cache::has('namadlist')) {
                 $namads = Cache::get('namadlist');

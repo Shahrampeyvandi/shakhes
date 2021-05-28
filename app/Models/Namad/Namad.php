@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models\Namad;
-
+use App\Http\Traits\FullTextSearch;
 use Carbon\Carbon;
 use App\Models\clarification;
 use App\Models\Holding\Holding;
@@ -19,6 +19,16 @@ use App\User;
 
 class Namad extends Model
 {
+    use FullTextSearch;
+    /**
+     * The columns of the full text index
+     */
+    protected $searchable = [
+        'symbol',
+        'name'
+    ];
+
+
     public function dailyReports()
     {
         return $this->hasMany(NamadsDailyReport::class);
@@ -126,16 +136,16 @@ class Namad extends Model
 
         // $member = Member::find($memberId);
         // if($member && $member->namads->contains($this->id)) {
-          
-                if($this->capital_increases()->whereDate('publish_date',Carbon::today())->count() 
+
+                if($this->capital_increases()->whereDate('publish_date',Carbon::today())->count()
                 || $this->clarifications()->whereDate('publish_date',Carbon::today())->count())
                 {
                     return true;
                 }
-            
+
         // }
-        
+
         return false;
     }
-   
+
 }

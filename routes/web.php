@@ -102,14 +102,34 @@ Route::group(['middleware' => ['admin']], function () {
 Route::get('/education/{id}', 'EducationController@Show')->name('Education.Show');
 Route::get('/farsi', 'Controller@convertPersianToEnglish');
 Route::get('/d-namad/{name}',function($name){
-    
+    dd(\App\Models\Namad\Namad::search('صنعتی دریایی')->get());
+//    dd(public_path('nnn.txt'));
+//    $line=utf8_encode(fgets(file_get_contents(public_path('nnn.txt'))));
+//    dd($line);
+//    header('Content-Type: text/html; charset =utf-8');
+//    $array =  mb_convert_encoding(file_get_contents(public_path('nnn.txt')), 'UTF-8',
+//        mb_detect_encoding(file_get_contents(public_path('nnn.txt')), 'UTF-8, ISO-8859-1', true));
+//    dd($array);
+
+    $fh = fopen(public_path('nnn.txt'),'r');
+    while ($line = fgets($fh)) {
+         var_dump(utf8_encode($line));
+    }
+//    UPDATE namads
+//SET
+//    name = REPLACE(name,
+//        'ك',
+//        'ک');
+    fclose($fh);
+    dd('end');
+
    $namad= \App\Models\Namad\Namad::first();
     dd(Cache::get($namad->id));
-  
+
 });
 
 Route::get('/sendsms',function(){
-   
+
 
     dd(\App\Models\Namad\Namad::find(2)->users);
         $data = array('code' => '123456');
@@ -119,7 +139,7 @@ Route::get('/sendsms',function(){
             "recipient" => '+9899154131736',
             "values" => $data
         );
-    
+
         $url = "http://rest.ippanel.com/v1/messages/patterns/send";
         $handler = curl_init($url);
         curl_setopt($handler, CURLOPT_CUSTOMREQUEST, "POST");
@@ -129,10 +149,10 @@ Route::get('/sendsms',function(){
             'Content-Type: application/json',
             'Authorization: AccessKey LH5pTlnaCiZKZiEL7gPYh_nr-c6OmdmhRh9uKLSkkP0='
         ));
-    
+
         $response = curl_exec($handler);
         dd($response);
     });
-    
+
 
 

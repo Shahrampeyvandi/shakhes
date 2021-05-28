@@ -8,6 +8,7 @@ use App\Shakhes;
 use Goutte;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 
 class IndexScheduler
@@ -20,14 +21,15 @@ class IndexScheduler
         try {
 
 
-            if (strtotime('08:30') < strtotime(date('H:i')) &&  strtotime('13:00') > strtotime(date('H:i'))) {
-                if($status = Cache::get('bazarstatus') == 'close') {
+//            if (strtotime('08:30') < strtotime(date('H:i')) &&  strtotime('13:00') > strtotime(date('H:i'))) {
+//                if($status = Cache::get('bazarstatus') == 'close') {
+//
+//                }else{
 
-                }else{
-
+                    $this->delete_old_data();
                     $this->get_data();
-                }
-            }
+//                }
+//            }
         } catch (Exception $e) {
         }
         //   }
@@ -36,12 +38,7 @@ class IndexScheduler
 
     public function get_data()
     {
-        // if (Cache::has('bshakhes')) {
-        
-        //   $this->save_in_db();
-        //   echo 'cache has';
-        //     return;
-        // }
+
 
         try {
             $url = 'http://www.tsetmc.com/Loader.aspx?Partree=151315&Flow=1';
@@ -63,11 +60,6 @@ class IndexScheduler
                     $array['status'] = 'negative';
                 }
                 $bourse[] = $array;
-
-
-
-
-
 
 
                 $array['title'] = $node->filter('tr:nth-of-type(47) td')->text();
@@ -256,11 +248,10 @@ class IndexScheduler
 
             Cache::put('bshakhes', $bourse, 60 * 15);
 
-
-
             $error = null;
 
             $this->save_in_db();
+
         } catch (\Throwable $th) {
         }
 
@@ -273,7 +264,7 @@ class IndexScheduler
     protected function save_in_db() {
         // echo Cache::get('bshakhes')[0]->last_value;
         foreach ($cashe = Cache::get('bshakhes') as $item) {
-            
+
             $index = new Shakhes;
             $index->value = $item['last_val'];
             $index->time =  $item['time'];
@@ -284,6 +275,7 @@ class IndexScheduler
             $index->market =  'bourse';
             $index->save();
         }
+
         foreach ($cashe = Cache::get('fshakhes') as $item) {
             $index = new Shakhes;
             $index->value = $item['last_val'];
@@ -295,5 +287,10 @@ class IndexScheduler
             $index->market =  'farabourse';
             $index->save();
         }
+    }
+
+    private function delete_old_data()
+    {
+        DB::table('shakhes')->delete('');
     }
 }

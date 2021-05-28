@@ -128,9 +128,15 @@ class Controller extends BaseController
         return $response;
     }
 
-    public function get_history_data($inscode, $days)
+    public function get_history_data($inscode,int $months) : array
     {
-        $c = Jalalian::forge('now')->subDays($days)->getTimestamp();
+        $days = 0;
+        for ($x = 1; $x <= $months; $x++) {
+            $days += Jalalian::forge('now')->subMonths($x)->getMonthDays();
+        }
+
+        $timestampDays = Jalalian::forge('now')->subMonths($months)->getTimestamp();
+
 
         $array = [];
         $ch = curl_init("https://members.tsetmc.com/tsev2/data/InstTradeHistory.aspx?i=$inscode&Top=$days&A=0");
@@ -164,7 +170,7 @@ class Controller extends BaseController
                     'date' => $shamsi,
                     'year'=>$year
                 ];
-                if (Jalalian::forge($timestamp)->getTimestamp() < $c) break;
+                if (Jalalian::forge($timestamp)->getTimestamp() < $timestampDays) break;
             }
 
         }

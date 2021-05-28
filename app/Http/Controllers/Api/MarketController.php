@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use Goutte;
 use App\Models\Namad\Namad;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 use Morilog\Jalali\Jalalian;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CapitalIncreaseResource;
@@ -16,10 +19,15 @@ use App\MovingAverage;
 use App\Shakhes;
 use Carbon\Carbon;
 
+/**
+ * Class MarketController
+ * @package App\Http\Controllers\Api
+ */
+
 class MarketController extends Controller
 {
 
-    public function get_distributes()
+    public function get_distributes(): JsonResponse
     {
         try {
             $dist_arr = [];
@@ -246,80 +254,108 @@ class MarketController extends Controller
         //    return $data['distributes'] = $this->get_distributes();
 
 
-        try {
+
+        try{
 
             if (isset(request()->type)) {
                 if (request()->type == 'bourse') {
                     $url = "http://www.tsetmc.com/tsev2/chart/data/Index.aspx?Top=2&i=32097828799138957&t=value";
                     $type = 'bourse';
+                    $title = 'شاخص كل';
                 } elseif (request()->type == 'farabourse') {
                     $url = 'http://www.tsetmc.com/tsev2/chart/data/Index.aspx?i=43685683301327984&t=value';
                     $type = 'farabourse';
+                    $title = 'بازار دوم فرابورس';
                 } elseif (request()->type == 'equivalent') {
                     $url = 'http://www.tsetmc.com/tsev2/chart/data/Index.aspx?i=67130298613737946&t=value';
                     $type = 'bourse';
+                    $title='شاخص كل (هم وزن)';
                 } else {
 
                     $url = "http://www.tsetmc.com/tsev2/chart/data/Index.aspx?Top=2&i=32097828799138957&t=value";
                     $type = 'bourse';
+                    $title = 'شاخص كل';
                 }
             } else {
                 $url = "http://www.tsetmc.com/tsev2/chart/data/Index.aspx?Top=2&i=32097828799138957&t=value";
                 $type = 'bourse';
+                $title = 'شاخص كل';
             }
 
-            $days = request()->months ? (int)request()->months * 30 : 7;
-            $date = Jalalian::forge('now')->subDays($days)->getTimestamp();
             $chart_arr = [];
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_ENCODING, "");
-            $result = curl_exec($ch);
-            $day_data = explode(';', $result);
-            foreach (array_reverse($day_data) as $item) {
 
-                $y = explode('/', explode(',', $item)[0])[0];
-                $m = explode('/', explode(',', $item)[0])[1] < 10 ? '0' . intval(explode('/', explode(',', $item)[0])[1]) : explode('/', explode(',', $item)[0])[1];
-                $d = explode('/', explode(',', $item)[0])[2] < 10 ? '0' . intval(explode('/', explode(',', $item)[0])[2]) : explode('/', explode(',', $item)[0])[2];
+            $days = request()->months ? (int)request()->months * 30 : 0;
 
-                $chart_arr[] = ['yAxis' => implode('/', [$y, $m, $d]), 'xAxis' => explode(',', $item)[1]];
+            if($days === 0) {
 
-                if (Jalalian::fromFormat('Y/m/d', implode('/', [$y, $m, $d]))->getTimestamp() < $date) break;
+                $raws = DB::table('shakhes')
+                    ->where('title', '=', $title)
+                    ->whereDate('created_at', '=', Carbon::now())
+                    ->orderBy('created_at','asc')
+                    ->get();
 
-                $error = null;
+
+                foreach ($raws as $item) {
+                    $chart_arr[] = ['yAxis' => $item->time, 'xAxis' =>  floatval(str_replace(",","",$item->value)) ?? 0];
+                }
+
+                $data = $chart_arr;
+            }else {
+
+                $date = Jalalian::forge('now')->subDays($days)->getTimestamp();
+
+                $ch = curl_init($url);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_ENCODING, "");
+                $result = curl_exec($ch);
+                $day_data = explode(';', $result);
+                foreach (array_reverse($day_data) as $item) {
+
+                    $y = explode('/', explode(',', $item)[0])[0];
+                    $m = explode('/', explode(',', $item)[0])[1] < 10 ? '0' . intval(explode('/', explode(',', $item)[0])[1]) : explode('/', explode(',', $item)[0])[1];
+                    $d = explode('/', explode(',', $item)[0])[2] < 10 ? '0' . intval(explode('/', explode(',', $item)[0])[2]) : explode('/', explode(',', $item)[0])[2];
+
+                    $chart_arr[] = ['yAxis' => implode('/', [$y, $m, $d]), 'xAxis' => explode(',', $item)[1]];
+
+                    if (Jalalian::fromFormat('Y/m/d', implode('/', [$y, $m, $d]))->getTimestamp() < $date) break;
+
+                    $error = null;
+                }
+
+                $data = $chart_arr;
+
+                // $data['distributes'] = $this->get_distributes();
+
             }
-
-            $data = $chart_arr;
-
-            // $data['distributes'] = $this->get_distributes();
-
-        } catch (\Throwable $th) {
-            //throw $th;
-            $error = 'خطای سرور';
-            $chart_arr = null;
+            $error = null;
+        }catch (\Throwable $th) {
+            $data = null;
+            $error = $th->getMessage();
         }
 
         return $this->JsonResponse($data, $error, 200);
     }
 
-    public function chart()
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+
+    public function chart(): \Illuminate\Http\JsonResponse
     {
+
         try {
             $namad = Namad::find(request()->namad);
             $inscode = $namad->inscode;
-            $days = request()->months ? (int)request()->months * 30 : 7;
-
-
-
-
+            $months = request()->months ? (int)request()->months : 7;
 
             // if (Cache::has("chartdata-$inscode-$days")) {
             //     $chartdata = Cache::get("chartdata-$inscode-$days");
             // } else {
 
-                $data = $this->get_history_data($inscode, $days);
+                $data = $this->get_history_data($inscode, $months);
                 foreach ($data as $key => $item) {
                     $axis['xAxis'] = $item['pc'];
                     $axis['open'] = $item['pf'];
@@ -330,12 +366,13 @@ class MarketController extends Controller
                     $chartdata[] = $axis;
                 }
 
-                Cache::put("chartdata-$inscode-$days", $chartdata, 60 * 60 * 12);
+                Cache::put("chartdata-$inscode-$months", $chartdata, 60 * 60 * 12);
+
             // }
             $error = null;
         } catch (\Throwable $th) {
             $chartdata = null;
-            $error = 'خطا در دریافت اطلاعات از سرور';
+            $error = "{$th->getMessage()} in line {$th->getLine()}";
         }
 
 
